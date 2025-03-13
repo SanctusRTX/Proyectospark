@@ -3,21 +3,72 @@
 {% block title %}Login{% endblock %}
 
 {% block customCSS %}
-<link  rel="stylesheet " href="{{ url_for('static', filename='css/login.css') }}">
+<link  rel="stylesheet " href="{{ url_for('static', filename='css/style.css') }}">
 {% endblock %}
 {% block body %}
+
+<div class="login-container">
+        <form class="" action="/login" method="POST">
+            <input type="checkbox" class="input-check" id="input-check">
+            <label for="input-check" class="toggle">
+                <span class="text off">Off</span>
+                <span class="text on">On</span>
+            </label>
+            <div class="login-light"></div>
+            <img class="mb-4" src="{{ url_for('static', filename='img/spark.jpg') }}" alt="" width="200" height="200">
+            <h2>Inicio de sesión</h2>
+            <div class="input-box">
+                <span class="icon">
+                    <ion-icon name="mail"></ion-icon>
+                </span>
+                <input type="text" class="form-control" id="username" name="username"  required="required">
+                <label>Usuario</label>
+                <div class="input-line"></div>
+            </div>
+
+            <div class="input-box">
+                <span class="icon">
+                    <ion-icon name="lock-closed"></ion-icon>
+                </span>
+                <input input type="password" class="form-control" name="password"  required="required">
+                <label>Contraseña</label>
+                <div class="input-line"></div>
+
+            </div>
+
+            <div class="remember-forgot">
+                <label> 
+                    <input type="checkbox">
+                    Recuerdame
+                </label>
+                <a href="#"></a>
+            </div>
+            <button type="submit">Login</button>
+            <div class="register-link">
+                <p>Don't have an account? <a href="#">Register</a></p>
+            </div>
+        </form>
+    </div>
+
+
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script type="module" src="{{ url_for('static', filename='js/login.js') }}"></script>
+
+<!-- 
 <form class="form-signin" action="/login" method="POST">
-    <img class="mb-4" src="{{ url_for('static', filename='img/flask.svg') }}" alt="" width="100" height="60">
+    <img class="mb-4" src="{{ url_for('static', filename='img/spark.jpg') }}" alt="" width="200" height="200">
     <br />
-    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+    <h1 class="h3 mb-3 fw-normal">Porfavor inicie sesión</h1>
     <div class="form-floating">
         <input type="text" class="form-control" id="username" name="username" placeholder="Username">
-        <label for="username">Username</label>
+        <label for="username">usuario</label>
     </div>
     <div class="form-floating mt-2">
         <input type="password" class="form-control" name="password" placeholder="Password">
-        <label for="password">Password</label>
+        <label for="password">contraseña</label>
     </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Iniciar Sesión</button>
 </form>
+-->
 {% endblock %}
