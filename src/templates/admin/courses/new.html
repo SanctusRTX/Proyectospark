@@ -1,0 +1,47 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Nuevo Curso{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Nuevo Curso</h1>
+    <a href="{{ url_for('admin_courses') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <form action="{{ url_for('new_course') }}" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="title" class="form-label">Título del Curso</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="image" class="form-label">Imagen</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                <small class="text-muted">Formatos permitidos: PNG, JPG, JPEG, GIF, SVG</small>
+            </div>
+            
+            <div class="mb-3">
+                <label for="external_url" class="form-label">URL Externa</label>
+                <input type="url" class="form-control" id="external_url" name="external_url" required>
+                <small class="text-muted">URL completa incluyendo https://</small>
+            </div>
+            
+            <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            </div>
+            
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="active" name="active" checked>
+                <label class="form-check-label" for="active">Activo</label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Guardar Curso</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

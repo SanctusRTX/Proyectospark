@@ -1,0 +1,96 @@
+{% extends "course/base_course.html" %}
+
+{% block title %}{{ course[1] }}{% endblock %}
+
+{% block customCSS %}
+<style>
+    .course-image {
+        max-height: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="course-header mb-4">
+    <h1 class="course-title">{{ course[1] }}</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-body chapter-content">
+                <div class="text-center mb-4">
+                    <img src="{{ url_for('static', filename=course[2].replace('static/', '', 1)) }}" alt="{{ course[1] }}" class="img-fluid rounded course-image">
+                </div>
+                
+                <div class="course-description">
+                    <h2>Descripción del Curso</h2>
+                    <p>{{ course[4] }}</p>
+                </div>
+                
+                {% if chapters %}
+                <div class="mt-5">
+                    <h3>Contenido del Curso</h3>
+                    <div class="list-group mt-3">
+                        {% for chapter in chapters %}
+                        <a href="{{ url_for('view_chapter', course_id=course[0], chapter_id=chapter[0]) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ chapter[1] }}</h5>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-info mt-4">
+                    <p>Este curso aún no tiene capítulos disponibles. Vuelve pronto para ver el contenido actualizado.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Información del Curso</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-book me-2"></i> Capítulos</span>
+                        <span class="badge bg-primary rounded-pill">{{ chapters|length }}</span>
+                    </li>
+                    {% if course[3] %}
+                    <li class="list-group-item">
+                        <span>
+                            <a href="{{ course[3] }}" target="_blank" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-link-45deg me-2"></i> Recursos Externos
+                            </a>
+                        </span>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item">
+                        <span>
+                            <a href="{{ url_for('home') }}" class="btn btn-secondary w-100">
+                                <i class="bi bi-arrow-left me-2"></i> Volver a Inicio
+                            </a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

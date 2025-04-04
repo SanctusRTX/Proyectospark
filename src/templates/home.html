@@ -1,29 +1,149 @@
-{% extends './base.html' %}
+{% extends './base_courses.html' %}
 
-{% block title %}Inicio{% endblock %}
+{% block title %}Cursos de IA{% endblock %}
 {% block body %}
-<h1>Hola, este es el inicio</h1>
-<div class="container">
-    <div class="row">
-        <div class="col-md-3">
-            <ul class="nav flex-column">
+{% block customCSS %}
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+        background-color: #ffffff;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .card-img-container {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+    .card-img-container img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    .card-link {
+        color: inherit;
+        text-decoration: none;
+    }
+    .card-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+    .card-title {
+        text-align: center;
+        margin-bottom: 0;
+        font-weight: 600;
+        color: #333;
+    }
+    .page-title {
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #0f0a06;
+    }
+    .navbar {
+        background-color: #0f0a06;
+    }
+    .navbar-brand {
+        color: #fff;
+        font-weight: 600;
+    }
+    .navbar-brand:hover {
+        color: #00FFDD;
+    }
+    .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    .nav-link:hover, .nav-link.active {
+        color: #00FFDD;
+    }
+</style>
+{% endblock %}
+
+<!-- Barra de navegación -->
+<nav class="navbar navbar-expand-lg navbar-dark" role="navigation" aria-label="Barra de navegación">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo de Spark IA" width="30" height="30" class="d-inline-block align-text-top rounded-circle me-2">
+            Spark IA
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">Active</a>
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                    <a class="nav-link" href="#">Cursos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                    <a class="nav-link" href="#">Contacto</a>
+                </li>
+                {% if session.get('user_role') == 'profesor' %}<li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_courses') }}">
+                        <i class="bi bi-gear"></i> Administración
+                    </a>
+                </li>{% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">
+                        <i class="bi bi-box-arrow-right"></i> 
+                        {% if session.get('user_role') == 'guest' %}
+                            Salir ({{ session.get('username').split(':')[1].strip() }})
+                        {% else %}
+                            Cerrar Sesión
+                        {% endif %}
+                    </a>
                 </li>
             </ul>
         </div>
-        <div class="col-md-9">
-            <h3>Contenido</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+    </div>
+</nav>
+
+<!-- Contenedor principal -->
+<div class="container py-5">
+    <h1 class="text-center mb-5 page-title">Cursos de Inteligencia Artificial</h1>
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('view_course', course_id=course[0]) }}" class="card-link" aria-label="Enlace a {{ course[1] }}">
+                <div class="card h-100 shadow">
+                    <div class="card-img-container">
+                        <img src="{{ url_for('static', filename=course[2].replace('static/', '', 1)) }}" alt="{{ course[1] }}" class="img-fluid" loading="lazy">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course[1] }}</h5>
+                    </div>
+                </div>
+            </a>
         </div>
+        {% else %}
+        <div class="col-12 text-center">
+            <div class="alert alert-info" role="alert">
+                No hay cursos disponibles en este momento.
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
-{% block body %}
 
+<!-- Footer -->
+<footer class="bg-dark text-white py-4 mt-5" role="contentinfo">
+    <div class="container text-center">
+        <p>&copy; 2025 Spark IA - Todos los derechos reservados</p>
+    </div>
+</footer>
 {% endblock %}

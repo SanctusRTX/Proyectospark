@@ -1,0 +1,108 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Administración de Cursos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Administración de Cursos</h1>
+        <a href="{{ url_for('new_course') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Curso
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Cursos Disponibles</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Imagen</th>
+                            <th>URL Externa</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                        <tr>
+                            <td>{{ course[0] }}</td>
+                            <td>{{ course[1] }}</td>
+                            <td>
+                                <img src="{{ url_for('static', filename=course[2]) }}" alt="Imagen de {{ course[1] }}" class="course-thumbnail" loading="lazy">
+                            </td>
+                            <td>
+                                <a href="{{ course[3] }}" target="_blank" title="Visitar {{ course[1] }}">
+                                    <i class="bi bi-link-45deg"></i> Visitar
+                                </a>
+                            </td>
+                            <td>
+                                {% if course[5] == 1 %}
+                                <span class="badge bg-success">Activo</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Acciones para {{ course[1] }}">
+                                    <a href="{{ url_for('edit_course', id=course[0]) }}" class="btn btn-sm btn-warning" title="Editar {{ course[1] }}">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <a href="{{ url_for('admin_chapters', course_id=course[0]) }}" class="btn btn-sm btn-info" title="Administrar capítulos de {{ course[1] }}">
+                                        <i class="bi bi-book"></i> Capítulos
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ course[0] }}" title="Eliminar {{ course[1] }}">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </div>
+
+                                <!-- Modal de confirmación de eliminación -->
+                                <div class="modal fade" id="deleteModal{{ course[0] }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ course[0] }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel{{ course[0] }}">Confirmar eliminación</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Está seguro de que desea eliminar el curso <strong>{{ course[1] }}</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <form action="{{ url_for('delete_course', id=course[0]) }}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">No hay cursos disponibles</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

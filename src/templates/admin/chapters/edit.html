@@ -1,0 +1,90 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Editar Capítulo - {{ chapter[1] }}{% endblock %}
+
+{% block customCSS %}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+    #editor-container {
+        height: 400px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Editar Capítulo: {{ chapter[1] }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Información del Capítulo</h6>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('edit_chapter', course_id=course[0], chapter_id=chapter[0]) }}" method="POST">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Título del Capítulo</label>
+                    <input type="text" class="form-control" id="title" name="title" value="{{ chapter[1] }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="editor-container" class="form-label">Contenido</label>
+                    <div id="editor-container"></div>
+                    <input type="hidden" name="content" id="content">
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ url_for('admin_chapters', course_id=course[0]) }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+    // Inicializar el editor Quill
+    var quill = new Quill('#editor-container', {
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                [{ 'align': [] }],
+                ['link', 'image', 'video', 'code-block'],
+                ['clean']
+            ]
+        },
+        placeholder: 'Escribe el contenido del capítulo aquí...',
+        theme: 'snow'
+    });
+
+    // Cargar el contenido existente en el editor
+    quill.root.innerHTML = `{{ chapter[2]|safe }}`;
+
+    // Actualizar el campo oculto con el contenido HTML al enviar el formulario
+    document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('content').value = quill.root.innerHTML;
+    });
+</script>
+{% endblock %}

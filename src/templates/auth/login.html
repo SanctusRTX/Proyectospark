@@ -3,72 +3,224 @@
 {% block title %}Login{% endblock %}
 
 {% block customCSS %}
-<link  rel="stylesheet " href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+    .login-container {
+        position: relative;
+        z-index: 10;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    .form-container {
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        position: absolute;
+        width: 100%;
+        backface-visibility: hidden;
+        padding: 20px;
+    }
+    .login-form {
+        transform: rotateY(0deg);
+        z-index: 2;
+    }
+    .guest-form {
+        transform: rotateY(180deg);
+        opacity: 0;
+        z-index: 1;
+    }
+    .show-guest .login-form {
+        transform: rotateY(180deg);
+        opacity: 0;
+        z-index: 1;
+    }
+    .show-guest .guest-form {
+        transform: rotateY(0deg);
+        opacity: 1;
+        z-index: 2;
+    }
+    .toggle-form {
+        background: none;
+        border: none;
+        color: #00FFDD;
+        cursor: pointer;
+        font-size: 0.9em;
+        text-decoration: underline;
+        margin-top: 15px;
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+    .toggle-form:hover {
+        color: #fff;
+    }
+    .input-box {
+        width: 100%;
+        padding: 0 20px;
+        margin-bottom: 30px;
+    }
+    button[type="submit"], button.toggle-form {
+        width: 80%;
+        margin: 0 auto;
+        display: block;
+    }
+    .remember-forgot {
+        padding: 0 20px;
+        margin-bottom: 20px;
+    }
+    h2 {
+        margin-bottom: 30px;
+    }
+    .alert {
+        margin: 0 20px 20px;
+    }
+    .guest-login {
+        margin-top: 15px;
+        text-align: center;
+    }
+    .guest-login-btn {
+        background: none;
+        border: none;
+        color: #00FFDD;
+        cursor: pointer;
+        font-size: 0.9em;
+        text-decoration: underline;
+    }
+    .guest-login-btn:hover {
+        color: #fff;
+    }
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 15px 0;
+        color: #aaa;
+    }
+    .divider::before, .divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #444;
+        margin: 0 10px;
+    }
+</style>
 {% endblock %}
 {% block body %}
 
-<div class="login-container">
-        <form class="" action="/login" method="POST">
-            <input type="checkbox" class="input-check" id="input-check">
-            <label for="input-check" class="toggle">
-                <span class="text off">Off</span>
-                <span class="text on">On</span>
+<div class="login-container" id="loginContainer">
+    <!-- Formulario de Login Normal -->
+    <form class="form-container login-form" action="/login" method="POST">
+        <input type="checkbox" class="input-check" id="input-check">
+        <label for="input-check" class="toggle">
+            <span class="text off">Off</span>
+            <span class="text on">On</span>
+        </label>
+        <div class="login-light"></div>
+        <img class="mb-4" src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo Spark IA" width="200" height="200">
+        <h2>Inicio de sesión</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
+        <div class="input-box">
+            <span class="icon">
+                <ion-icon name="mail"></ion-icon>
+            </span>
+            <input type="text" class="form-control" id="username" name="username" required="required">
+            <label for="username">Usuario</label>
+            <div class="input-line"></div>
+        </div>
+
+        <div class="input-box">
+            <span class="icon">
+                <ion-icon name="lock-closed"></ion-icon>
+            </span>
+            <input type="password" class="form-control" id="password" name="password" required="required">
+            <label for="password">Contraseña</label>
+            <div class="input-line"></div>
+        </div>
+
+        <div class="remember-forgot">
+            <label>
+                <input type="checkbox" name="remember">
+                Recuérdame
             </label>
-            <div class="login-light"></div>
-            <img class="mb-4" src="{{ url_for('static', filename='img/spark.jpg') }}" alt="" width="200" height="200">
-            <h2>Inicio de sesión</h2>
-            <div class="input-box">
-                <span class="icon">
-                    <ion-icon name="mail"></ion-icon>
-                </span>
-                <input type="text" class="form-control" id="username" name="username"  required="required">
-                <label>Usuario</label>
-                <div class="input-line"></div>
-            </div>
+        </div>
+        <button type="submit">Iniciar Sesión</button>
+        
+        <button type="button" class="toggle-form" id="showGuestForm">Acceder como invitado</button>
+    </form>
+    
+    <!-- Formulario de Acceso como Invitado -->
+    <form class="form-container guest-form" action="/guest-login" method="POST">
+        <input type="checkbox" class="input-check" id="input-check-guest">
+        <label for="input-check-guest" class="toggle">
+            <span class="text off">Off</span>
+            <span class="text on">On</span>
+        </label>
+        <div class="login-light"></div>
+        <img class="mb-4" src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo Spark IA" width="200" height="200">
+        <h2>Acceso como invitado</h2>
+        
+        <div class="input-box">
+            <span class="icon">
+                <ion-icon name="person"></ion-icon>
+            </span>
+            <input type="text" class="form-control" id="guest_name" name="guest_name" required="required">
+            <label for="guest_name">Tu nombre</label>
+            <div class="input-line"></div>
+        </div>
+        
+        <button type="submit">Acceder como Invitado</button>
+        
+        <button type="button" class="toggle-form" id="showLoginForm">Volver al inicio de sesión</button>
+    </form>
+</div>
 
-            <div class="input-box">
-                <span class="icon">
-                    <ion-icon name="lock-closed"></ion-icon>
-                </span>
-                <input input type="password" class="form-control" name="password"  required="required">
-                <label>Contraseña</label>
-                <div class="input-line"></div>
+<canvas id="canvas">Your browser doesn't support canvas</canvas>
 
-            </div>
+<!-- SVG Goo filter -->
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+      <filter id="shadowed-goo">
+          <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+          <feGaussianBlur in="goo" stdDeviation="3" result="shadow" />
+          <feColorMatrix in="shadow" mode="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 -0.2" result="shadow" />
+          <feOffset in="shadow" dx="1" dy="1" result="shadow" />
+          <feBlend in2="shadow" in="goo" result="goo" />
+          <feBlend in2="goo" in="SourceGraphic" result="mix" />
+      </filter>
+      <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+          <feBlend in2="goo" in="SourceGraphic" result="mix" />
+      </filter>
+    </defs>
+</svg>
 
-            <div class="remember-forgot">
-                <label> 
-                    <input type="checkbox">
-                    Recuerdame
-                </label>
-                <a href="#"></a>
-            </div>
-            <button type="submit">Login</button>
-            <div class="register-link">
-                <p>Don't have an account? <a href="#">Register</a></p>
-            </div>
-        </form>
-    </div>
+{% block customJS %}
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginContainer = document.getElementById('loginContainer');
+        const showGuestForm = document.getElementById('showGuestForm');
+        const showLoginForm = document.getElementById('showLoginForm');
+        
+        showGuestForm.addEventListener('click', function() {
+            loginContainer.classList.add('show-guest');
+        });
+        
+        showLoginForm.addEventListener('click', function() {
+            loginContainer.classList.remove('show-guest');
+        });
+    });
+</script>
+{% endblock %}
 
-
-<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-<script type="module" src="{{ url_for('static', filename='js/login.js') }}"></script>
-
-<!-- 
-<form class="form-signin" action="/login" method="POST">
-    <img class="mb-4" src="{{ url_for('static', filename='img/spark.jpg') }}" alt="" width="200" height="200">
-    <br />
-    <h1 class="h3 mb-3 fw-normal">Porfavor inicie sesión</h1>
-    <div class="form-floating">
-        <input type="text" class="form-control" id="username" name="username" placeholder="Username">
-        <label for="username">usuario</label>
-    </div>
-    <div class="form-floating mt-2">
-        <input type="password" class="form-control" name="password" placeholder="Password">
-        <label for="password">contraseña</label>
-    </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Iniciar Sesión</button>
-</form>
--->
 {% endblock %}
