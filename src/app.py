@@ -27,172 +27,14 @@ db = MySQL(app)
 # Función para inicializar la base de datos
 def init_db():
     try:
+        # Verificar la conexión a la base de datos
         cursor = db.connection.cursor()
-        
-        # Verificar qué tablas existen
         cursor.execute("SHOW TABLES")
         tables = [table[0] for table in cursor.fetchall()]
         print(f"Tablas existentes: {tables}")
-        
-        # Verificar si la tabla courses existe, si no, crearla
-        cursor.execute("SHOW TABLES LIKE 'courses'")
-        if cursor.fetchone() is None:
-            cursor.execute("""
-                CREATE TABLE `courses` (
-                  `id` INT NOT NULL AUTO_INCREMENT,
-                  `title` VARCHAR(255) NOT NULL,
-                  `image_url` VARCHAR(255),
-                  `external_url` VARCHAR(255),
-                  `description` TEXT,
-                  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                  `active` BOOLEAN DEFAULT TRUE,
-                  PRIMARY KEY (`id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-            """)
-            db.connection.commit()
-            print("Tabla 'courses' creada exitosamente")
-        
-        # Verificar si la tabla cursos existe, si no, crearla como copia de courses
-        cursor.execute("SHOW TABLES LIKE 'cursos'")
-        if cursor.fetchone() is None:
-            try:
-                # Primero intentamos crear la tabla cursos
-                cursor.execute("""
-                    CREATE TABLE `cursos` (
-                      `id` bigint(20) NOT NULL AUTO_INCREMENT,
-                      `title` VARCHAR(255) NOT NULL,
-                      `image_url` VARCHAR(255),
-                      `external_url` VARCHAR(255),
-                      `description` TEXT,
-                      `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                      `active` BOOLEAN DEFAULT TRUE,
-                      PRIMARY KEY (`id`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-                """)
-                db.connection.commit()
-                print("Tabla 'cursos' creada exitosamente")
-                
-                # Copiamos los datos de courses a cursos
-                cursor.execute("INSERT INTO cursos (id, title, image_url, external_url, description, created_at, updated_at, active) SELECT id, title, image_url, external_url, description, created_at, updated_at, active FROM courses")
-                db.connection.commit()
-                print("Datos copiados de 'courses' a 'cursos'")
-            except Exception as e:
-                print(f"Error al crear tabla 'cursos': {e}")
-        
-        # Verificar si la tabla capitulos existe, si no, crearla
-        cursor.execute("SHOW TABLES LIKE 'capitulos'")
-        if cursor.fetchone() is None:
-            cursor.execute("""
-                CREATE TABLE `capitulos` (
-                  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-                  `titulo` varchar(255) NOT NULL,
-                  `contenido` text DEFAULT NULL,
-                  `curso_id` bigint(20) DEFAULT NULL,
-                  PRIMARY KEY (`id`),
-                  KEY `curso_id` (`curso_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-            """)
-            db.connection.commit()
-            print("Tabla 'capitulos' creada exitosamente")
-            
-            # Intentar agregar la restricción de clave foránea
-            try:
-                cursor.execute("""
-                    ALTER TABLE `capitulos`
-                    ADD CONSTRAINT `capitulos_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE;
-                """)
-                db.connection.commit()
-                print("Restricción de clave foránea agregada exitosamente")
-            except Exception as e:
-                print(f"Error al agregar restricción de clave foránea: {e}")
-        
-        # Verificar si existe la vista 'cursos'
-        cursor.execute("SHOW TABLES LIKE 'cursos'")
-        if cursor.fetchone() is None:
-            # Crear vista si no existe
-            cursor.execute("CREATE VIEW cursos AS SELECT * FROM courses")
-        
-        # Crear tabla de exámenes si no existe
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS examenes (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            capitulo_id BIGINT NOT NULL,
-            titulo VARCHAR(255) NOT NULL,
-            descripcion TEXT,
-            tiempo_limite INT DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (capitulo_id) REFERENCES capitulos(id) ON DELETE CASCADE
-        )
-        """)
-        
-        # Crear tabla de preguntas si no existe
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS preguntas (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            examen_id INT NOT NULL,
-            texto TEXT NOT NULL,
-            tipo ENUM('opcion_multiple', 'verdadero_falso', 'respuesta_corta') DEFAULT 'opcion_multiple',
-            valor INT DEFAULT 1,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (examen_id) REFERENCES examenes(id) ON DELETE CASCADE
-        )
-        """)
-        
-        # Crear tabla de opciones de respuesta si no existe
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS opciones (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            pregunta_id INT NOT NULL,
-            texto TEXT NOT NULL,
-            es_correcta BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (pregunta_id) REFERENCES preguntas(id) ON DELETE CASCADE
-        )
-        """)
-        
-        # Crear tabla de resultados de exámenes si no existe
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS resultados_examenes (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            usuario_id BIGINT NOT NULL,
-            examen_id INT NOT NULL,
-            puntuacion DECIMAL(5,2) DEFAULT 0,
-            fecha_inicio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            fecha_fin TIMESTAMP NULL,
-            completado BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-            FOREIGN KEY (examen_id) REFERENCES examenes(id) ON DELETE CASCADE
-        )
-        """)
-        
-        # Crear tabla de respuestas de usuarios si no existe
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS respuestas_usuarios (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            resultado_id INT NOT NULL,
-            pregunta_id INT NOT NULL,
-            opcion_id INT NULL,
-            texto_respuesta TEXT NULL,
-            es_correcta BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (resultado_id) REFERENCES resultados_examenes(id) ON DELETE CASCADE,
-            FOREIGN KEY (pregunta_id) REFERENCES preguntas(id) ON DELETE CASCADE,
-            FOREIGN KEY (opcion_id) REFERENCES opciones(id) ON DELETE SET NULL
-        )
-        """)
-        
-        db.connection.commit()
         print("Base de datos inicializada correctamente")
     except Exception as ex:
-        print(f"Error al inicializar la base de datos: {str(ex)}")
+        print(f"Error al inicializar la base de datos: {ex}")
 
 # Decoradores para proteger rutas
 def login_required(f):
@@ -969,25 +811,18 @@ def mis_resultados():
 def fix_image_paths():
     try:
         cursor = db.connection.cursor()
-        # Obtener todos los cursos
-        cursor.execute("SELECT id, image_url FROM courses")
-        courses = cursor.fetchall()
-        
-        for course in courses:
-            course_id = course[0]
-            image_url = course[1]
-            
-            # Reemplazar barras invertidas por barras diagonales
-            if image_url and '\\' in image_url:
-                fixed_url = image_url.replace('\\', '/')
-                cursor.execute(
-                    "UPDATE courses SET image_url = %s WHERE id = %s",
-                    (fixed_url, course_id)
-                )
-                print(f"Actualizada ruta de imagen para curso {course_id}: {image_url} -> {fixed_url}")
-        
+        # Actualizar directamente todas las rutas de imágenes con una sola consulta SQL
+        cursor.execute(
+            "UPDATE courses SET image_url = REPLACE(image_url, '\\\\', '/') WHERE image_url LIKE '%\\\\%'"
+        )
+        rows_affected = cursor.rowcount
         db.connection.commit()
-        flash('Rutas de imágenes corregidas correctamente', 'success')
+        
+        if rows_affected > 0:
+            flash(f'Se corrigieron {rows_affected} rutas de imágenes correctamente', 'success')
+        else:
+            flash('No se encontraron rutas de imágenes que necesiten corrección', 'info')
+            
         return redirect(url_for('admin_courses'))
     except Exception as ex:
         flash(f'Error al corregir rutas de imágenes: {str(ex)}', 'danger')
@@ -996,4 +831,4 @@ def fix_image_paths():
 if __name__ == '__main__':
     with app.app_context():
         init_db()
-    app.run()
+    app.run(debug=True)
