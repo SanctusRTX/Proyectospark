@@ -1,8 +1,13 @@
 from flask_mysqldb import MySQL
 from flask import Flask
-from config import config
-from models.entities.User import User
 import sys
+import os
+import sys
+
+# Añadir la ruta del directorio padre (src) al path para poder importar config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import config
+from entities.User import User
 
 app = Flask(__name__)
 app.config.from_object(config['development'])

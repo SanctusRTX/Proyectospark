@@ -2,6 +2,12 @@ import mysql.connector
 from werkzeug.security import generate_password_hash
 import random
 import string
+import os
+import sys
+
+# Añadir la ruta del directorio padre (src) al path para poder importar config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import config
 
 # Función para generar una contraseña aleatoria
 def generar_password(longitud=10):
@@ -11,12 +17,15 @@ def generar_password(longitud=10):
 # Función para actualizar la contraseña de un usuario
 def actualizar_password(usuario, nueva_password=None):
     try:
+        # Obtener configuración de la base de datos desde config.py
+        db_config = config['development']
+        
         # Conectar a la base de datos
         conexion = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="proyectox"
+            host=db_config.MYSQL_HOST,
+            user=db_config.MYSQL_USER,
+            password=db_config.MYSQL_PASSWORD,
+            database=db_config.MYSQL_DB
         )
         
         cursor = conexion.cursor()
@@ -56,12 +65,15 @@ def actualizar_password(usuario, nueva_password=None):
 # Función para listar todos los usuarios
 def listar_usuarios():
     try:
+        # Obtener configuración de la base de datos desde config.py
+        db_config = config['development']
+        
         # Conectar a la base de datos
         conexion = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="proyectox"
+            host=db_config.MYSQL_HOST,
+            user=db_config.MYSQL_USER,
+            password=db_config.MYSQL_PASSWORD,
+            database=db_config.MYSQL_DB
         )
         
         cursor = conexion.cursor()
