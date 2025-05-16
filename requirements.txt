@@ -1,9 +1,16 @@
+# Framework web
 Flask==2.3.3
-flask-mysqldb==1.0.1
 Werkzeug==2.3.7
 Jinja2==3.1.2
 MarkupSafe==2.1.3
 click==8.1.7
 itsdangerous==2.1.2
-mysqlclient==2.2.0
 blinker==1.6.2
+
+# Bases de datos
+flask-mysqldb==1.0.1
+mysqlclient==2.2.0
+mysql-connector-python==8.1.0
+
+# Utilidades
+python-dotenv==1.0.0
