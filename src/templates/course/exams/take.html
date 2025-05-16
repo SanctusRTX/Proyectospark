@@ -1,0 +1,120 @@
+{% extends 'course/base_course.html' %}
+
+{% block title %}Examen - {{ examen[2] }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5 class="text-primary">{{ examen[2] }}</h5>
+                    <p class="text-muted">{{ examen[3] }}</p>
+                    {% if examen[4] > 0 %}
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-clock me-2"></i> Tiempo límite: {{ examen[4] }} minutos
+                            <div id="timer" class="mt-2 fw-bold" data-tiempo-limite="{{ examen[4] }}"></div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('take_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" id="examenForm">
+                        <input type="hidden" name="submit_respuestas" value="1">
+                        <input type="hidden" name="resultado_id" value="{{ resultado_id }}">
+                        
+                        {% for item in preguntas %}
+                            <div class="mb-4 p-3 border rounded">
+                                <h6 class="mb-3">{{ loop.index }}. {{ item.pregunta[2] }}</h6>
+                                
+                                {% if item.pregunta[3] == 'opcion_multiple' %}
+                                    <div class="mb-3">
+                                        {% for opcion in item.opciones %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="pregunta_{{ item.pregunta[0] }}" 
+                                                       id="opcion_{{ opcion[0] }}" value="{{ opcion[0] }}">
+                                                <label class="form-check-label" for="opcion_{{ opcion[0] }}">
+                                                    {{ opcion[2] }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% elif item.pregunta[3] == 'verdadero_falso' %}
+                                    <div class="mb-3">
+                                        {% for opcion in item.opciones %}
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="pregunta_{{ item.pregunta[0] }}" 
+                                                       id="opcion_{{ opcion[0] }}" value="{{ opcion[0] }}">
+                                                <label class="form-check-label" for="opcion_{{ opcion[0] }}">
+                                                    {{ opcion[2] }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% elif item.pregunta[3] == 'respuesta_corta' %}
+                                    <div class="mb-3">
+                                        <textarea class="form-control" name="pregunta_{{ item.pregunta[0] }}" rows="3" 
+                                                  placeholder="Escribe tu respuesta aquí"></textarea>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="text-muted small">
+                                    <i class="bi bi-star me-1"></i> Valor: {{ item.pregunta[4] }} puntos
+                                </div>
+                            </div>
+                        {% endfor %}
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('chapter_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary">
+                                <i class="bi bi-x me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check me-1"></i> Finalizar Examen
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si hay un elemento timer
+        var timerElement = document.getElementById('timer');
+        
+        if (timerElement) {
+            var tiempoLimite = parseInt(timerElement.getAttribute('data-tiempo-limite') || '0') * 60; // Convertir minutos a segundos
+            
+            if (tiempoLimite > 0) {
+                var intervalo;
+                
+                function actualizarTimer() {
+                    var minutos = Math.floor(tiempoLimite / 60);
+                    var segundos = tiempoLimite % 60;
+                    
+                    // Formatear para mostrar siempre dos dígitos
+                    minutos = minutos < 10 ? "0" + minutos : minutos;
+                    segundos = segundos < 10 ? "0" + segundos : segundos;
+                    
+                    timerElement.textContent = "Tiempo restante: " + minutos + ":" + segundos;
+                    
+                    if (tiempoLimite <= 0) {
+                        clearInterval(intervalo);
+                        alert('¡Tiempo agotado! El examen se enviará automáticamente.');
+                        document.getElementById('examenForm').submit();
+                    }
+                    
+                    tiempoLimite--;
+                }
+                
+                // Actualizar cada segundo
+                actualizarTimer();
+                intervalo = setInterval(actualizarTimer, 1000);
+            }
+        }
+    });
+</script>
+{% endblock %}

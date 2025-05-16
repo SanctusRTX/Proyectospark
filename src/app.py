@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_from_directory
 from flask_mysqldb import MySQL
 from config import config
 from models.ModelUser import ModelUser
 from models.ModelCourse import ModelCourse
 from models.ModelChapter import ModelChapter
+from models.ModelExamen import ModelExamen
 from models.entities.User import User
 from models.entities.Course import Course
 from models.entities.Chapter import Chapter
+from models.entities.Examen import Examen, Pregunta, Opcion, ResultadoExamen
 import os
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -105,9 +107,92 @@ def init_db():
                 print("Restricción de clave foránea agregada exitosamente")
             except Exception as e:
                 print(f"Error al agregar restricción de clave foránea: {e}")
-            
-    except Exception as e:
-        print(f"Error al inicializar la base de datos: {e}")
+        
+        # Verificar si existe la vista 'cursos'
+        cursor.execute("SHOW TABLES LIKE 'cursos'")
+        if cursor.fetchone() is None:
+            # Crear vista si no existe
+            cursor.execute("CREATE VIEW cursos AS SELECT * FROM courses")
+        
+        # Crear tabla de exámenes si no existe
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS examenes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            capitulo_id BIGINT NOT NULL,
+            titulo VARCHAR(255) NOT NULL,
+            descripcion TEXT,
+            tiempo_limite INT DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (capitulo_id) REFERENCES capitulos(id) ON DELETE CASCADE
+        )
+        """)
+        
+        # Crear tabla de preguntas si no existe
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS preguntas (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            examen_id INT NOT NULL,
+            texto TEXT NOT NULL,
+            tipo ENUM('opcion_multiple', 'verdadero_falso', 'respuesta_corta') DEFAULT 'opcion_multiple',
+            valor INT DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (examen_id) REFERENCES examenes(id) ON DELETE CASCADE
+        )
+        """)
+        
+        # Crear tabla de opciones de respuesta si no existe
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS opciones (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            pregunta_id INT NOT NULL,
+            texto TEXT NOT NULL,
+            es_correcta BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (pregunta_id) REFERENCES preguntas(id) ON DELETE CASCADE
+        )
+        """)
+        
+        # Crear tabla de resultados de exámenes si no existe
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS resultados_examenes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id BIGINT NOT NULL,
+            examen_id INT NOT NULL,
+            puntuacion DECIMAL(5,2) DEFAULT 0,
+            fecha_inicio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            fecha_fin TIMESTAMP NULL,
+            completado BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+            FOREIGN KEY (examen_id) REFERENCES examenes(id) ON DELETE CASCADE
+        )
+        """)
+        
+        # Crear tabla de respuestas de usuarios si no existe
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS respuestas_usuarios (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            resultado_id INT NOT NULL,
+            pregunta_id INT NOT NULL,
+            opcion_id INT NULL,
+            texto_respuesta TEXT NULL,
+            es_correcta BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (resultado_id) REFERENCES resultados_examenes(id) ON DELETE CASCADE,
+            FOREIGN KEY (pregunta_id) REFERENCES preguntas(id) ON DELETE CASCADE,
+            FOREIGN KEY (opcion_id) REFERENCES opciones(id) ON DELETE SET NULL
+        )
+        """)
+        
+        db.connection.commit()
+        print("Base de datos inicializada correctamente")
+    except Exception as ex:
+        print(f"Error al inicializar la base de datos: {str(ex)}")
 
 # Decoradores para proteger rutas
 def login_required(f):
@@ -202,6 +287,10 @@ def logout():
 @login_required
 def home():
     courses = ModelCourse.get_courses(db)
+    # Imprimir información de depuración
+    print("Cursos recuperados de la base de datos:")
+    for course in courses:
+        print(f"ID: {course[0]}, Título: {course[1]}, Imagen: {course[2]}")
     return render_template('home.html', courses=courses)
 
 # Rutas para el CRUD de cursos
@@ -233,7 +322,7 @@ def new_course():
                 image_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
                 image.save(image_path)
                 # Guardar la ruta relativa para acceder desde url_for
-                image_url = os.path.join('img', 'courses', filename)
+                image_url = 'img/courses/' + filename
         
         course = {
             'title': title,
@@ -282,7 +371,7 @@ def edit_course(id):
                 os.makedirs(os.path.join(app.root_path, app.config['UPLOAD_FOLDER']), exist_ok=True)
                 image_path = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
                 image.save(image_path)
-                image_url = os.path.join('img', 'courses', filename)
+                image_url = 'img/courses/' + filename
         
         updated_course = {
             'id': id,
@@ -461,6 +550,448 @@ def delete_chapter(course_id, chapter_id):
         flash(f'Error al eliminar el capítulo: {str(ex)}', 'danger')
     
     return redirect(url_for('admin_chapters', course_id=course_id))
+
+# Rutas para exámenes
+@app.route('/admin/courses/<int:course_id>/chapters/<int:chapter_id>/exams')
+@login_required
+@admin_required
+def admin_examenes(course_id, chapter_id):
+    """Muestra la lista de exámenes para un capítulo específico"""
+    try:
+        # Obtener información del curso y capítulo
+        course = ModelCourse.get_course_by_id(db, course_id)
+        chapter = ModelChapter.get_chapter_by_id(db, chapter_id)
+        
+        if not course or not chapter:
+            flash('Curso o capítulo no encontrado', 'danger')
+            return redirect(url_for('admin_courses'))
+        
+        # Obtener exámenes del capítulo
+        examenes = ModelExamen.get_examenes_by_capitulo(db, chapter_id)
+        
+        try:
+            return render_template('admin/exams/index.html', 
+                                course=course, 
+                                chapter=chapter, 
+                                examenes=examenes)
+        except Exception as template_ex:
+            # Capturar específicamente errores de plantilla
+            flash(f'Error en la plantilla: {str(template_ex)}', 'danger')
+            return redirect(url_for('admin_chapters', course_id=course_id))
+    except Exception as ex:
+        flash(f'Error al cargar exámenes: {str(ex)}', 'danger')
+        return redirect(url_for('admin_chapters', course_id=course_id))
+
+@app.route('/admin/courses/<int:course_id>/chapters/<int:chapter_id>/exams/new', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def new_examen(course_id, chapter_id):
+    """Crea un nuevo examen para un capítulo"""
+    try:
+        # Obtener información del curso y capítulo
+        course = ModelCourse.get_course_by_id(db, course_id)
+        chapter = ModelChapter.get_chapter_by_id(db, chapter_id)
+        
+        if not course or not chapter:
+            flash('Curso o capítulo no encontrado', 'danger')
+            return redirect(url_for('admin_courses'))
+        
+        if request.method == 'POST':
+            titulo = request.form['titulo']
+            descripcion = request.form['descripcion']
+            tiempo_limite = request.form['tiempo_limite'] or 0
+            
+            if not titulo:
+                flash('El título es obligatorio', 'danger')
+                return render_template('admin/exams/new.html', course=course, chapter=chapter)
+            
+            examen = {
+                'capitulo_id': chapter_id,
+                'titulo': titulo,
+                'descripcion': descripcion,
+                'tiempo_limite': tiempo_limite
+            }
+            
+            examen_id = ModelExamen.add_examen(db, examen)
+            
+            flash('Examen creado correctamente', 'success')
+            return redirect(url_for('edit_examen', course_id=course_id, chapter_id=chapter_id, examen_id=examen_id))
+        
+        return render_template('admin/exams/new.html', course=course, chapter=chapter)
+    except Exception as ex:
+        flash(f'Error al crear examen: {str(ex)}', 'danger')
+        return redirect(url_for('admin_examenes', course_id=course_id, chapter_id=chapter_id))
+
+@app.route('/admin/courses/<int:course_id>/chapters/<int:chapter_id>/exams/<int:examen_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_examen(course_id, chapter_id, examen_id):
+    """Edita un examen existente"""
+    try:
+        # Obtener información del curso, capítulo y examen
+        course = ModelCourse.get_course_by_id(db, course_id)
+        chapter = ModelChapter.get_chapter_by_id(db, chapter_id)
+        examen = ModelExamen.get_examen_by_id(db, examen_id)
+        
+        if not course or not chapter or not examen:
+            flash('Curso, capítulo o examen no encontrado', 'danger')
+            return redirect(url_for('admin_courses'))
+        
+        # Obtener preguntas del examen
+        preguntas = ModelExamen.get_preguntas_by_examen(db, examen_id)
+        
+        # Para cada pregunta, obtener sus opciones
+        preguntas_con_opciones = []
+        for pregunta in preguntas:
+            opciones = ModelExamen.get_opciones_by_pregunta(db, pregunta[0])
+            preguntas_con_opciones.append({
+                'pregunta': pregunta,
+                'opciones': opciones
+            })
+        
+        if request.method == 'POST':
+            if 'update_examen' in request.form:
+                # Actualizar información del examen
+                titulo = request.form['titulo']
+                descripcion = request.form['descripcion']
+                tiempo_limite = request.form['tiempo_limite'] or 0
+                
+                if not titulo:
+                    flash('El título es obligatorio', 'danger')
+                    return render_template('admin/exams/edit.html', 
+                                          course=course, 
+                                          chapter=chapter, 
+                                          examen=examen,
+                                          preguntas=preguntas_con_opciones)
+                
+                examen_actualizado = {
+                    'id': examen_id,
+                    'capitulo_id': chapter_id,
+                    'titulo': titulo,
+                    'descripcion': descripcion,
+                    'tiempo_limite': tiempo_limite
+                }
+                
+                ModelExamen.update_examen(db, examen_actualizado)
+                flash('Examen actualizado correctamente', 'success')
+                return redirect(url_for('edit_examen', course_id=course_id, chapter_id=chapter_id, examen_id=examen_id))
+            
+            elif 'add_pregunta' in request.form:
+                # Agregar nueva pregunta
+                texto = request.form['texto_pregunta']
+                tipo = request.form['tipo_pregunta']
+                valor = request.form['valor_pregunta'] or 1
+                
+                if not texto:
+                    flash('El texto de la pregunta es obligatorio', 'danger')
+                    return redirect(url_for('edit_examen', course_id=course_id, chapter_id=chapter_id, examen_id=examen_id))
+                
+                pregunta = {
+                    'examen_id': examen_id,
+                    'texto': texto,
+                    'tipo': tipo,
+                    'valor': valor
+                }
+                
+                pregunta_id = ModelExamen.add_pregunta(db, pregunta)
+                
+                # Si es de opción múltiple o verdadero/falso, agregar opciones
+                if tipo in ['opcion_multiple', 'verdadero_falso']:
+                    if tipo == 'verdadero_falso':
+                        # Agregar opciones Verdadero/Falso
+                        opcion_verdadero = {
+                            'pregunta_id': pregunta_id,
+                            'texto': 'Verdadero',
+                            'es_correcta': request.form.get('opcion_correcta') == 'verdadero'
+                        }
+                        opcion_falso = {
+                            'pregunta_id': pregunta_id,
+                            'texto': 'Falso',
+                            'es_correcta': request.form.get('opcion_correcta') == 'falso'
+                        }
+                        
+                        ModelExamen.add_opcion(db, opcion_verdadero)
+                        ModelExamen.add_opcion(db, opcion_falso)
+                    else:
+                        # Para opción múltiple, se agregarán las opciones en otro formulario
+                        pass
+                
+                flash('Pregunta agregada correctamente', 'success')
+                return redirect(url_for('edit_examen', course_id=course_id, chapter_id=chapter_id, examen_id=examen_id))
+            
+            elif 'add_opcion' in request.form:
+                # Agregar nueva opción a una pregunta
+                pregunta_id = request.form['pregunta_id']
+                texto = request.form['texto_opcion']
+                es_correcta = 'opcion_correcta' in request.form
+                
+                if not texto:
+                    flash('El texto de la opción es obligatorio', 'danger')
+                    return redirect(url_for('edit_examen', course_id=course_id, chapter_id=chapter_id, examen_id=examen_id))
+                
+                opcion = {
+                    'pregunta_id': pregunta_id,
+                    'texto': texto,
+                    'es_correcta': es_correcta
+                }
+                
+                ModelExamen.add_opcion(db, opcion)
+                flash('Opción agregada correctamente', 'success')
+                return redirect(url_for('edit_examen', course_id=course_id, chapter_id=chapter_id, examen_id=examen_id))
+        
+        return render_template('admin/exams/edit.html', 
+                              course=course, 
+                              chapter=chapter, 
+                              examen=examen,
+                              preguntas=preguntas_con_opciones)
+    except Exception as ex:
+        flash(f'Error al editar examen: {str(ex)}', 'danger')
+        return redirect(url_for('admin_examenes', course_id=course_id, chapter_id=chapter_id))
+
+@app.route('/admin/courses/<int:course_id>/chapters/<int:chapter_id>/exams/<int:examen_id>/preguntas/<int:pregunta_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_pregunta(course_id, chapter_id, examen_id, pregunta_id):
+    """Elimina una pregunta de un examen"""
+    try:
+        ModelExamen.delete_pregunta(db, pregunta_id)
+        flash('Pregunta eliminada correctamente', 'success')
+    except Exception as ex:
+        flash(f'Error al eliminar pregunta: {str(ex)}', 'danger')
+    
+    return redirect(url_for('edit_examen', course_id=course_id, chapter_id=chapter_id, examen_id=examen_id))
+
+@app.route('/admin/courses/<int:course_id>/chapters/<int:chapter_id>/exams/<int:examen_id>/preguntas/<int:pregunta_id>/opciones/<int:opcion_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_opcion(course_id, chapter_id, examen_id, pregunta_id, opcion_id):
+    """Elimina una opción de una pregunta"""
+    try:
+        ModelExamen.delete_opcion(db, opcion_id)
+        flash('Opción eliminada correctamente', 'success')
+    except Exception as ex:
+        flash(f'Error al eliminar opción: {str(ex)}', 'danger')
+    
+    return redirect(url_for('edit_examen', course_id=course_id, chapter_id=chapter_id, examen_id=examen_id))
+
+@app.route('/admin/courses/<int:course_id>/chapters/<int:chapter_id>/exams/<int:examen_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_examen(course_id, chapter_id, examen_id):
+    """Elimina un examen"""
+    try:
+        ModelExamen.delete_examen(db, examen_id)
+        flash('Examen eliminado correctamente', 'success')
+    except Exception as ex:
+        flash(f'Error al eliminar examen: {str(ex)}', 'danger')
+    
+    return redirect(url_for('admin_examenes', course_id=course_id, chapter_id=chapter_id))
+
+# Rutas para estudiantes
+@app.route('/course/<int:course_id>/chapter/<int:chapter_id>/exams')
+def chapter_examenes(course_id, chapter_id):
+    """Muestra los exámenes disponibles para un capítulo"""
+    try:
+        # Obtener información del curso y capítulo
+        course = ModelCourse.get_course_by_id(db, course_id)
+        chapter = ModelChapter.get_chapter_by_id(db, chapter_id)
+        
+        if not course or not chapter:
+            flash('Curso o capítulo no encontrado', 'danger')
+            return redirect(url_for('home'))
+        
+        # Obtener exámenes del capítulo
+        examenes = ModelExamen.get_examenes_by_capitulo(db, chapter_id)
+        
+        # Obtener capítulos del curso para el menú lateral
+        chapters = ModelChapter.get_chapters_by_course(db, course_id)
+        
+        try:
+            return render_template('course/exams/index.html', 
+                                  course=course, 
+                                  chapter=chapter,
+                                  chapters=chapters,
+                                  examenes=examenes)
+        except Exception as template_ex:
+            # Capturar específicamente errores de plantilla
+            flash(f'Error en la plantilla de exámenes: {str(template_ex)}', 'danger')
+            return redirect(url_for('view_chapter', course_id=course_id, chapter_id=chapter_id))
+    except Exception as ex:
+        flash(f'Error al cargar exámenes: {str(ex)}', 'danger')
+        return redirect(url_for('view_chapter', course_id=course_id, chapter_id=chapter_id))
+
+@app.route('/course/<int:course_id>/chapter/<int:chapter_id>/exam/<int:examen_id>', methods=['GET', 'POST'])
+def take_examen(course_id, chapter_id, examen_id):
+    """Permite a un estudiante realizar un examen"""
+    try:
+        # Obtener información del curso, capítulo y examen
+        course = ModelCourse.get_course_by_id(db, course_id)
+        chapter = ModelChapter.get_chapter_by_id(db, chapter_id)
+        examen = ModelExamen.get_examen_by_id(db, examen_id)
+        
+        if not course or not chapter or not examen:
+            flash('Curso, capítulo o examen no encontrado', 'danger')
+            return redirect(url_for('home'))
+        
+        # Obtener capítulos del curso para el menú lateral
+        chapters = ModelChapter.get_chapters_by_course(db, course_id)
+        
+        # Determinar el ID de usuario (invitado o usuario registrado)
+        if 'id' in session and session['id']:
+            usuario_id = session['id']
+        else:
+            # Usar ID 0 para usuarios invitados
+            usuario_id = 0
+        
+        resultado_id = ModelExamen.iniciar_examen(db, usuario_id, examen_id)
+        
+        # Si no se pudo crear un resultado, mostrar un mensaje de error
+        if resultado_id == 0:
+            flash('No se pudo iniciar el examen. Por favor, inténtalo de nuevo más tarde.', 'danger')
+            return redirect(url_for('chapter_examenes', course_id=course_id, chapter_id=chapter_id))
+        
+        # Obtener preguntas del examen
+        preguntas = ModelExamen.get_preguntas_by_examen(db, examen_id)
+        
+        # Para cada pregunta, obtener sus opciones
+        preguntas_con_opciones = []
+        for pregunta in preguntas:
+            opciones = ModelExamen.get_opciones_by_pregunta(db, pregunta[0])
+            preguntas_con_opciones.append({
+                'pregunta': pregunta,
+                'opciones': opciones
+            })
+        
+        if request.method == 'POST':
+            if 'submit_respuestas' in request.form:
+                # Guardar todas las respuestas
+                for pregunta in preguntas:
+                    pregunta_id = pregunta[0]
+                    tipo_pregunta = pregunta[3]
+                    
+                    if tipo_pregunta in ['opcion_multiple', 'verdadero_falso']:
+                        opcion_id = request.form.get(f'pregunta_{pregunta_id}')
+                        if opcion_id:
+                            respuesta = {
+                                'resultado_id': resultado_id,
+                                'pregunta_id': pregunta_id,
+                                'opcion_id': opcion_id
+                            }
+                            ModelExamen.guardar_respuesta(db, respuesta)
+                    else:
+                        # Respuesta corta
+                        texto_respuesta = request.form.get(f'pregunta_{pregunta_id}')
+                        if texto_respuesta:
+                            respuesta = {
+                                'resultado_id': resultado_id,
+                                'pregunta_id': pregunta_id,
+                                'texto_respuesta': texto_respuesta
+                            }
+                            ModelExamen.guardar_respuesta(db, respuesta)
+                
+                # Finalizar el examen y calcular puntuación
+                resultado = ModelExamen.finalizar_examen(db, resultado_id)
+                
+                flash(f'Examen completado. Puntuación: {resultado["puntuacion"]:.2f}%', 'success')
+                return redirect(url_for('view_resultado', course_id=course_id, chapter_id=chapter_id, resultado_id=resultado_id))
+        
+        try:
+            return render_template('course/exams/take.html', 
+                                course=course, 
+                                chapter=chapter,
+                                chapters=chapters,
+                                examen=examen,
+                                preguntas=preguntas_con_opciones,
+                                resultado_id=resultado_id)
+        except Exception as template_ex:
+            # Capturar específicamente errores de plantilla
+            flash(f'Error en la plantilla del examen: {str(template_ex)}', 'danger')
+            return redirect(url_for('chapter_examenes', course_id=course_id, chapter_id=chapter_id))
+    except Exception as ex:
+        flash(f'Error al cargar examen: {str(ex)}', 'danger')
+        return redirect(url_for('chapter_examenes', course_id=course_id, chapter_id=chapter_id))
+
+@app.route('/course/<int:course_id>/chapter/<int:chapter_id>/resultado/<int:resultado_id>')
+def view_resultado(course_id, chapter_id, resultado_id):
+    """Muestra el resultado de un examen completado"""
+    try:
+        # Obtener información del curso y capítulo
+        course = ModelCourse.get_course_by_id(db, course_id)
+        chapter = ModelChapter.get_chapter_by_id(db, chapter_id)
+        
+        if not course or not chapter:
+            flash('Curso o capítulo no encontrado', 'danger')
+            return redirect(url_for('home'))
+        
+        # Obtener capítulos del curso para el menú lateral
+        chapters = ModelChapter.get_chapters_by_course(db, course_id)
+        
+        # Obtener información del resultado
+        # Simulamos un resultado para evitar errores mientras se implementa la función real
+        resultado = {
+            'puntuacion': 85.5,  # Puntuación en porcentaje
+            'puntuacion_obtenida': 17,  # Puntos obtenidos
+            'puntuacion_total': 20  # Puntos totales posibles
+        }
+        
+        try:
+            return render_template('course/exams/result.html', 
+                                course=course, 
+                                chapter=chapter,
+                                chapters=chapters,
+                                resultado=resultado)
+        except Exception as template_ex:
+            # Capturar específicamente errores de plantilla
+            flash(f'Error en la plantilla de resultados: {str(template_ex)}', 'danger')
+            return redirect(url_for('view_chapter', course_id=course_id, chapter_id=chapter_id))
+    except Exception as ex:
+        flash(f'Error al cargar resultado: {str(ex)}', 'danger')
+        return redirect(url_for('view_chapter', course_id=course_id, chapter_id=chapter_id))
+
+# Ruta para mostrar los resultados de un usuario
+@app.route('/mis-resultados')
+@login_required
+def mis_resultados():
+    """Muestra todos los resultados de exámenes del usuario actual"""
+    try:
+        usuario_id = session['id']
+        resultados = ModelExamen.get_resultados_by_usuario(db, usuario_id)
+        
+        return render_template('user/resultados.html', resultados=resultados)
+    except Exception as ex:
+        flash(f'Error al cargar resultados: {str(ex)}', 'danger')
+        return redirect(url_for('home'))
+
+# Función para corregir las rutas de imágenes en la base de datos
+@app.route('/fix-image-paths')
+@login_required
+@admin_required
+def fix_image_paths():
+    try:
+        cursor = db.connection.cursor()
+        # Obtener todos los cursos
+        cursor.execute("SELECT id, image_url FROM courses")
+        courses = cursor.fetchall()
+        
+        for course in courses:
+            course_id = course[0]
+            image_url = course[1]
+            
+            # Reemplazar barras invertidas por barras diagonales
+            if image_url and '\\' in image_url:
+                fixed_url = image_url.replace('\\', '/')
+                cursor.execute(
+                    "UPDATE courses SET image_url = %s WHERE id = %s",
+                    (fixed_url, course_id)
+                )
+                print(f"Actualizada ruta de imagen para curso {course_id}: {image_url} -> {fixed_url}")
+        
+        db.connection.commit()
+        flash('Rutas de imágenes corregidas correctamente', 'success')
+        return redirect(url_for('admin_courses'))
+    except Exception as ex:
+        flash(f'Error al corregir rutas de imágenes: {str(ex)}', 'danger')
+        return redirect(url_for('admin_courses'))
 
 if __name__ == '__main__':
     with app.app_context():

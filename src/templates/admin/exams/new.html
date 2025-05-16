@@ -1,0 +1,50 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Nuevo Examen - {{ chapter[1] }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Crear Nuevo Examen para el capítulo: {{ chapter[1] }}</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('new_examen', course_id=course[0], chapter_id=chapter[0]) }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="titulo" class="form-control-label">Título del Examen</label>
+                                    <input class="form-control" type="text" id="titulo" name="titulo" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="tiempo_limite" class="form-control-label">Tiempo Límite (minutos)</label>
+                                    <input class="form-control" type="number" id="tiempo_limite" name="tiempo_limite" value="0" min="0">
+                                    <small class="text-muted">0 = Sin límite de tiempo</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="descripcion" class="form-control-label">Descripción</label>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <a href="{{ url_for('admin_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Crear Examen</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

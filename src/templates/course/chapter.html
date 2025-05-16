@@ -69,6 +69,22 @@
     <div class="card-body chapter-content">
         {{ chapter[2]|safe }}
         
+        <div class="mt-5 mb-4">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-graduation-cap me-2"></i> Evaluación del Capítulo</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Comprueba tu conocimiento sobre este capítulo realizando los exámenes disponibles.</p>
+                    <div class="text-center">
+                        <a href="{{ url_for('chapter_examenes', course_id=course[0], chapter_id=chapter[0], _external=True) }}" class="btn btn-lg btn-primary">
+                            <i class="fas fa-clipboard-check me-2"></i> Ver Exámenes Disponibles
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="chapter-navigation">
             {% set current_index = -1 %}
             {% for i in range(chapters|length) %}

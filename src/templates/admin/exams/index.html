@@ -1,0 +1,82 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Exámenes - {{ chapter[1] }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h6>Exámenes para el capítulo: {{ chapter[1] }}</h6>
+                    <a href="{{ url_for('new_examen', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-circle"></i> Nuevo Examen
+                    </a>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Título</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Descripción</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tiempo Límite</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha Creación</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if examenes %}
+                                    {% for examen in examenes %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex px-2 py-1">
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">{{ examen[2] }}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="text-xs text-secondary mb-0">{{ examen[3]|truncate(50) }}</p>
+                                        </td>
+                                        <td class="align-middle text-center text-sm">
+                                            <span class="badge badge-sm bg-gradient-success">{{ examen[4] }} minutos</span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="text-secondary text-xs font-weight-bold">{{ examen[5].strftime('%d/%m/%Y') }}</span>
+                                        </td>
+                                        <td class="align-middle">
+                                            <a href="{{ url_for('edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Editar examen">
+                                                <i class="bi bi-pencil"></i> Editar
+                                            </a>
+                                            <form action="{{ url_for('delete_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este examen?');">
+                                                <button type="submit" class="btn btn-link text-danger text-xs">
+                                                    <i class="bi bi-trash"></i> Eliminar
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">
+                                            <p class="text-xs text-secondary mb-0">No hay exámenes para este capítulo</p>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <a href="{{ url_for('admin_chapters', course_id=course[0]) }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Capítulos
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

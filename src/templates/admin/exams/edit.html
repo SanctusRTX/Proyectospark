@@ -1,0 +1,268 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Editar Examen - {{ examen[2] }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Información del examen -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Editar Examen: {{ examen[2] }}</h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
+                        <input type="hidden" name="update_examen" value="1">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="titulo" class="form-control-label">Título del Examen</label>
+                                    <input class="form-control" type="text" id="titulo" name="titulo" value="{{ examen[2] }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="tiempo_limite" class="form-control-label">Tiempo Límite (minutos)</label>
+                                    <input class="form-control" type="number" id="tiempo_limite" name="tiempo_limite" value="{{ examen[4] }}" min="0">
+                                    <small class="text-muted">0 = Sin límite de tiempo</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="descripcion" class="form-control-label">Descripción</label>
+                                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3">{{ examen[3] }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-primary">Actualizar Examen</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preguntas del examen -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h6>Preguntas del Examen</h6>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#nuevaPreguntaModal">
+                        <i class="bi bi-plus-circle"></i> Nueva Pregunta
+                    </button>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    {% if preguntas %}
+                        <div class="accordion" id="accordionPreguntas">
+                            {% for item in preguntas %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ item.pregunta[0] }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ item.pregunta[0] }}" aria-expanded="false" aria-controls="collapse{{ item.pregunta[0] }}">
+                                            <div class="d-flex justify-content-between w-100 pe-3">
+                                                <span>{{ item.pregunta[2]|truncate(50) }}</span>
+                                                <span class="badge bg-primary">{{ item.pregunta[3] }}</span>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ item.pregunta[0] }}" class="accordion-collapse collapse" aria-labelledby="heading{{ item.pregunta[0] }}" data-bs-parent="#accordionPreguntas">
+                                        <div class="accordion-body">
+                                            <div class="mb-3">
+                                                <h6>Pregunta:</h6>
+                                                <p>{{ item.pregunta[2] }}</p>
+                                                <p><strong>Tipo:</strong> {{ item.pregunta[3] }} | <strong>Valor:</strong> {{ item.pregunta[4] }} puntos</p>
+                                            </div>
+                                            
+                                            {% if item.pregunta[3] in ['opcion_multiple', 'verdadero_falso'] %}
+                                                <div class="mb-3">
+                                                    <h6>Opciones:</h6>
+                                                    <ul class="list-group">
+                                                        {% for opcion in item.opciones %}
+                                                        <li class="list-group-item {% if opcion[3] %}list-group-item-success{% endif %}">
+                                                            {{ opcion[2] }} {% if opcion[3] %}<span class="badge bg-success">Correcta</span>{% endif %}
+                                                            
+                                                            {% if item.pregunta[3] == 'opcion_multiple' %}
+                                                                <form method="POST" action="{{ url_for('delete_opcion', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0], pregunta_id=item.pregunta[0], opcion_id=opcion[0]) }}" class="d-inline float-end">
+                                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta opción?')" title="Eliminar opción">
+                                                                        <i class="bi bi-trash"></i> <span class="visually-hidden">Eliminar opción</span>
+                                                                    </button>
+                                                                </form>
+                                                            {% endif %}
+                                                        </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                    {% if not item.opciones %}
+                                                    <div class="alert alert-info">
+                                                        No hay opciones para esta pregunta
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                
+                                                {% if item.pregunta[3] == 'opcion_multiple' %}
+                                                    <div class="mb-3">
+                                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#nuevaOpcionModal" 
+                                                                onclick="document.getElementById('pregunta_id').value = '{{ item.pregunta[0] }}'">
+                                                            <i class="bi bi-plus-circle"></i> Agregar Opción
+                                                        </button>
+                                                    </div>
+                                                {% endif %}
+                                            {% endif %}
+                                            
+                                            <div class="mt-3">
+                                                <form method="POST" action="{{ url_for('delete_pregunta', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0], pregunta_id=item.pregunta[0]) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta pregunta?')" title="Eliminar pregunta">
+                                                        <i class="bi bi-trash"></i> <span class="visually-hidden">Eliminar pregunta</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center p-4">
+                            <p>No hay preguntas para este examen</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <a href="{{ url_for('admin_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary" title="Volver a Exámenes">
+                <i class="bi bi-arrow-left"></i> Volver a Exámenes
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para nueva pregunta -->
+<div class="modal fade" id="nuevaPreguntaModal" tabindex="-1" aria-labelledby="nuevaPreguntaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nuevaPreguntaModalLabel">Nueva Pregunta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
+                <input type="hidden" name="add_pregunta" value="1">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="texto_pregunta" class="form-label">Texto de la Pregunta</label>
+                        <textarea class="form-control" id="texto_pregunta" name="texto_pregunta" rows="3" required></textarea>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="tipo_pregunta" class="form-label">Tipo de Pregunta</label>
+                            <select class="form-select" id="tipo_pregunta" name="tipo_pregunta" onchange="mostrarOpcionesVF()">
+                                <option value="opcion_multiple">Opción Múltiple</option>
+                                <option value="verdadero_falso">Verdadero/Falso</option>
+                                <option value="respuesta_corta">Respuesta Corta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="valor_pregunta" class="form-label">Valor (puntos)</label>
+                            <input type="number" class="form-control" id="valor_pregunta" name="valor_pregunta" value="1" min="1">
+                        </div>
+                    </div>
+                    <div id="opciones_vf">
+                        <div class="mb-3">
+                            <label class="form-label">Respuesta Correcta</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="opcion_correcta" id="opcion_verdadero" value="verdadero" checked>
+                                <label class="form-check-label" for="opcion_verdadero">
+                                    Verdadero
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="opcion_correcta" id="opcion_falso" value="falso">
+                                <label class="form-check-label" for="opcion_falso">
+                                    Falso
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="Cancelar">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" title="Guardar Pregunta">
+                        Guardar Pregunta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para nueva opción -->
+<div class="modal fade" id="nuevaOpcionModal" tabindex="-1" aria-labelledby="nuevaOpcionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nuevaOpcionModalLabel">Nueva Opción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
+                <input type="hidden" name="add_opcion" value="1">
+                <input type="hidden" id="pregunta_id" name="pregunta_id" value="">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="texto_opcion" class="form-label">Texto de la Opción</label>
+                        <input type="text" class="form-control" id="texto_opcion" name="texto_opcion" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="opcion_correcta" name="opcion_correcta">
+                        <label class="form-check-label" for="opcion_correcta">Es la respuesta correcta</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="Cancelar">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" title="Guardar Opción">
+                        Guardar Opción
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block customCSS %}
+<style>
+    #opciones_vf {
+        display: none;
+    }
+    .mostrar-opciones-vf {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function mostrarOpcionesVF() {
+        var tipoSeleccionado = document.getElementById('tipo_pregunta').value;
+        var opcionesVF = document.getElementById('opciones_vf');
+        
+        if (tipoSeleccionado === 'verdadero_falso') {
+            opcionesVF.classList.add('mostrar-opciones-vf');
+        } else {
+            opcionesVF.classList.remove('mostrar-opciones-vf');
+        }
+    }
+</script>
+{% endblock %}

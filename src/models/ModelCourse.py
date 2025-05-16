@@ -8,6 +8,9 @@ class ModelCourse():
                 sql += " WHERE active = 1"
             cursor.execute(sql)
             courses = cursor.fetchall()
+            # Imprimir las rutas de las imágenes para depuración
+            for course in courses:
+                print(f"Curso ID: {course[0]}, Título: {course[1]}, Ruta de imagen: {course[2]}")
             return courses
         except Exception as ex:
             raise Exception(ex)
