@@ -10,15 +10,25 @@ from models.entities.Course import Course
 from models.entities.Chapter import Chapter
 from models.entities.Examen import Examen, Pregunta, Opcion, ResultadoExamen
 import os
+import time
 from werkzeug.utils import secure_filename
 from functools import wraps
 
 app = Flask(__name__)
 
-# Configuración para subida de imágenes
+# Configuración para subida de archivos multimedia
 UPLOAD_FOLDER = os.path.join('static', 'img', 'courses')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}
+VIDEO_FOLDER = os.path.join('static', 'videos', 'courses')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'mp4', 'webm', 'ogg'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['VIDEO_FOLDER'] = VIDEO_FOLDER
+
+# Asegurarse de que las carpetas existan
+os.makedirs(os.path.join(app.root_path, UPLOAD_FOLDER), exist_ok=True)
+os.makedirs(os.path.join(app.root_path, VIDEO_FOLDER), exist_ok=True)
+
+# Configurar límite de tamaño de archivos (100MB)
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 app.config.from_object(config['development'])
 
@@ -803,6 +813,68 @@ def mis_resultados():
     except Exception as ex:
         flash(f'Error al cargar resultados: {str(ex)}', 'danger')
         return redirect(url_for('home'))
+
+# Ruta para subir archivos multimedia desde TinyMCE
+@app.route('/upload-media', methods=['POST'])
+@login_required
+@admin_required
+def upload_media():
+    try:
+        print("Solicitud de carga de archivo recibida")
+        print(f"Archivos en la solicitud: {list(request.files.keys())}")
+        print(f"Formulario en la solicitud: {list(request.form.keys())}")
+        
+        if 'file' not in request.files:
+            # Intentar buscar el archivo con otro nombre
+            if len(request.files) > 0:
+                # Usar el primer archivo que encontremos
+                file_key = list(request.files.keys())[0]
+                file = request.files[file_key]
+                print(f"Archivo encontrado con clave alternativa: {file_key}")
+            else:
+                print("No se encontró ningún archivo en la solicitud")
+                return jsonify({'error': 'No se encontró el archivo'}), 400
+        else:
+            file = request.files['file']
+        
+        print(f"Nombre del archivo: {file.filename}")
+        
+        if file.filename == '':
+            print("Nombre de archivo vacío")
+            return jsonify({'error': 'No se seleccionó ningún archivo'}), 400
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            # Generar nombre único para evitar colisiones
+            unique_filename = f"{int(time.time())}_{filename}"
+            print(f"Nombre de archivo único generado: {unique_filename}")
+            
+            # Determinar si es imagen o video por la extensión
+            ext = filename.rsplit('.', 1)[1].lower()
+            print(f"Extensión del archivo: {ext}")
+            
+            if ext in {'mp4', 'webm', 'ogg'}:
+                filepath = os.path.join(app.root_path, app.config['VIDEO_FOLDER'], unique_filename)
+                file.save(filepath)
+                file_url = url_for('static', filename=f'videos/courses/{unique_filename}')
+                print(f"Video guardado en: {filepath}")
+            else:
+                filepath = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], unique_filename)
+                file.save(filepath)
+                file_url = url_for('static', filename=f'img/courses/{unique_filename}')
+                print(f"Imagen guardada en: {filepath}")
+            
+            response = {'location': file_url}
+            print(f"Respuesta JSON: {response}")
+            return jsonify(response)
+        
+        print(f"Tipo de archivo no permitido: {file.filename}")
+        return jsonify({'error': 'Tipo de archivo no permitido'}), 400
+    except Exception as ex:
+        print(f"Error en upload_media: {str(ex)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(ex)}), 500
 
 # Función para corregir las rutas de imágenes en la base de datos
 @app.route('/fix-image-paths')
