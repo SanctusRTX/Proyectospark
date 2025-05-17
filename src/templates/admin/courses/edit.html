@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Editar Curso</h1>
-        <a href="{{ url_for('admin_courses') }}" class="btn btn-secondary" title="Volver a la lista de cursos">
+        <a href="{{ url_for('admin.admin_courses') }}" class="btn btn-secondary" title="Volver a la lista de cursos">
             <i class="bi bi-arrow-left"></i> Volver
         </a>
     </div>
@@ -16,7 +16,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Información del Curso</h6>
         </div>
         <div class="card-body">
-            <form action="{{ url_for('edit_course', id=course[0]) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ url_for('admin.edit_course', id=course[0]) }}" method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="title" class="form-label">Título del Curso</label>
                     <input type="text" class="form-control" id="title" name="title" value="{{ course[1] }}" required>

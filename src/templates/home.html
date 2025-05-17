@@ -85,7 +85,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Inicio</a>
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('main.home') }}">Inicio</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Cursos</a>
@@ -94,12 +94,12 @@
                     <a class="nav-link" href="#">Contacto</a>
                 </li>
                 {% if session.get('user_role') == 'profesor' %}<li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('admin_courses') }}">
+                    <a class="nav-link" href="{{ url_for('admin.admin_courses') }}">
                         <i class="bi bi-gear"></i> Administración
                     </a>
                 </li>{% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout') }}">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">
                         <i class="bi bi-box-arrow-right"></i> 
                         {% if session.get('user_role') == 'guest' %}
                             Salir ({{ session.get('username').split(':')[1].strip() }})
@@ -119,7 +119,7 @@
     <div class="row">
         {% for course in courses %}
         <div class="col-md-4 mb-4">
-            <a href="{{ url_for('view_course', course_id=course[0]) }}" class="card-link" aria-label="Enlace a {{ course[1] }}">
+            <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="card-link" aria-label="Enlace a {{ course[1] }}">
                 <div class="card h-100 shadow">
                     <div class="card-img-container">
                         <img src="{{ url_for('static', filename=course[2]) }}" alt="{{ course[1] }}" class="img-fluid" loading="lazy">

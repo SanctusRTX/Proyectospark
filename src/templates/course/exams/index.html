@@ -84,7 +84,7 @@
                     
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <small class="text-muted"><i class="bi bi-calendar me-1"></i> {{ examen[5].strftime('%d/%m/%Y') }}</small>
-                        <a href="{{ url_for('take_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" class="btn btn-primary">
+                        <a href="{{ url_for('course.take_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" class="btn btn-primary">
                             <i class="bi bi-play-circle me-1"></i> Iniciar Examen
                         </a>
                     </div>
@@ -110,11 +110,11 @@
     
     <div class="row mt-4">
         <div class="col-12">
-            <a href="{{ url_for('view_chapter', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary">
+            <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left me-2"></i> Volver al Capítulo
             </a>
             
-            <a href="{{ url_for('mis_resultados') }}" class="btn btn-info float-end">
+            <a href="{{ url_for('course.mis_resultados') }}" class="btn btn-info float-end">
                 <i class="bi bi-chart-bar me-2"></i> Ver Mis Resultados
             </a>
         </div>

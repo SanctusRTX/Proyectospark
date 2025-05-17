@@ -30,7 +30,7 @@
             <h6 class="m-0 font-weight-bold text-primary">Información del Capítulo</h6>
         </div>
         <div class="card-body">
-            <form action="{{ url_for('new_chapter', course_id=course[0]) }}" method="POST">
+            <form action="{{ url_for('admin.new_chapter', course_id=course[0]) }}" method="POST">
                 <div class="mb-3">
                     <label for="title" class="form-label">Título del Capítulo</label>
                     <input type="text" class="form-control" id="title" name="title" required>
@@ -42,7 +42,7 @@
                 </div>
                 
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="{{ url_for('admin_chapters', course_id=course[0]) }}" class="btn btn-secondary">
+                    <a href="{{ url_for('admin.admin_chapters', course_id=course[0]) }}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Cancelar
                     </a>
                     <button type="submit" class="btn btn-primary" id="submit-btn">
@@ -57,6 +57,7 @@
 
 {% block customJS %}
 <script src="{{ url_for('static', filename='tinymce/js/tinymce/tinymce.min.js') }}"></script>
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/plugins/template/plugin.min.js"></script>
 <script>
     tinymce.init({
         selector: '#content',
@@ -91,7 +92,7 @@
                 var xhr, formData;
                 xhr = new XMLHttpRequest();
                 xhr.withCredentials = false;
-                xhr.open('POST', '{{ url_for("upload_media") }}');
+                xhr.open('POST', '{{ url_for("media.upload_media") }}');
                 
                 xhr.upload.onprogress = function (e) {
                     progress(e.loaded / e.total * 100);
@@ -174,7 +175,7 @@
                     formData.append('file', file);
                     
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '{{ url_for("upload_media") }}');
+                    xhr.open('POST', '{{ url_for("media.upload_media") }}');
                     
                     xhr.onload = function() {
                         if (xhr.status === 200) {
@@ -212,7 +213,7 @@
                     var xhr, formData;
                     xhr = new XMLHttpRequest();
                     xhr.withCredentials = false;
-                    xhr.open('POST', '{{ url_for("upload_media") }}');
+                    xhr.open('POST', '{{ url_for("media.upload_media") }}');
                     
                     xhr.onload = function() {
                         var json;

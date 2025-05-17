@@ -21,22 +21,22 @@
                 <hr class="sidebar-divider">
                 <div class="nav flex-column">
                     <div class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'admin_courses' %}active{% endif %}" href="{{ url_for('admin_courses') }}">
+                        <a class="nav-link {% if request.endpoint == 'admin_courses' %}active{% endif %}" href="{{ url_for('admin.admin_courses') }}">
                             <i class="bi bi-book"></i> Cursos
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a class="nav-link" href="{{ url_for('mis_resultados') }}">
+                        <a class="nav-link" href="{{ url_for('course.mis_resultados') }}">
                             <i class="bi bi-file-earmark-text"></i> Resultados de Exámenes
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">
+                        <a class="nav-link" href="{{ url_for('main.home') }}">
                             <i class="bi bi-house"></i> Volver al Inicio
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
                             <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                         </a>
                     </div>

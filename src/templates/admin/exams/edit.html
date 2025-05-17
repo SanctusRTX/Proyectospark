@@ -12,7 +12,7 @@
                     <h6>Editar Examen: {{ examen[2] }}</h6>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
+                    <form method="POST" action="{{ url_for('admin.edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
                         <input type="hidden" name="update_examen" value="1">
                         <div class="row">
                             <div class="col-md-6">
@@ -88,7 +88,7 @@
                                                             {{ opcion[2] }} {% if opcion[3] %}<span class="badge bg-success">Correcta</span>{% endif %}
                                                             
                                                             {% if item.pregunta[3] == 'opcion_multiple' %}
-                                                                <form method="POST" action="{{ url_for('delete_opcion', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0], pregunta_id=item.pregunta[0], opcion_id=opcion[0]) }}" class="d-inline float-end">
+                                                                <form method="POST" action="{{ url_for('admin.delete_opcion', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0], pregunta_id=item.pregunta[0], opcion_id=opcion[0]) }}" class="d-inline float-end">
                                                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta opción?')" title="Eliminar opción">
                                                                         <i class="bi bi-trash"></i> <span class="visually-hidden">Eliminar opción</span>
                                                                     </button>
@@ -115,7 +115,7 @@
                                             {% endif %}
                                             
                                             <div class="mt-3">
-                                                <form method="POST" action="{{ url_for('delete_pregunta', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0], pregunta_id=item.pregunta[0]) }}" class="d-inline">
+                                                <form method="POST" action="{{ url_for('admin.delete_pregunta', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0], pregunta_id=item.pregunta[0]) }}" class="d-inline">
                                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta pregunta?')" title="Eliminar pregunta">
                                                         <i class="bi bi-trash"></i> <span class="visually-hidden">Eliminar pregunta</span>
                                                     </button>
@@ -138,7 +138,7 @@
 
     <div class="row">
         <div class="col-12">
-            <a href="{{ url_for('admin_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary" title="Volver a Exámenes">
+            <a href="{{ url_for('admin.admin_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary" title="Volver a Exámenes">
                 <i class="bi bi-arrow-left"></i> Volver a Exámenes
             </a>
         </div>
@@ -153,7 +153,7 @@
                 <h5 class="modal-title" id="nuevaPreguntaModalLabel">Nueva Pregunta</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="{{ url_for('edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
+            <form method="POST" action="{{ url_for('admin.edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
                 <input type="hidden" name="add_pregunta" value="1">
                 <div class="modal-body">
                     <div class="mb-3">
@@ -213,7 +213,7 @@
                 <h5 class="modal-title" id="nuevaOpcionModalLabel">Nueva Opción</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="{{ url_for('edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
+            <form method="POST" action="{{ url_for('admin.edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}">
                 <input type="hidden" name="add_opcion" value="1">
                 <input type="hidden" id="pregunta_id" name="pregunta_id" value="">
                 <div class="modal-body">

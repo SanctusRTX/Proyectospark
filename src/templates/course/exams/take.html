@@ -18,7 +18,7 @@
                     {% endif %}
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('take_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" id="examenForm">
+                    <form method="POST" action="{{ url_for('course.take_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" id="examenForm">
                         <input type="hidden" name="submit_respuestas" value="1">
                         <input type="hidden" name="resultado_id" value="{{ resultado_id }}">
                         
@@ -64,7 +64,7 @@
                         {% endfor %}
                         
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ url_for('chapter_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary">
+                            <a href="{{ url_for('course.chapter_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary">
                                 <i class="bi bi-x me-1"></i> Cancelar
                             </a>
                             <button type="submit" class="btn btn-primary">

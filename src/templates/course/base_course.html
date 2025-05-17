@@ -160,7 +160,7 @@
     <div class="course-container">
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <a href="{{ url_for('home') }}" class="d-flex align-items-center text-decoration-none">
+                <a href="{{ url_for('main.home') }}" class="d-flex align-items-center text-decoration-none">
                     <img src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo" width="30" height="30" class="me-2 rounded-circle">
                     <h3>Spark IA</h3>
                 </a>
@@ -175,13 +175,13 @@
                 <ul class="chapters-list">
                     {% for ch in chapters %}
                     <li>
-                        <a href="{{ url_for('view_chapter', course_id=course[0], chapter_id=ch[0]) }}" class="{% if chapter and chapter[0] == ch[0] %}active{% endif %}">
+                        <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=ch[0]) }}" class="{% if chapter and chapter[0] == ch[0] %}active{% endif %}">
                             <i class="bi bi-journal-text me-2"></i> {{ ch[1] }}
                         </a>
                     </li>
                     {% endfor %}
                     <li>
-                        <a href="{{ url_for('view_course', course_id=course[0]) }}" class="{% if not chapter %}active{% endif %}">
+                        <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="{% if not chapter %}active{% endif %}">
                             <i class="bi bi-house-door me-2"></i> Inicio del Curso
                         </a>
                     </li>
