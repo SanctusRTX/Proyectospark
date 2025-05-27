@@ -9,6 +9,7 @@
     min-height: 100vh;
     background-color: #0f0a06;
     color: #fff;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
 }
 
 .sidebar-brand {
@@ -22,8 +23,10 @@
 }
 
 .sidebar-brand:hover {
-    color: #00FFDD;
+    color: #fff;
     text-decoration: none;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
 }
 
 .sidebar-brand img {
@@ -39,15 +42,43 @@
     color: rgba(255, 255, 255, 0.8);
     padding: 0.75rem 1rem;
     font-weight: 500;
+    transition: all 0.3s ease;
+    border-left: 0px solid #fff;
+    position: relative;
+    overflow: hidden;
 }
 
 .nav-item .nav-link:hover, 
 .nav-item .nav-link.active {
-    color: #00FFDD;
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left: 4px solid #fff;
+    padding-left: calc(1rem - 4px);
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.nav-item .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #fff;
+    transition: width 0.3s ease;
+}
+
+.nav-item .nav-link:hover::after {
+    width: 100%;
 }
 
 .nav-item .nav-link i {
     margin-right: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-item .nav-link:hover i {
+    transform: translateX(3px);
 }
 
 .content-wrapper {

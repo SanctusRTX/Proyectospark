@@ -7,10 +7,10 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Administración de Cursos</h1>
         <div>
-            <a href="{{ url_for('admin.fix_image_paths') }}" class="btn btn-warning me-2">
+            <a href="{{ url_for('admin.fix_image_paths') }}" class="btn btn-warning btn-ripple me-2">
                 <i class="bi bi-wrench"></i> Corregir Rutas de Imágenes
             </a>
-            <a href="{{ url_for('admin.new_course') }}" class="btn btn-primary">
+            <a href="{{ url_for('admin.new_course') }}" class="btn btn-new btn-ripple">
                 <i class="bi bi-plus-circle"></i> Nuevo Curso
             </a>
         </div>
@@ -53,8 +53,8 @@
                                 <img src="{{ url_for('static', filename=course[2]) }}" alt="Imagen de {{ course[1] }}" class="course-thumbnail" loading="lazy">
                             </td>
                             <td>
-                                <a href="{{ course[3] }}" target="_blank" title="Visitar {{ course[1] }}">
-                                    <i class="bi bi-link-45deg"></i> Visitar
+                                <a href="{{ course[3] }}" target="_blank" title="{{ course[3] }}" class="external-link">
+                                    <i class="bi bi-box-arrow-up-right"></i> Visitar curso
                                 </a>
                             </td>
                             <td>
@@ -66,13 +66,13 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Acciones para {{ course[1] }}">
-                                    <a href="{{ url_for('admin.edit_course', id=course[0]) }}" class="btn btn-sm btn-warning" title="Editar {{ course[1] }}">
+                                    <a href="{{ url_for('admin.edit_course', id=course[0]) }}" class="btn btn-sm btn-warning btn-ripple" title="Editar {{ course[1] }}">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
-                                    <a href="{{ url_for('admin.admin_chapters', course_id=course[0]) }}" class="btn btn-sm btn-info" title="Administrar capítulos de {{ course[1] }}">
+                                    <a href="{{ url_for('admin.admin_chapters', course_id=course[0]) }}" class="btn btn-sm btn-info btn-ripple" title="Administrar capítulos de {{ course[1] }}">
                                         <i class="bi bi-book"></i> Capítulos
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ course[0] }}" title="Eliminar {{ course[1] }}">
+                                    <button type="button" class="btn btn-sm btn-danger btn-ripple" data-bs-toggle="modal" data-bs-target="#deleteModal{{ course[0] }}" title="Eliminar {{ course[1] }}">
                                         <i class="bi bi-trash"></i> Eliminar
                                     </button>
                                 </div>
@@ -89,9 +89,13 @@
                                                 ¿Está seguro de que desea eliminar el curso <strong>{{ course[1] }}</strong>?
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="button" class="btn btn-secondary btn-ripple" data-bs-dismiss="modal">
+                                                    <i class="bi bi-x-circle"></i> Cancelar
+                                                </button>
                                                 <form action="{{ url_for('admin.delete_course', id=course[0]) }}" method="POST">
-                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                    <button type="submit" class="btn btn-danger btn-ripple">
+                                                        <i class="bi bi-trash"></i> Eliminar
+                                                    </button>
                                                 </form>
                                             </div>
                                         </div>

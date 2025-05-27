@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Editar Curso</h1>
-        <a href="{{ url_for('admin.admin_courses') }}" class="btn btn-secondary" title="Volver a la lista de cursos">
+        <a href="{{ url_for('admin.admin_courses') }}" class="btn btn-secondary btn-ripple" title="Volver a la lista de cursos">
             <i class="bi bi-arrow-left"></i> Volver
         </a>
     </div>
@@ -52,7 +52,9 @@
                     <label class="form-check-label" for="active">Activo</label>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Actualizar Curso</button>
+                <button type="submit" class="btn btn-primary btn-ripple">
+                    <i class="bi bi-check-circle"></i> Actualizar Curso
+                </button>
             </form>
         </div>
     </div>

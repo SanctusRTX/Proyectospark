@@ -9,7 +9,7 @@
             <div class="card mb-4">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h6>Exámenes para el capítulo: {{ chapter[1] }}</h6>
-                    <a href="{{ url_for('admin.new_examen', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-sm btn-primary">
+                    <a href="{{ url_for('admin.new_examen', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-exam btn-ripple">
                         <i class="bi bi-plus-circle"></i> Nuevo Examen
                     </a>
                 </div>
@@ -46,11 +46,11 @@
                                             <span class="text-secondary text-xs font-weight-bold">{{ examen[5].strftime('%d/%m/%Y') }}</span>
                                         </td>
                                         <td class="align-middle">
-                                            <a href="{{ url_for('admin.edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Editar examen">
+                                            <a href="{{ url_for('admin.edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" class="btn btn-warning btn-sm btn-ripple me-1">
                                                 <i class="bi bi-pencil"></i> Editar
                                             </a>
                                             <form action="{{ url_for('admin.delete_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este examen?');">
-                                                <button type="submit" class="btn btn-link text-danger text-xs">
+                                                <button type="submit" class="btn btn-danger btn-sm btn-ripple">
                                                     <i class="bi bi-trash"></i> Eliminar
                                                 </button>
                                             </form>
@@ -73,7 +73,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <a href="{{ url_for('admin.admin_chapters', course_id=course[0]) }}" class="btn btn-secondary">
+            <a href="{{ url_for('admin.admin_chapters', course_id=course[0]) }}" class="btn btn-secondary btn-ripple">
                 <i class="bi bi-arrow-left"></i> Volver a Capítulos
             </a>
         </div>
