@@ -69,41 +69,171 @@
         width: 100%;
     }
     
-    /* Hero Section */
+    /* Hero Section con Video de Fondo - Tamaño reducido y efecto parallax */
     .hero-section {
-        background: linear-gradient(135deg, var(--dark-color) 0%, #2a2a2a 100%);
         color: white;
-        padding: 6rem 0;
+        padding: 4rem 0;
         position: relative;
         overflow: hidden;
+        height: 70vh; /* Altura reducida */
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1000px; /* Para efecto parallax */
     }
     
-    .hero-section::before {
+    .video-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        overflow: hidden;
+        transform: translateZ(-10px) scale(2); /* Efecto parallax */
+        transform-origin: center;
+        transition: transform 0.5s ease-out;
+    }
+    
+    .video-background::after {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: url('{{ url_for("static", filename="img/spark.jpg") }}') center/cover no-repeat;
-        opacity: 0.15;
-        z-index: 0;
+        background: linear-gradient(135deg, rgba(15, 10, 6, 0.8) 0%, rgba(42, 42, 42, 0.7) 100%);
+        z-index: 1;
+    }
+    
+    /* Efecto de partículas flotantes */
+    .particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    .particle {
+        position: absolute;
+        background-color: rgba(0, 255, 221, 0.5);
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0;
+    }
+    
+    .particle:nth-child(1) {
+        width: 8px;
+        height: 8px;
+        left: 10%;
+        top: 20%;
+        animation: float 15s ease-in-out infinite, fadeInOut 15s ease-in-out infinite;
+    }
+    
+    .particle:nth-child(2) {
+        width: 12px;
+        height: 12px;
+        left: 30%;
+        top: 40%;
+        animation: float 20s ease-in-out infinite 2s, fadeInOut 20s ease-in-out infinite 2s;
+    }
+    
+    .particle:nth-child(3) {
+        width: 6px;
+        height: 6px;
+        left: 50%;
+        top: 30%;
+        animation: float 18s ease-in-out infinite 1s, fadeInOut 18s ease-in-out infinite 1s;
+    }
+    
+    .particle:nth-child(4) {
+        width: 10px;
+        height: 10px;
+        left: 70%;
+        top: 60%;
+        animation: float 25s ease-in-out infinite 3s, fadeInOut 25s ease-in-out infinite 3s;
+    }
+    
+    .particle:nth-child(5) {
+        width: 7px;
+        height: 7px;
+        left: 85%;
+        top: 15%;
+        animation: float 22s ease-in-out infinite 4s, fadeInOut 22s ease-in-out infinite 4s;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translate(0, 0);
+        }
+        50% {
+            transform: translate(20px, -20px);
+        }
+        100% {
+            transform: translate(0, 0);
+        }
+    }
+    
+    @keyframes fadeInOut {
+        0%, 100% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 0.6;
+        }
+    }
+    
+    .video-background video {
+        position: absolute;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
     }
     
     .hero-content {
         position: relative;
-        z-index: 1;
+        z-index: 2;
+        animation: fadeInUp 1s ease-out forwards;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     
     .hero-title {
-        font-size: 3.5rem;
+        font-size: 3.8rem;
         font-weight: 800;
         margin-bottom: 1.5rem;
-        background: linear-gradient(90deg, #fff, var(--secondary-color));
+        background: linear-gradient(90deg, #fff, var(--secondary-color), #4cc9f0);
+        background-size: 200% auto;
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
         line-height: 1.2;
+        animation: shine 3s linear infinite;
+        text-shadow: 0 5px 15px rgba(0, 255, 221, 0.3);
+    }
+    
+    @keyframes shine {
+        to {
+            background-position: 200% center;
+        }
     }
     
     .hero-subtitle {
@@ -111,6 +241,13 @@
         font-weight: 300;
         margin-bottom: 2rem;
         max-width: 700px;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 1.5s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
     
     .hero-btn {
@@ -124,12 +261,32 @@
         transition: all 0.3s ease;
         text-decoration: none;
         display: inline-block;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        animation: fadeIn 2s ease-out forwards;
+    }
+    
+    .hero-btn:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: width 0.4s ease;
+        z-index: -1;
+    }
+    
+    .hero-btn:hover:before {
+        width: 100%;
     }
     
     .hero-btn:hover {
         background-color: #00e6c5;
         transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 255, 221, 0.5);
     }
     
     /* Course Cards */
@@ -406,17 +563,35 @@
     </div>
 </nav>
 
-<!-- Hero Section -->
+<!-- Hero Section con Video de Fondo -->
 <section class="hero-section">
+    <!-- Video de fondo -->
+    <div class="video-background">
+        <video autoplay loop muted playsinline>
+            <source src="{{ url_for('static', filename='videos/videofondo1.mp4') }}" type="video/mp4">
+            <!-- Fallback para navegadores que no soportan video -->
+            Tu navegador no soporta videos HTML5.
+        </video>
+        
+        <!-- Partículas flotantes -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+    
     <div class="container">
         <div class="row align-items-center hero-content">
             <div class="col-lg-7">
-                <h1 class="hero-title">Aprende con Diversión en Escuela El Recreo</h1>
-                <p class="hero-subtitle">Plataforma educativa diseñada especialmente para estudiantes de 5to y 6to grado del laboratorio informático de la Escuela El Recreo.</p>
-                <a href="#cursos" class="hero-btn">Explorar Contenidos</a>
+                <h1 class="hero-title" data-aos="fade-down" data-aos-delay="200">Aprende con Diversión en Escuela El Recreo</h1>
+                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">Plataforma educativa diseñada especialmente para estudiantes de 5to y 6to grado del laboratorio informático de la Escuela El Recreo.</p>
+                <a href="#cursos" class="hero-btn" data-aos="zoom-in" data-aos-delay="600">Explorar Contenidos</a>
             </div>
             <div class="col-lg-5 d-none d-lg-block">
-                <!-- Imagen decorativa o ilustración -->
+                <!-- Espacio para posible contenido adicional -->
             </div>
         </div>
     </div>
@@ -610,4 +785,33 @@
 
 <!-- Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<!-- Script para efecto parallax con movimiento del mouse -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const videoBackground = document.querySelector('.video-background');
+        const heroSection = document.querySelector('.hero-section');
+        
+        // Efecto parallax con movimiento del mouse
+        heroSection.addEventListener('mousemove', function(e) {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            videoBackground.style.transform = `translateZ(-10px) scale(2) translate(${xAxis}px, ${yAxis}px)`;
+        });
+        
+        // Restaurar posición cuando el mouse sale de la sección
+        heroSection.addEventListener('mouseleave', function() {
+            videoBackground.style.transform = 'translateZ(-10px) scale(2)';
+        });
+        
+        // Efecto parallax con scroll
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            if (scrollPosition <= window.innerHeight) {
+                const parallaxValue = scrollPosition * 0.5;
+                videoBackground.style.transform = `translateZ(-10px) scale(2) translateY(${parallaxValue}px)`;
+            }
+        });
+    });
+</script>
 {% endblock %}

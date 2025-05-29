@@ -10,19 +10,108 @@
     
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     
+    <!-- Incluir AOS CSS para animaciones -->    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    
+    <style>
+        /* Estilos para animaciones de contenido con AOS */
+        [data-aos] {
+            pointer-events: auto;
+        }
+        
+        /* Asegurarse que las animaciones sean fluidas */
+        .aos-animate {
+            transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+        }
+        
+        /* Estilos personalizados para AOS */
+        .fade-up-custom {
+            transform: translate3d(0, 30px, 0);
+            opacity: 0;
+            transition-property: transform, opacity;
+        }
+        
+        .fade-up-custom.aos-animate {
+            transform: translate3d(0, 0, 0);
+            opacity: 1;
+        }
+        
+        /* Estilos para el cuerpo y el contenido principal */
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* Estilos para transiciones de página */
+        .page-transition {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+    
     {% block customCSS %}
     {% endblock %}
 </head>
 
 <body>
+    <!-- Contenedor principal con animaciones AOS -->
+    <main data-aos="fade" data-aos-duration="800">
+    
     <div class="content-wrapper">
         {% block body %}
         {% endblock %}
     </div>
     
+    </main>
+    
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    
+    <!-- Incluir AOS JS para animaciones -->    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar AOS con configuración mejorada
+            AOS.init({
+                duration: 800,               // duración de las animaciones
+                easing: 'ease-out-cubic',    // tipo de aceleración
+                once: false,                // repetir animaciones al hacer scroll
+                mirror: true,                // reflejar animaciones al subir
+                offset: 120,                 // offset (en px) desde el punto de activación original
+                delay: 100,                  // valores de 0 a 3000, con paso 50ms
+                anchorPlacement: 'top-bottom'// define qué posición del elemento respecto a la ventana debe activar la animación
+            });
+            
+            // Manejar enlaces para transiciones suaves entre páginas
+            const links = document.querySelectorAll('a[href]:not([target="_blank"])');
+            
+            links.forEach(link => {
+                // Solo aplicar a enlaces internos
+                if (link.hostname === window.location.hostname) {
+                    link.addEventListener('click', function(e) {
+                        // No aplicar a clics con modificadores (ctrl, shift, etc.)
+                        if (!e.ctrlKey && !e.shiftKey && !e.metaKey) {
+                            e.preventDefault();
+                            
+                            // Guardar la URL de destino
+                            const targetUrl = this.href;
+                            
+                            // Animar la salida de la página actual
+                            // Revertir todas las animaciones AOS
+                            document.querySelectorAll('[data-aos]').forEach(el => {
+                                el.classList.remove('aos-animate');
+                            });
+                            
+                            // Navegar a la nueva página después de un breve retraso
+                            setTimeout(() => {
+                                window.location = targetUrl;
+                            }, 400);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
