@@ -1,0 +1,198 @@
+@font-face {
+  font-display: block;
+  font-family: "bootstrap-icons";
+  src: url("./fonts/bootstrap-icons.woff2?8d200481aa7f02a2d63a331fc782cfaf") format("woff2"),
+       url("./fonts/bootstrap-icons.woff?8d200481aa7f02a2d63a331fc782cfaf") format("woff");
+}
+
+.bi::before,
+[class^="bi-"]::before,
+[class*=" bi-"]::before {
+  display: inline-block;
+  font-family: bootstrap-icons !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -0.125em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Definiciones de iconos básicos */
+.bi-book::before { content: "\f10a"; }
+.bi-laptop::before { content: "\f456"; }
+.bi-people::before { content: "\f51d"; }
+.bi-star-fill::before { content: "\f586"; }
+.bi-moon-fill::before { content: "\f4da"; }
+.bi-sun-fill::before { content: "\f5a2"; }
+.bi-facebook::before { content: "\f344"; }
+.bi-twitter::before { content: "\f5ef"; }
+.bi-instagram::before { content: "\f437"; }
+.bi-linkedin::before { content: "\f472"; }
+.bi-search::before { content: "\f52a"; }
+.bi-plus::before { content: "\f4fe"; }
+.bi-pencil::before { content: "\f4cb"; }
+.bi-trash::before { content: "\f5de"; }
+.bi-eye::before { content: "\f341"; }
+.bi-house::before { content: "\f425"; }
+.bi-gear::before { content: "\f3e7"; }
+.bi-person::before { content: "\f4ce"; }
+.bi-box-arrow-right::before { content: "\f11c"; }
+.bi-check::before { content: "\f26e"; }
+.bi-x::before { content: "\f62a"; }
+.bi-bell::before { content: "\f10b"; }
+.bi-calendar::before { content: "\f210"; }
+.bi-clock::before { content: "\f294"; }
+.bi-file-text::before { content: "\f38e"; }
+.bi-award::before { content: "\f153"; }
+.bi-graph-up::before { content: "\f3d2"; }
+.bi-chat::before { content: "\f266"; }
+.bi-envelope::before { content: "\f32f"; }
+.bi-lock::before { content: "\f47b"; }
+.bi-unlock::before { content: "\f600"; }
+.bi-exclamation-triangle::before { content: "\f33a"; }
+.bi-info-circle::before { content: "\f430"; }
+.bi-question-circle::before { content: "\f50d"; }
+.bi-arrow-left::before { content: "\f12c"; }
+.bi-arrow-right::before { content: "\f138"; }
+.bi-arrow-up::before { content: "\f13d"; }
+.bi-arrow-down::before { content: "\f128"; }
+.bi-chevron-left::before { content: "\f284"; }
+.bi-chevron-right::before { content: "\f285"; }
+.bi-chevron-up::before { content: "\f286"; }
+.bi-chevron-down::before { content: "\f282"; }
+.bi-list::before { content: "\f479"; }
+.bi-grid::before { content: "\f3ff"; }
+.bi-heart::before { content: "\f415"; }
+.bi-heart-fill::before { content: "\f417"; }
+.bi-bookmark::before { content: "\f196"; }
+.bi-bookmark-fill::before { content: "\f195"; }
+.bi-download::before { content: "\f30a"; }
+.bi-upload::before { content: "\f603"; }
+.bi-share::before { content: "\f52f"; }
+.bi-link::before { content: "\f471"; }
+.bi-image::before { content: "\f428"; }
+.bi-camera::before { content: "\f219"; }
+.bi-video::before { content: "\f5fc"; }
+.bi-music-note::before { content: "\f4de"; }
+.bi-file::before { content: "\f35c"; }
+.bi-folder::before { content: "\f4c1"; }
+.bi-archive::before { content: "\f10d"; }
+.bi-tag::before { content: "\f5a4"; }
+.bi-cart::before { content: "\f242"; }
+.bi-bag::before { content: "\f15d"; }
+.bi-currency-dollar::before { content: "\f2e7"; }
+.bi-credit-card::before { content: "\f2e1"; }
+.bi-wallet::before { content: "\f624"; }
+.bi-trophy::before { content: "\f5eb"; }
+.bi-flag::before { content: "\f3a4"; }
+.bi-pin::before { content: "\f4fb"; }
+.bi-map::before { content: "\f479"; }
+.bi-globe::before { content: "\f3ed"; }
+.bi-cloud::before { content: "\f2a2"; }
+.bi-cloud-download::before { content: "\f2a4"; }
+.bi-cloud-upload::before { content: "\f2ab"; }
+.bi-lightning::before { content: "\f46c"; }
+.bi-emoji-smile::before { content: "\f32c"; }
+.bi-emoji-neutral::before { content: "\f328"; }
+.bi-emoji-frown::before { content: "\f327"; }
+.bi-hand-thumbs-up::before { content: "\f408"; }
+.bi-hand-thumbs-down::before { content: "\f407"; }
+.bi-chat-dots::before { content: "\f268"; }
+.bi-chat-left-text::before { content: "\f264"; }
+.bi-chat-right-text::before { content: "\f271"; }
+.bi-telephone::before { content: "\f5b3"; }
+.bi-printer::before { content: "\f4fd"; }
+.bi-wifi::before { content: "\f61c"; }
+.bi-bluetooth::before { content: "\f294"; }
+.bi-battery-full::before { content: "\f179"; }
+.bi-battery-half::before { content: "\f17a"; }
+.bi-battery::before { content: "\f175"; }
+.bi-volume-up::before { content: "\f60e"; }
+.bi-volume-down::before { content: "\f60c"; }
+.bi-volume-mute::before { content: "\f60d"; }
+.bi-play::before { content: "\f4f9"; }
+.bi-pause::before { content: "\f4c6"; }
+.bi-stop::before { content: "\f590"; }
+.bi-skip-forward::before { content: "\f55f"; }
+.bi-skip-backward::before { content: "\f55e"; }
+.bi-fast-forward::before { content: "\f355"; }
+.bi-rewind::before { content: "\f529"; }
+.bi-shuffle::before { content: "\f549"; }
+.bi-repeat::before { content: "\f52c"; }
+.bi-filter::before { content: "\f399"; }
+.bi-sort-down::before { content: "\f57e"; }
+.bi-sort-up::before { content: "\f57f"; }
+.bi-sort-alpha-down::before { content: "\f573"; }
+.bi-sort-alpha-up::before { content: "\f575"; }
+.bi-sort-numeric-down::before { content: "\f57a"; }
+.bi-sort-numeric-up::before { content: "\f57c"; }
+.bi-arrow-clockwise::before { content: "\f116"; }
+.bi-arrow-counterclockwise::before { content: "\f117"; }
+.bi-plus-circle::before { content: "\f4fa"; }
+.bi-dash-circle::before { content: "\f2ea"; }
+.bi-check-circle::before { content: "\f26a"; }
+.bi-x-circle::before { content: "\f621"; }
+.bi-exclamation-circle::before { content: "\f334"; }
+.bi-question-circle-fill::before { content: "\f50c"; }
+.bi-info-circle-fill::before { content: "\f42f"; }
+.bi-shield-check::before { content: "\f553"; }
+.bi-shield-lock::before { content: "\f556"; }
+.bi-shield-x::before { content: "\f55d"; }
+.bi-key::before { content: "\f43f"; }
+.bi-door-closed::before { content: "\f2f7"; }
+.bi-door-open::before { content: "\f2f8"; }
+.bi-window::before { content: "\f61f"; }
+.bi-cpu::before { content: "\f2db"; }
+.bi-gpu-card::before { content: "\f3fa"; }
+.bi-hdd::before { content: "\f40f"; }
+.bi-usb::before { content: "\f5f4"; }
+.bi-code::before { content: "\f2c8"; }
+.bi-code-slash::before { content: "\f2c9"; }
+.bi-terminal::before { content: "\f5b6"; }
+.bi-braces::before { content: "\f1cd"; }
+.bi-markdown::before { content: "\f482"; }
+.bi-bug::before { content: "\f1fe"; }
+.bi-git::before { content: "\f3ea"; }
+.bi-github::before { content: "\f3eb"; }
+.bi-gitlab::before { content: "\f3ec"; }
+.bi-bootstrap::before { content: "\f1b3"; }
+.bi-slack::before { content: "\f565"; }
+.bi-discord::before { content: "\f300"; }
+.bi-youtube::before { content: "\f62b"; }
+.bi-twitch::before { content: "\f5ef"; }
+.bi-reddit::before { content: "\f52b"; }
+.bi-whatsapp::before { content: "\f618"; }
+.bi-telegram::before { content: "\f5b1"; }
+.bi-tiktok::before { content: "\f5b9"; }
+.bi-snapchat::before { content: "\f56e"; }
+.bi-pinterest::before { content: "\f4f7"; }
+.bi-dribbble::before { content: "\f319"; }
+.bi-behance::before { content: "\f17f"; }
+.bi-medium::before { content: "\f487"; }
+.bi-stack-overflow::before { content: "\f583"; }
+.bi-google::before { content: "\f3f0"; }
+.bi-apple::before { content: "\f179"; }
+.bi-android::before { content: "\f106"; }
+.bi-windows::before { content: "\f620"; }
+.bi-ubuntu::before { content: "\f5f2"; }
+.bi-linux::before { content: "\f473"; }
+.bi-chrome::before { content: "\f27f"; }
+.bi-edge::before { content: "\f320"; }
+.bi-firefox::before { content: "\f39a"; }
+.bi-safari::before { content: "\f527"; }
+.bi-opera::before { content: "\f4c0"; }
+.bi-paypal::before { content: "\f4c5"; }
+.bi-stripe::before { content: "\f591"; }
+.bi-cc-visa::before { content: "\f226"; }
+.bi-cc-mastercard::before { content: "\f224"; }
+.bi-cc-amex::before { content: "\f220"; }
+.bi-cc-discover::before { content: "\f223"; }
+.bi-cc-paypal::before { content: "\f225"; }
+.bi-cc-stripe::before { content: "\f227"; }
+.bi-cc-amazon-pay::before { content: "\f21f"; }
+.bi-cc-apple-pay::before { content: "\f221"; }
+.bi-cc-diners-club::before { content: "\f222"; }
+.bi-cc-jcb::before { content: "\f223"; } 
