@@ -57,7 +57,7 @@
 
 {% block customJS %}
 <script src="{{ url_for('static', filename='tinymce/js/tinymce/tinymce.min.js') }}"></script>
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/plugins/template/plugin.min.js"></script>
+<script src="{{ url_for('static', filename='tinymce/js/tinymce/plugins/template/plugin.min.js') }}"></script>
 <script>
     tinymce.init({
         selector: '#content',
