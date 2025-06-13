@@ -1,0 +1,615 @@
+{% extends './base.html' %}
+
+{% block title %}Spark IA - Plataforma Educativa{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+    /* Estilos específicos para la landing page */
+    .hero-section {
+        position: relative;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 100px 0;
+        color: white;
+        overflow: hidden;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+    }
+    
+    .hero-buttons .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        margin-right: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background-image: linear-gradient(45deg, #0ea5e9, #38bdf8);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background-image: linear-gradient(45deg, #0284c7, #0ea5e9);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-outline-light {
+        border: 2px solid #e0f2fe;
+        color: #e0f2fe;
+    }
+    
+    .btn-outline-light:hover {
+        background-color: #e0f2fe;
+        color: #0284c7;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .hero-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        transition: all 0.5s ease;
+    }
+    
+    .hero-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .features-section {
+        padding: 100px 0;
+        background-color: #f8fafc;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        text-align: center;
+        color: #0f172a;
+    }
+    
+    .feature-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background-image: linear-gradient(45deg, #0ea5e9, #38bdf8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        color: white;
+        font-size: 2rem;
+    }
+    
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #0f172a;
+    }
+    
+    .feature-description {
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    
+    .courses-section {
+        padding: 100px 0;
+        background-color: white;
+    }
+    
+    .course-card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .course-image {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+    }
+    
+    .course-content {
+        padding: 1.5rem;
+    }
+    
+    .course-tag {
+        display: inline-block;
+        background-color: #e0f2fe;
+        color: #0284c7;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .course-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #0f172a;
+    }
+    
+    .course-description {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+    
+    .course-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1rem;
+    }
+    
+    .course-rating {
+        display: flex;
+        align-items: center;
+        color: #f59e0b;
+    }
+    
+    .course-rating i {
+        margin-right: 0.25rem;
+    }
+    
+    .course-students {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+    
+    .testimonials-section {
+        padding: 100px 0;
+        background-color: #f8fafc;
+    }
+    
+    .testimonial-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .testimonial-content {
+        font-size: 1rem;
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .testimonial-content:before {
+        content: '"';
+        font-size: 4rem;
+        color: #e0f2fe;
+        position: absolute;
+        top: -20px;
+        left: -10px;
+        z-index: 0;
+        opacity: 0.5;
+    }
+    
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+    }
+    
+    .testimonial-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+    }
+    
+    .testimonial-info {
+        flex: 1;
+    }
+    
+    .testimonial-name {
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 0.25rem;
+    }
+    
+    .testimonial-role {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+    
+    .cta-section {
+        padding: 100px 0;
+        background-image: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+        color: white;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    
+    .cta-description {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+    }
+    
+    .btn-light {
+        background-color: white;
+        color: #0284c7;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-light:hover {
+        background-color: #f8fafc;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .footer {
+        background-color: #0f172a;
+        color: white;
+        padding: 50px 0;
+    }
+    
+    .footer-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .footer-description {
+        color: #94a3b8;
+        margin-bottom: 2rem;
+        max-width: 300px;
+    }
+    
+    .footer-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+    
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+    
+    .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+        color: #38bdf8;
+    }
+    
+    .footer-social {
+        display: flex;
+        margin-top: 1.5rem;
+    }
+    
+    .footer-social a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #1e293b;
+        color: white;
+        margin-right: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .footer-social a:hover {
+        background-color: #38bdf8;
+        transform: translateY(-3px);
+    }
+    
+    .footer-bottom {
+        border-top: 1px solid #1e293b;
+        padding-top: 2rem;
+        margin-top: 3rem;
+        text-align: center;
+        color: #94a3b8;
+    }
+    
+    /* Animaciones */
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+    
+    .floating {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    /* Partículas de fondo */
+    canvas {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+        
+        .hero-buttons .btn {
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+        }
+        
+        .cta-description {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <canvas id="canvas"></canvas>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content">
+                <h1 class="hero-title">Aprende Inteligencia Artificial con Spark IA</h1>
+                <p class="hero-subtitle">Domina las tecnologías de IA más demandadas con nuestra plataforma educativa interactiva diseñada para todos los niveles.</p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Comenzar Ahora</a>
+                    <a href="#features" class="btn btn-outline-light">Conocer Más</a>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+                <img src="{{ url_for('static', filename='img/hero-image.png') }}" alt="Spark IA Platform" class="hero-image floating">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="container">
+        <h2 class="section-title">¿Por qué elegir Spark IA?</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h3 class="feature-title">Contenido de Calidad</h3>
+                    <p class="feature-description">Accede a cursos creados por expertos en IA, con ejemplos prácticos y aplicaciones del mundo real.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-laptop"></i>
+                    </div>
+                    <h3 class="feature-title">Aprendizaje Interactivo</h3>
+                    <p class="feature-description">Aprende a tu ritmo con laboratorios virtuales, ejercicios prácticos y proyectos guiados.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3 class="feature-title">Comunidad Activa</h3>
+                    <p class="feature-description">Forma parte de una comunidad de estudiantes y profesionales apasionados por la IA.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Courses Section -->
+<section class="courses-section">
+    <div class="container">
+        <h2 class="section-title">Cursos Destacados</h2>
+        <div class="row">
+            {% for course in featured_courses %}
+            <div class="col-md-4 mb-4">
+                <div class="course-card">
+                    <img src="{{ url_for('static', filename='img/courses/' + course.image) }}" alt="{{ course.title }}" class="course-image">
+                    <div class="course-content">
+                        <span class="course-tag">{{ course.category }}</span>
+                        <h3 class="course-title">{{ course.title }}</h3>
+                        <p class="course-description">{{ course.description }}</p>
+                        <div class="course-meta">
+                            <div class="course-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span>{{ course.rating }}</span>
+                            </div>
+                            <div class="course-students">
+                                <i class="bi bi-people"></i> {{ course.students }} estudiantes
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Ver Todos los Cursos</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="section-title">Lo que dicen nuestros estudiantes</h2>
+        <div class="row">
+            {% for testimonial in testimonials %}
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-content">{{ testimonial.content }}</p>
+                    <div class="testimonial-author">
+                        <img src="{{ url_for('static', filename='img/testimonials/' + testimonial.avatar) }}" alt="{{ testimonial.name }}" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4 class="testimonial-name">{{ testimonial.name }}</h4>
+                            <p class="testimonial-role">{{ testimonial.role }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2 class="cta-title">¿Listo para comenzar tu viaje en IA?</h2>
+        <p class="cta-description mx-auto">Únete a miles de estudiantes que ya están transformando su futuro con Spark IA.</p>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-lg">Comenzar Ahora</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="footer-logo">Spark IA</div>
+                <p class="footer-description">Transformando la educación en Inteligencia Artificial para crear un futuro mejor.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                    <a href="#"><i class="bi bi-twitter"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 mb-4">
+                <h3 class="footer-title">Plataforma</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Cursos</a></li>
+                    <li><a href="#">Instructores</a></li>
+                    <li><a href="#">Precios</a></li>
+                    <li><a href="#">Afiliados</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4 mb-4">
+                <h3 class="footer-title">Soporte</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Documentación</a></li>
+                    <li><a href="#">Foro</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-md-4 mb-4">
+                <h3 class="footer-title">Suscríbete</h3>
+                <p class="text-muted mb-3">Recibe las últimas actualizaciones y ofertas</p>
+                <form>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Tu email" aria-label="Tu email">
+                        <button class="btn btn-primary" type="button">Suscribir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Spark IA. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+{% block customJS %}
+<script src="{{ url_for('static', filename='js/particles.js') }}"></script>
+{% endblock %}
+{% endblock %} 

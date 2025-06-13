@@ -1,0 +1,361 @@
+{% extends './base.html' %}
+
+{% block title %}Dashboard - Spark IA{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .dashboard-container {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .stats-card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+        background-color: #0ea5e9;
+        color: white;
+        font-weight: 600;
+        padding: 1rem;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .stats-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #0ea5e9;
+    }
+    .stats-label {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+    .course-card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .course-card:hover {
+        transform: translateY(-5px);
+    }
+    .course-img {
+        height: 180px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .course-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+    }
+    .course-description {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        height: 60px;
+        overflow: hidden;
+    }
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+    }
+    .progress-bar {
+        background-color: #0ea5e9;
+    }
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: #1e293b;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 3px;
+        background-color: #0ea5e9;
+    }
+    .welcome-message {
+        background-image: linear-gradient(45deg, #0ea5e9, #38bdf8);
+        color: white;
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .welcome-title {
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    .welcome-text {
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+    .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e0f2fe;
+        color: #0ea5e9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+    .activity-content {
+        flex: 1;
+    }
+    .activity-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    .activity-time {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+    .btn-continue {
+        background-image: linear-gradient(45deg, #0ea5e9, #38bdf8);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-continue:hover {
+        background-image: linear-gradient(45deg, #0284c7, #0ea5e9);
+        transform: translateY(-2px);
+    }
+    .theme-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-image: linear-gradient(45deg, #0ea5e9, #38bdf8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    .theme-toggle:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    }
+    .theme-toggle i {
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+    <!-- Mensaje de Bienvenida -->
+    <div class="welcome-message">
+        <h1 class="welcome-title">¡Bienvenido, {{ current_user.username }}!</h1>
+        <p class="welcome-text">Continúa con tu aprendizaje en Spark IA. Tienes cursos pendientes por completar.</p>
+    </div>
+
+    <!-- Estadísticas -->
+    <h2 class="section-title">Estadísticas</h2>
+    <div class="row mb-4">
+        <div class="col-md-3 mb-4 mb-md-0">
+            <div class="stats-card dashboard-card">
+                <div class="card-header">
+                    Cursos Inscritos
+                </div>
+                <div class="card-body text-center">
+                    <div class="stats-value">{{ stats.enrolled_courses }}</div>
+                    <div class="stats-label">Cursos</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4 mb-md-0">
+            <div class="stats-card dashboard-card">
+                <div class="card-header">
+                    Cursos Completados
+                </div>
+                <div class="card-body text-center">
+                    <div class="stats-value">{{ stats.completed_courses }}</div>
+                    <div class="stats-label">Cursos</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4 mb-md-0">
+            <div class="stats-card dashboard-card">
+                <div class="card-header">
+                    Exámenes Realizados
+                </div>
+                <div class="card-body text-center">
+                    <div class="stats-value">{{ stats.exams_taken }}</div>
+                    <div class="stats-label">Exámenes</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card dashboard-card">
+                <div class="card-header">
+                    Promedio de Calificaciones
+                </div>
+                <div class="card-body text-center">
+                    <div class="stats-value">{{ stats.average_score }}</div>
+                    <div class="stats-label">Puntos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cursos en Progreso -->
+    <h2 class="section-title">Cursos en Progreso</h2>
+    <div class="row">
+        {% for course in in_progress_courses %}
+        <div class="col-md-4">
+            <div class="course-card">
+                <img src="{{ url_for('static', filename='img/courses/' + course.image) }}" alt="{{ course.title }}" class="course-img">
+                <div class="card-body">
+                    <h5 class="course-title">{{ course.title }}</h5>
+                    <p class="course-description">{{ course.description }}</p>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ course.progress }}%" aria-valuenow="{{ course.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="progress-label">
+                        <span>Progreso</span>
+                        <span>{{ course.progress }}%</span>
+                    </div>
+                    <a href="{{ url_for('course.view', id=course.id) }}" class="btn btn-continue w-100 mt-3">Continuar</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Actividad Reciente y Cursos Recomendados -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <h2 class="section-title">Actividad Reciente</h2>
+            <div class="card">
+                <div class="card-body p-0">
+                    {% for activity in recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="bi {{ activity.icon }}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">{{ activity.title }}</div>
+                            <div class="activity-time">{{ activity.time }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h2 class="section-title">Cursos Recomendados</h2>
+            {% for course in recommended_courses %}
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-4">
+                        <img src="{{ url_for('static', filename='img/courses/' + course.image) }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ course.title }}">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ course.title }}</h5>
+                            <p class="card-text small">{{ course.description[:100] }}...</p>
+                            <a href="{{ url_for('course.view', id=course.id) }}" class="btn btn-sm btn-continue">Ver Curso</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Botón de cambio de tema -->
+<div class="theme-toggle" id="themeToggle">
+    <i class="bi bi-moon-fill"></i>
+</div>
+
+{% block customJS %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cambio de tema
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+        
+        // Verificar si hay un tema guardado
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+            icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // Animación de las tarjetas de estadísticas
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}
+
+{% endblock %} 
