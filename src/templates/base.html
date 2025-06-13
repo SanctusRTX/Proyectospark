@@ -8,8 +8,8 @@
     <title>{% block title %}{% endblock %}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/spark.jpg') }}">
     
-    <link  href="./static/css/bootstrap.min.css" rel="stylesheet">
-    <link  href="./static/css/style.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     
     
     {% block customCSS %}
@@ -19,9 +19,10 @@
 <body class="text-center">
         {% block body %}
         {% endblock %}
-        <script href="./static/js/bootstrap.bundle.min.js"></script>
-        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+        <script type="module" src="{{ url_for('static', filename='js/ionicons/ionicons.esm.js') }}"></script>
+        <script nomodule src="{{ url_for('static', filename='js/ionicons/ionicons.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/particles.js') }}"></script>
     </body>
 
     

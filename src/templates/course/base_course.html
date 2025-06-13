@@ -6,7 +6,7 @@
     <title>{% block title %}{% endblock %} - Spark IA</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/spark.jpg') }}">
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons/bootstrap-icons.css') }}">
     <style>
         :root {
             --primary-color: #0f0a06;
@@ -197,19 +197,92 @@
     </div>
     
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/particles.js') }}"></script>
     <script>
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
-        
-        // Cerrar sidebar al hacer clic en un enlace en dispositivos móviles
-        if (window.innerWidth < 768) {
-            document.querySelectorAll('.chapters-list a').forEach(function(link) {
-                link.addEventListener('click', function() {
-                    document.getElementById('sidebar').classList.remove('active');
-                });
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('sidebarToggle').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('active');
             });
-        }
+            
+            // Cerrar sidebar al hacer clic en un enlace en dispositivos móviles
+            if (window.innerWidth < 768) {
+                document.querySelectorAll('.chapters-list a').forEach(function(link) {
+                    link.addEventListener('click', function() {
+                        document.getElementById('sidebar').classList.remove('active');
+                    });
+                });
+            }
+            
+            // Añadir contenedor de partículas a la sidebar
+            const sidebar = document.getElementById('sidebar');
+            const particlesContainer = document.createElement('div');
+            particlesContainer.className = 'particles-container';
+            particlesContainer.style.position = 'absolute';
+            particlesContainer.style.top = '0';
+            particlesContainer.style.left = '0';
+            particlesContainer.style.width = '100%';
+            particlesContainer.style.height = '100%';
+            particlesContainer.style.zIndex = '0';
+            particlesContainer.style.pointerEvents = 'none';
+            sidebar.prepend(particlesContainer);
+            
+            // Asegurar que todos los elementos dentro del sidebar estén por encima de las partículas
+            document.querySelectorAll('.sidebar-header, .sidebar-body').forEach(el => {
+                el.style.position = 'relative';
+                el.style.zIndex = '1';
+            });
+            
+            // Crear partículas con colores oscuros para el sidebar
+            createParticles(particlesContainer, {
+                count: 15,
+                minSize: 3,
+                maxSize: 8,
+                minDuration: 20,
+                maxDuration: 40,
+                hueMin: 160,  // Tonos turquesa/verde azulado
+                hueMax: 200,  // Hasta azul
+                satMin: 70,
+                satMax: 100,
+                lightMin: 50,
+                lightMax: 70,
+                opacityMin: 0.2,
+                opacityMax: 0.4
+            });
+            
+            // Añadir partículas al contenido principal
+            const content = document.querySelector('.content');
+            const contentParticlesContainer = document.createElement('div');
+            contentParticlesContainer.className = 'particles-container';
+            contentParticlesContainer.style.position = 'absolute';
+            contentParticlesContainer.style.top = '0';
+            contentParticlesContainer.style.left = '0';
+            contentParticlesContainer.style.width = '100%';
+            contentParticlesContainer.style.height = '100%';
+            contentParticlesContainer.style.zIndex = '0';
+            contentParticlesContainer.style.pointerEvents = 'none';
+            content.prepend(contentParticlesContainer);
+            
+            // Asegurar que el contenido esté por encima de las partículas
+            document.querySelector('.container-fluid').style.position = 'relative';
+            document.querySelector('.container-fluid').style.zIndex = '1';
+            
+            // Crear partículas con colores claros para el contenido
+            createParticles(contentParticlesContainer, {
+                count: 12,
+                minSize: 4,
+                maxSize: 10,
+                minDuration: 15,
+                maxDuration: 30,
+                hueMin: 200,
+                hueMax: 240,
+                satMin: 60,
+                satMax: 90,
+                lightMin: 60,
+                lightMax: 80,
+                opacityMin: 0.1,
+                opacityMax: 0.3
+            });
+        });
     </script>
     {% block customJS %}{% endblock %}
 </body>

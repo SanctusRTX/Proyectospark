@@ -4,35 +4,116 @@
 
 {% block content %}
 <div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Administración de Cursos</li>
+        </ol>
+    </nav>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">Administración de Cursos</h1>
         <div>
-            <a href="{{ url_for('admin.fix_image_paths') }}" class="btn btn-warning btn-ripple me-2">
+            <a href="{{ url_for('admin.fix_image_paths') }}" class="btn btn-primary btn-ripple me-2">
                 <i class="bi bi-wrench"></i> Corregir Rutas de Imágenes
             </a>
-            <a href="{{ url_for('admin.new_course') }}" class="btn btn-new btn-ripple">
+            <a href="{{ url_for('admin.new_course') }}" class="btn btn-primary btn-ripple">
                 <i class="bi bi-plus-circle"></i> Nuevo Curso
             </a>
         </div>
     </div>
+    
+    <!-- Dashboard Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Cursos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ courses|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-book-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Cursos Activos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ courses|selectattr('5', 'equalto', 1)|list|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-check-circle-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Cursos Inactivos
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ courses|selectattr('5', 'equalto', 0)|list|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-x-circle-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Último Curso</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if courses %}
+                                    {{ courses|last|first }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-clock-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+
+
 
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Cursos Disponibles</h6>
+            <div class="search-wrapper">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" id="courseSearch" class="form-control form-control-sm" placeholder="Buscar cursos...">
+            </div>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
+            <div class="table-responsive table-responsive-card">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
@@ -46,31 +127,31 @@
                     </thead>
                     <tbody>
                         {% for course in courses %}
-                        <tr>
-                            <td>{{ course[0] }}</td>
-                            <td>{{ course[1] }}</td>
-                            <td>
+                        <tr class="course-row">
+                            <td data-label="ID">{{ course[0] }}</td>
+                            <td data-label="Título">{{ course[1] }}</td>
+                            <td data-label="Imagen">
                                 <img src="{{ url_for('static', filename=course[2]) }}" alt="Imagen de {{ course[1] }}" class="course-thumbnail" loading="lazy">
                             </td>
-                            <td>
+                            <td data-label="URL Externa">
                                 <a href="{{ course[3] }}" target="_blank" title="{{ course[3] }}" class="external-link">
-                                    <i class="bi bi-box-arrow-up-right"></i> Visitar curso
+                                    <i class="bi bi-box-arrow-up-right"></i> Acceso a IA
                                 </a>
                             </td>
-                            <td>
+                            <td data-label="Estado">
                                 {% if course[5] == 1 %}
                                 <span class="badge bg-success">Activo</span>
                                 {% else %}
                                 <span class="badge bg-danger">Inactivo</span>
                                 {% endif %}
                             </td>
-                            <td>
+                            <td data-label="Acciones">
                                 <div class="btn-group" role="group" aria-label="Acciones para {{ course[1] }}">
                                     <a href="{{ url_for('admin.edit_course', id=course[0]) }}" class="btn btn-sm btn-warning btn-ripple" title="Editar {{ course[1] }}">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
                                     <a href="{{ url_for('admin.admin_chapters', course_id=course[0]) }}" class="btn btn-sm btn-info btn-ripple" title="Administrar capítulos de {{ course[1] }}">
-                                        <i class="bi bi-book"></i> Capítulos
+                                        <i class="bi bi-book-fill"></i> Capítulos
                                     </a>
                                     <button type="button" class="btn btn-sm btn-danger btn-ripple" data-bs-toggle="modal" data-bs-target="#deleteModal{{ course[0] }}" title="Eliminar {{ course[1] }}">
                                         <i class="bi bi-trash"></i> Eliminar
@@ -89,7 +170,7 @@
                                                 ¿Está seguro de que desea eliminar el curso <strong>{{ course[1] }}</strong>?
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary btn-ripple" data-bs-dismiss="modal">
+                                                <button type="button" class="btn btn-primary btn-ripple" data-bs-dismiss="modal">
                                                     <i class="bi bi-x-circle"></i> Cancelar
                                                 </button>
                                                 <form action="{{ url_for('admin.delete_course', id=course[0]) }}" method="POST">
@@ -114,4 +195,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Funcionalidad de búsqueda
+        const searchInput = document.getElementById('courseSearch');
+        const courseRows = document.querySelectorAll('.course-row');
+        
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            courseRows.forEach(row => {
+                const id = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                const title = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || id.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+
 {% endblock %}

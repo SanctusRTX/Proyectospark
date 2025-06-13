@@ -13,7 +13,8 @@ def login():
         success, message = AuthController.login(username, password)
         
         if success:
-            return redirect(url_for('main.home'))
+            flash("Inicio de sesión exitoso", "success")
+            return redirect(url_for('main.index'))
         else:
             flash(message, "danger")
             return render_template('auth/login.html')
@@ -29,7 +30,7 @@ def guest_login():
         
         if success:
             flash(message, "success")
-            return redirect(url_for('main.home'))
+            return redirect(url_for('main.index'))
         else:
             flash(message, "warning")
             return redirect(url_for('auth.login'))
@@ -39,4 +40,5 @@ def guest_login():
 @auth_bp.route('/logout')
 def logout():
     AuthController.logout()
-    return redirect(url_for('auth.login'))
+    flash("Has cerrado sesión correctamente", "info")
+    return redirect(url_for('main.index'))
