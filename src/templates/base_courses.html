@@ -11,7 +11,7 @@
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     
     <!-- Incluir AOS CSS para animaciones -->    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}" />
     
     <style>
         /* Estilos para animaciones de contenido con AOS */
@@ -63,11 +63,14 @@
     </main>
     
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="{{ url_for('static', filename='js/ionicons/ionicons.esm.js') }}"></script>
+    <script nomodule src="{{ url_for('static', filename='js/ionicons/ionicons.js') }}"></script>
     
     <!-- Incluir AOS JS para animaciones -->    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
+    
+    <!-- Script de partículas -->
+    <script src="{{ url_for('static', filename='js/particles.js') }}"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {

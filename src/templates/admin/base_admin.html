@@ -5,12 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Panel de Administración{% endblock %}</title>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons/bootstrap-icons.css') }}">
     <link href="{{ url_for('static', filename='css/admin.css') }}?v={{ range(1, 1000) | random }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/admin-buttons.css') }}?v={{ range(1, 1000) | random }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/admin-dashboard.css') }}?v={{ range(1, 1000) | random }}" rel="stylesheet">
     {% block customCSS %}{% endblock %}
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/spark.jpg') }}"
 </head>
 <body>
+    <!-- Botón para volver al inicio de administración -->
+    <a href="{{ url_for('admin.admin_courses') }}" class="btn-home" title="Volver a la página principal de administración">
+        <i class="bi bi-house-fill"></i>
+    </a>
+
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -47,16 +56,18 @@
             <!-- Content -->
             <div class="col-md-9 col-lg-10 content-wrapper">
                 <div class="py-4">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <!-- Contenedor para alertas -->
+                    <div id="alertContainer">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} auto-close" role="alert">
                                     {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
                     
                     {% block content %}{% endblock %}
                 </div>
@@ -64,7 +75,107 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/particles.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Añadir partículas al sidebar
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarParticles = document.createElement('div');
+            sidebarParticles.className = 'particles-container';
+            sidebarParticles.style.position = 'absolute';
+            sidebarParticles.style.top = '0';
+            sidebarParticles.style.left = '0';
+            sidebarParticles.style.width = '100%';
+            sidebarParticles.style.height = '100%';
+            sidebarParticles.style.zIndex = '0';
+            sidebarParticles.style.pointerEvents = 'none';
+            sidebar.style.position = 'relative';
+            sidebar.style.overflow = 'hidden';
+            sidebar.prepend(sidebarParticles);
+            
+            // Asegurar que el contenido del sidebar esté por encima de las partículas
+            document.querySelectorAll('.sidebar-brand, .sidebar-divider, .nav').forEach(el => {
+                el.style.position = 'relative';
+                el.style.zIndex = '1';
+            });
+            
+            // Crear partículas para el sidebar
+            createParticles(sidebarParticles, {
+                count: 10,
+                minSize: 2,
+                maxSize: 6,
+                minDuration: 25,
+                maxDuration: 40,
+                hueMin: 200,
+                hueMax: 240,
+                satMin: 70,
+                satMax: 100,
+                lightMin: 60,
+                lightMax: 80,
+                opacityMin: 0.1,
+                opacityMax: 0.3
+            });
+            
+            // Añadir partículas al contenido principal
+            const contentWrapper = document.querySelector('.content-wrapper');
+            const contentParticles = document.createElement('div');
+            contentParticles.className = 'particles-container';
+            contentParticles.style.position = 'absolute';
+            contentParticles.style.top = '0';
+            contentParticles.style.left = '0';
+            contentParticles.style.width = '100%';
+            contentParticles.style.height = '100%';
+            contentParticles.style.zIndex = '0';
+            contentParticles.style.pointerEvents = 'none';
+            contentWrapper.style.position = 'relative';
+            contentWrapper.style.overflow = 'hidden';
+            contentWrapper.prepend(contentParticles);
+            
+            // Asegurar que el contenido principal esté por encima de las partículas
+            document.querySelector('.py-4').style.position = 'relative';
+            document.querySelector('.py-4').style.zIndex = '1';
+            
+            // Crear partículas para el contenido principal
+            createParticles(contentParticles, {
+                count: 8,
+                minSize: 3,
+                maxSize: 8,
+                minDuration: 20,
+                maxDuration: 35,
+                hueMin: 190,
+                hueMax: 230,
+                satMin: 60,
+                satMax: 90,
+                lightMin: 65,
+                lightMax: 85,
+                opacityMin: 0.1,
+                opacityMax: 0.2
+            });
+            
+            // Añadir clases de animación a las tarjetas del dashboard
+            document.querySelectorAll('.col-xl-3 .card').forEach(card => {
+                card.classList.add('dashboard-card');
+            });
+            
+            // Ocultar el botón de inicio en la página principal de administración
+            if (window.location.pathname === "{{ url_for('admin.admin_courses') }}") {
+                document.querySelector('.btn-home').style.display = 'none';
+            }
+            
+            // Auto-cierre de alertas
+            const autoCloseAlerts = document.querySelectorAll('.auto-close');
+            autoCloseAlerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 500);
+                }, 1500);
+            });
+        });
+    </script>
     {% block customJS %}{% endblock %}
 </body>
 </html>
