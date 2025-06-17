@@ -25,8 +25,8 @@
                             <input type="text" id="examSearch" class="form-control form-control-sm" placeholder="Buscar exámenes...">
                         </div>
                         <a href="{{ url_for('admin.new_examen', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-primary btn-ripple">
-                            <i class="bi bi-plus-circle"></i> Nuevo Examen
-                        </a>
+                        <i class="bi bi-plus-circle"></i> Nuevo Examen
+                    </a>
                     </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
@@ -62,14 +62,41 @@
                                             <span class="text-secondary text-xs font-weight-bold">{{ examen[5].strftime('%d/%m/%Y') }}</span>
                                         </td>
                                         <td data-label="Acciones" class="align-middle">
-                                            <a href="{{ url_for('admin.edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" class="btn btn-warning btn-sm btn-ripple me-1">
-                                                <i class="bi bi-pencil-square"></i> Editar
-                                            </a>
-                                            <form action="{{ url_for('admin.delete_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este examen?');">
-                                                <button type="submit" class="btn btn-danger btn-sm btn-ripple">
-                                                    <i class="bi bi-trash"></i> Eliminar
-                                                </button>
-                                            </form>
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ url_for('admin.edit_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" class="btn btn-warning btn-sm btn-ripple">
+                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                </a>
+                                                <form action="{{ url_for('admin.delete_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" method="POST" class="d-inline">
+                                                    <button type="button" class="btn btn-danger btn-sm btn-ripple" data-bs-toggle="modal" data-bs-target="#deleteModal{{ examen[0] }}">
+                                                        <i class="bi bi-trash"></i> Eliminar
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            
+                                            <!-- Modal de confirmación para eliminar -->
+                                            <div class="modal fade" id="deleteModal{{ examen[0] }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ examen[0] }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteModalLabel{{ examen[0] }}">Confirmar eliminación</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            ¿Estás seguro de que deseas eliminar el examen "{{ examen[2] }}"?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-primary btn-ripple" data-bs-dismiss="modal">
+                                                                <i class="bi bi-x-circle"></i> Cancelar
+                                                            </button>
+                                                            <form action="{{ url_for('admin.delete_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" method="POST">
+                                                                <button type="submit" class="btn btn-danger btn-ripple">
+                                                                    <i class="bi bi-trash"></i> Eliminar
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                     {% endfor %}

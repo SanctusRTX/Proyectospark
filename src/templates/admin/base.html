@@ -1,3 +1,5 @@
-{% extends 'admin/base_admin.html' %}
+{% extends 'base.html' %}
 
-{# Este archivo existe solo para mantener compatibilidad con las plantillas que lo extienden #}
+{% block content %}
+    {% block admin_content %}{% endblock %}
+{% endblock %}

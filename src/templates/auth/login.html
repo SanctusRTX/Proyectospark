@@ -250,7 +250,7 @@
         }
         100% {
             background-position: 0% 50%;
-        }
+    }
     }
 
     .form-switch {
@@ -427,7 +427,7 @@
             <label class="toggle-switch">
                 <input type="checkbox" id="darkModeToggle">
                 <span class="toggle-slider"></span>
-            </label>
+        </label>
         </div>
 
         <div class="form-container" id="loginForm">
@@ -437,39 +437,39 @@
             </div>
             
             <h2 class="form-title">Iniciar sesión</h2>
-
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}" role="alert">
-                {{ message }}
-            </div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
             <form action="/login" method="POST">
                 <div class="form-group">
                     <input type="text" class="form-control" id="username" name="username" placeholder="Usuario" required>
-                </div>
-                
+        </div>
+
                 <div class="form-group">
                     <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
-                </div>
-                
+        </div>
+
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="remember" name="remember">
                     <label class="form-check-label" for="remember">Recuérdame</label>
-                </div>
-
+        </div>
+        
                 <button type="submit" class="btn-continue">Iniciar Sesión</button>
-            </form>
-
+    </form>
+    
             <div class="form-switch">
                 <a href="#" class="form-switch-link" id="showGuestForm">¿Eres invitado? Accede aquí</a>
             </div>
         </div>
-
+        
         <div class="form-container" id="guestForm" style="display: none;">
             <div class="logo-container">
                 <img src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo Spark IA" class="logo-image">
@@ -483,7 +483,7 @@
                     <input type="text" class="form-control" id="guest_name" name="guest_name" placeholder="Nombre de invitado" required>
                 </div>
                 <button type="submit" class="btn-continue">Acceder como Invitado</button>
-            </form>
+    </form>
 
             <div class="form-switch">
                 <a href="#" class="form-switch-link" id="showLoginForm">Volver al inicio de sesión</a>
@@ -494,11 +494,11 @@
 
 {% block customJS %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const guestForm = document.getElementById('guestForm');
-    const showGuestForm = document.getElementById('showGuestForm');
-    const showLoginForm = document.getElementById('showLoginForm');
+        const showGuestForm = document.getElementById('showGuestForm');
+        const showLoginForm = document.getElementById('showLoginForm');
     const darkModeToggle = document.getElementById('darkModeToggle');
     
     // Crear partículas flotantes
@@ -540,8 +540,8 @@ document.addEventListener('DOMContentLoaded', function() {
     showGuestForm.addEventListener('click', function(e) {
         e.preventDefault();
         switchForms(loginForm, guestForm);
-    });
-
+        });
+        
     showLoginForm.addEventListener('click', function(e) {
         e.preventDefault();
         switchForms(guestForm, loginForm);
@@ -594,7 +594,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loginFormElement.appendChild(particle);
         }
     }
-});
+    });
 </script>
 
 <style>

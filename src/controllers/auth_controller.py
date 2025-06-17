@@ -2,6 +2,7 @@ from flask import session, flash
 from extensions.extensions import db
 from models.ModelUser import ModelUser
 from models.entities.User import User
+import time
 
 class AuthController:
     @staticmethod
@@ -19,6 +20,7 @@ class AuthController:
                 session['username'] = logged_user.username
                 session['fullname'] = logged_user.fullname
                 session['user_role'] = logged_user.role
+                session['timestamp'] = int(time.time())
                 return True, None
             else:
                 return False, "Contraseña incorrecta"
@@ -33,6 +35,7 @@ class AuthController:
             session['username'] = f"Invitado: {guest_name}"
             session['fullname'] = f"Invitado: {guest_name}"
             session['user_role'] = 'guest'
+            session['timestamp'] = int(time.time())
             return True, f"Bienvenido, {guest_name}! Has accedido como invitado."
         else:
             return False, "Por favor, introduce tu nombre para acceder como invitado."

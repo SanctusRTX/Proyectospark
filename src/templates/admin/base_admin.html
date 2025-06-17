@@ -9,6 +9,7 @@
     <link href="{{ url_for('static', filename='css/admin.css') }}?v={{ range(1, 1000) | random }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/admin-buttons.css') }}?v={{ range(1, 1000) | random }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/admin-dashboard.css') }}?v={{ range(1, 1000) | random }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/admin-buttons-fix.css') }}?v={{ range(1, 1000) | random }}" rel="stylesheet">
     {% block customCSS %}{% endblock %}
     
     <!-- Favicon -->
@@ -17,7 +18,7 @@
 <body>
     <!-- Botón para volver al inicio de administración -->
     <a href="{{ url_for('admin.admin_courses') }}" class="btn-home" title="Volver a la página principal de administración">
-        <i class="bi bi-house-fill"></i>
+        <i class="bi bi-house"></i>
     </a>
 
     <div class="container-fluid">
@@ -58,15 +59,15 @@
                 <div class="py-4">
                     <!-- Contenedor para alertas -->
                     <div id="alertContainer">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
                                 <div class="alert alert-{{ category }} auto-close" role="alert">
                                     {{ message }}
                                 </div>
-                                {% endfor %}
-                            {% endif %}
-                        {% endwith %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                     </div>
                     
                     {% block content %}{% endblock %}

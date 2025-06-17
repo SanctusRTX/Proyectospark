@@ -1,0 +1,305 @@
+{% extends "course/base_course.html" %}
+
+{% block title %}{{ chapter[1] }} - {{ course[1] }}{% endblock %}
+
+{% block customCSS %}
+<style>
+    .chapter-content {
+        font-size: 1.05rem;
+        line-height: 1.7;
+    }
+    
+    .chapter-content h1, 
+    .chapter-content h2, 
+    .chapter-content h3, 
+    .chapter-content h4, 
+    .chapter-content h5, 
+    .chapter-content h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        color: #333;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .chapter-content h2::after,
+    .chapter-content h3::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #00FFDD, transparent);
+        border-radius: 3px;
+    }
+    
+    .chapter-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+    
+    .chapter-content img:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .chapter-content pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 10px;
+        overflow-x: auto;
+        border-left: 4px solid #00FFDD;
+    }
+    
+    .chapter-content blockquote {
+        border-left: 4px solid #00FFDD;
+        padding: 1rem 1.5rem;
+        background-color: rgba(0, 255, 221, 0.05);
+        border-radius: 0 10px 10px 0;
+        font-style: italic;
+        color: #6c757d;
+        margin: 1.5rem 0;
+        position: relative;
+    }
+    
+    .chapter-content blockquote::before {
+        content: '"';
+        font-size: 3rem;
+        position: absolute;
+        top: -15px;
+        left: 10px;
+        color: rgba(0, 255, 221, 0.2);
+    }
+    
+    .chapter-navigation {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(0, 255, 221, 0.2);
+    }
+    
+    /* Elementos interactivos */
+    .interactive-tip {
+        background: linear-gradient(135deg, rgba(0, 255, 221, 0.1), rgba(76, 201, 240, 0.1));
+        border-radius: 15px;
+        padding: 20px;
+        margin: 25px 0;
+        border-left: 4px solid #00FFDD;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
+    }
+    
+    .interactive-tip:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .interactive-tip::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        transition: all 0.6s;
+    }
+    
+    .interactive-tip:hover::before {
+        transform: translateX(100%);
+    }
+    
+    .tip-title {
+        display: flex;
+        align-items: center;
+        color: #00e6c5;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .tip-title i {
+        margin-right: 10px;
+        font-size: 1.5rem;
+    }
+    
+    /* Animación para el botón de exámenes */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+    
+    /* Barra de progreso de lectura */
+    .reading-progress-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: transparent;
+        z-index: 9999;
+    }
+    
+    .reading-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #00FFDD, #4cc9f0);
+        width: 0%;
+        transition: width 0.1s;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Barra de progreso de lectura -->
+<div class="reading-progress-container">
+    <div class="reading-progress-bar" id="readingProgressBar"></div>
+</div>
+
+<div class="course-header mb-4">
+    <h1 class="course-title">{{ chapter[1] }}</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body chapter-content">
+        <div class="interactive-tip">
+            <div class="tip-title">
+                <i class="bi bi-lightbulb animated-icon"></i> Consejo para aprender
+            </div>
+            <p>Lee detenidamente este capítulo y toma notas de los puntos importantes. ¡Al final podrás poner a prueba lo que has aprendido!</p>
+        </div>
+        
+        {{ chapter[2]|safe }}
+        
+        <div class="mt-5 mb-4">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-award me-2"></i> Evaluación del Capítulo</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">¡Comprueba cuánto has aprendido realizando los exámenes disponibles!</p>
+                    <div class="text-center">
+                        <a href="{{ url_for('course.chapter_examenes', course_id=course[0], chapter_id=chapter[0], _external=True) }}" class="btn btn-lg btn-primary btn-ripple pulse-animation">
+                            <i class="bi bi-pencil-square me-2"></i> ¡Ponte a prueba!
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chapter-navigation">
+            {% set current_index = -1 %}
+            {% for i in range(chapters|length) %}
+                {% if chapters[i][0] == chapter[0] %}
+                    {% set current_index = i %}
+                {% endif %}
+            {% endfor %}
+            
+            <div class="d-flex justify-content-between">
+                {% if current_index > 0 %}
+                <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapters[current_index-1][0]) }}" class="btn btn-outline-primary btn-ripple">
+                    <i class="bi bi-arrow-left me-2"></i> Capítulo Anterior
+                </a>
+                {% else %}
+                <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="btn btn-outline-primary btn-ripple">
+                    <i class="bi bi-house-door me-2"></i> Inicio del Curso
+                </a>
+                {% endif %}
+                
+                {% if current_index < chapters|length - 1 %}
+                <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapters[current_index+1][0]) }}" class="btn btn-primary btn-ripple">
+                    Siguiente Capítulo <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+                {% else %}
+                <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="btn btn-success btn-ripple">
+                    <i class="bi bi-check-circle me-2"></i> ¡Completaste el Curso!
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block customJS %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Barra de progreso de lectura
+        const progressBar = document.getElementById('readingProgressBar');
+        const totalHeight = document.body.scrollHeight - window.innerHeight;
+        
+        window.addEventListener('scroll', function() {
+            const progress = (window.pageYOffset / totalHeight) * 100;
+            progressBar.style.width = progress + '%';
+        });
+        
+        // Animación para imágenes
+        const images = document.querySelectorAll('.chapter-content img');
+        images.forEach(img => {
+            img.classList.add('interactive-element');
+            
+            // Añadir zoom al hacer clic en la imagen
+            img.addEventListener('click', function() {
+                if (this.style.transform === 'scale(1.5)') {
+                    this.style.transform = '';
+                    this.style.zIndex = '';
+                    this.style.position = '';
+                } else {
+                    this.style.transform = 'scale(1.5)';
+                    this.style.zIndex = '100';
+                    this.style.position = 'relative';
+                }
+            });
+        });
+        
+        // Añadir efecto de resaltado a los párrafos al hacer hover
+        const paragraphs = document.querySelectorAll('.chapter-content p');
+        paragraphs.forEach(p => {
+            p.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'rgba(0, 255, 221, 0.05)';
+                this.style.borderRadius = '5px';
+                this.style.padding = '5px';
+                this.style.transition = 'all 0.3s';
+            });
+            
+            p.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+                this.style.padding = '';
+            });
+        });
+        
+        // Añadir animación a los títulos
+        const headings = document.querySelectorAll('.chapter-content h1, .chapter-content h2, .chapter-content h3, .chapter-content h4, .chapter-content h5, .chapter-content h6');
+        headings.forEach((heading, index) => {
+            heading.style.opacity = '0';
+            heading.style.transform = 'translateY(20px)';
+            heading.style.transition = 'all 0.5s';
+            
+            setTimeout(() => {
+                heading.style.opacity = '1';
+                heading.style.transform = 'translateY(0)';
+            }, 300 + (index * 150));
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

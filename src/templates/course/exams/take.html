@@ -2,28 +2,74 @@
 
 {% block title %}Examen - {{ examen[2] }}{% endblock %}
 
+{% block customCSS %}
+<style>
+    .exam-header {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px 10px 0 0;
+        margin-bottom: 0;
+    }
+    
+    .exam-title {
+        color: white;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
+    
+    .exam-description {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0;
+    }
+    
+    .question-container {
+        border-left: 4px solid #4e73df;
+        background-color: #f8f9fc;
+        transition: all 0.3s;
+    }
+    
+    .question-container:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    .timer-container {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+    }
+    
+    #timer {
+        font-size: 1.2rem;
+        color: #856404;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h5 class="text-primary">{{ examen[2] }}</h5>
-                    <p class="text-muted">{{ examen[3] }}</p>
+                <div class="exam-header">
+                    <h5 class="exam-title">{{ examen[2] }}</h5>
+                    <p class="exam-description">{{ examen[3] }}</p>
+                </div>
+                <div class="card-body">
                     {% if examen[4] > 0 %}
-                        <div class="alert alert-warning" role="alert">
+                        <div class="alert timer-container" role="alert">
                             <i class="bi bi-clock me-2"></i> Tiempo límite: {{ examen[4] }} minutos
                             <div id="timer" class="mt-2 fw-bold" data-tiempo-limite="{{ examen[4] }}"></div>
                         </div>
                     {% endif %}
-                </div>
-                <div class="card-body">
+                    
                     <form method="POST" action="{{ url_for('course.take_examen', course_id=course[0], chapter_id=chapter[0], examen_id=examen[0]) }}" id="examenForm">
                         <input type="hidden" name="submit_respuestas" value="1">
                         <input type="hidden" name="resultado_id" value="{{ resultado_id }}">
                         
                         {% for item in preguntas %}
-                            <div class="mb-4 p-3 border rounded">
+                            <div class="mb-4 p-3 border rounded question-container">
                                 <h6 class="mb-3">{{ loop.index }}. {{ item.pregunta[2] }}</h6>
                                 
                                 {% if item.pregunta[3] == 'opcion_multiple' %}

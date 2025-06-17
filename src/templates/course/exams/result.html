@@ -2,35 +2,203 @@
 
 {% block title %}Resultado del Examen{% endblock %}
 
+{% block customCSS %}
+<style>
+    .result-card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .result-header {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .result-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite;
+        z-index: 1;
+    }
+    
+    .result-score {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .result-title {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 1.2rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .result-body {
+        padding: 2rem;
+    }
+    
+    .score-detail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .score-item {
+        text-align: center;
+        padding: 0 1.5rem;
+        position: relative;
+    }
+    
+    .score-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    .score-value {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0;
+        color: #4e73df;
+    }
+    
+    .score-label {
+        font-size: 0.9rem;
+        color: #858796;
+        margin: 0;
+    }
+    
+    .progress-bar-container {
+        height: 10px;
+        background-color: #eaecf4;
+        border-radius: 5px;
+        margin: 1.5rem 0;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        border-radius: 5px;
+        transition: width 1.5s ease-in-out;
+    }
+    
+    .progress-bar.success {
+        background: linear-gradient(to right, #1cc88a, #0bb77a);
+    }
+    
+    .progress-bar.warning {
+        background: linear-gradient(to right, #f6c23e, #e0a800);
+    }
+    
+    .progress-bar.danger {
+        background: linear-gradient(to right, #e74a3b, #c52f2b);
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -100% 0; }
+        100% { background-position: 100% 0; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid py-4">
     <div class="row">
-        <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h5 class="text-primary">Resultado del Examen</h5>
+        <div class="col-12 col-lg-8 mx-auto">
+            <div class="card result-card mb-4">
+                <div class="result-header text-center">
+                    <h5 class="result-title mb-2">Resultado del Examen</h5>
+                    <h1 class="result-score">{{ resultado.puntuacion|round(1) }}%</h1>
+                    
+                    {% if resultado.puntuacion >= 70 %}
+                        <div class="mt-3">
+                            <span class="badge bg-success px-3 py-2">
+                                <i class="bi bi-check-circle me-1"></i> Aprobado
+                            </span>
+                        </div>
+                    {% else %}
+                        <div class="mt-3">
+                            <span class="badge bg-warning px-3 py-2">
+                                <i class="bi bi-exclamation-triangle me-1"></i> No Aprobado
+                            </span>
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="card-body">
+                
+                <div class="result-body">
+                    <div class="score-detail">
+                        <div class="score-item">
+                            <p class="score-value">{{ resultado.puntuacion_obtenida }}</p>
+                            <p class="score-label">Puntos Obtenidos</p>
+                        </div>
+                        <div class="score-item">
+                            <p class="score-value">{{ resultado.puntuacion_total }}</p>
+                            <p class="score-label">Puntos Totales</p>
+                        </div>
+                        <div class="score-item">
+                            <p class="score-value">{{ resultado.respuestas_correctas|default(0) }}</p>
+                            <p class="score-label">Respuestas Correctas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar-container">
+                        {% if resultado.puntuacion >= 70 %}
+                            <div class="progress-bar success" style="width: {{ resultado.puntuacion }}%"></div>
+                        {% elif resultado.puntuacion >= 50 %}
+                            <div class="progress-bar warning" style="width: {{ resultado.puntuacion }}%"></div>
+                        {% else %}
+                            <div class="progress-bar danger" style="width: {{ resultado.puntuacion }}%"></div>
+                        {% endif %}
+                    </div>
+                    
                     <div class="text-center mb-4">
-                        <h2 class="display-4">{{ resultado.puntuacion|round(2) }}%</h2>
-                        <p class="lead">
-                            Has obtenido {{ resultado.puntuacion_obtenida }} de {{ resultado.puntuacion_total }} puntos
-                        </p>
-                        
                         {% if resultado.puntuacion >= 70 %}
                             <div class="alert alert-success" role="alert">
-                                <i class="bi bi-check-circle me-2"></i> ¡Felicidades! Has aprobado el examen.
+                                <i class="bi bi-check-circle me-2"></i> ¡Felicidades! Has aprobado el examen con éxito.
+                            </div>
+                        {% elif resultado.puntuacion >= 50 %}
+                            <div class="alert alert-warning" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i> Has obtenido una puntuación regular. Considera repasar el contenido del capítulo.
                             </div>
                         {% else %}
-                            <div class="alert alert-warning" role="alert">
-                                <i class="bi bi-exclamation-triangle me-2"></i> No has alcanzado la puntuación mínima para aprobar.
+                            <div class="alert alert-danger" role="alert">
+                                <i class="bi bi-x-circle me-2"></i> No has alcanzado la puntuación mínima para aprobar. Te recomendamos revisar el capítulo nuevamente.
                             </div>
                         {% endif %}
                     </div>
                     
-                    <div class="d-flex justify-content-center mt-4">
-                        <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-primary">
-                            <i class="bi bi-arrow-left me-1"></i> Volver al Capítulo
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary">
+                            <i class="bi bi-book me-1"></i> Volver al Capítulo
+                        </a>
+                        
+                        <a href="{{ url_for('course.chapter_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-primary">
+                            <i class="bi bi-list-check me-1"></i> Ver Todos los Exámenes
                         </a>
                     </div>
                 </div>
@@ -38,4 +206,18 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block customJS %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animar la barra de progreso cuando la página se carga
+        setTimeout(function() {
+            const progressBar = document.querySelector('.progress-bar');
+            if (progressBar) {
+                progressBar.style.width = '{{ resultado.puntuacion }}%';
+            }
+        }, 300);
+    });
+</script>
 {% endblock %}

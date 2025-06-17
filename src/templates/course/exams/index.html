@@ -61,7 +61,7 @@
         </div>
     </div>
     
-    {% if examenes %}
+    {% if examenes and examenes|length > 0 %}
     <div class="row">
         {% for examen in examenes %}
         <div class="col-md-6 col-lg-4">
@@ -112,10 +112,6 @@
         <div class="col-12">
             <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left me-2"></i> Volver al Capítulo
-            </a>
-            
-            <a href="{{ url_for('course.mis_resultados') }}" class="btn btn-info float-end">
-                <i class="bi bi-chart-bar me-2"></i> Ver Mis Resultados
             </a>
         </div>
     </div>

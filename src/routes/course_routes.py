@@ -54,22 +54,26 @@ def chapter_examenes(course_id, chapter_id):
             return redirect(url_for('main.home'))
         
         # Obtener exámenes del capítulo
-        examenes = ExamController.get_exams_by_chapter(chapter_id)
+        try:
+            examenes = ExamController.get_exams_by_chapter(chapter_id)
+            print(f"DEBUG - Exámenes encontrados para capítulo {chapter_id}: {len(examenes) if examenes else 0}")
+        except Exception as ex:
+            print(f"DEBUG - Error al obtener exámenes: {str(ex)}")
+            examenes = []
         
         # Obtener capítulos del curso para el menú lateral
         chapters = ChapterController.get_chapters_by_course(course_id)
         
-        try:
-            return render_template('course/exams.html', 
-                                  course=course, 
-                                  chapter=chapter, 
-                                  chapters=chapters,
-                                  examenes=examenes)
-        except Exception as template_ex:
-            # Capturar específicamente errores de plantilla
-            flash(f'Error en la plantilla de exámenes: {str(template_ex)}', 'danger')
-            return redirect(url_for('course.view_chapter', course_id=course_id, chapter_id=chapter_id))
+        # Siempre mostrar la plantilla, incluso si no hay exámenes
+        print(f"DEBUG - Renderizando plantilla de exámenes para curso {course_id}, capítulo {chapter_id}")
+        return render_template('course/exams/index.html', 
+                              course=course, 
+                              chapter=chapter, 
+                              chapters=chapters,
+                              examenes=examenes)
+                              
     except Exception as ex:
+        print(f"DEBUG - Error general en chapter_examenes: {str(ex)}")
         flash(f'Error al cargar exámenes: {str(ex)}', 'danger')
         return redirect(url_for('course.view_chapter', course_id=course_id, chapter_id=chapter_id))
 
@@ -110,9 +114,10 @@ def take_examen(course_id, chapter_id, examen_id):
                 return redirect(url_for('course.view_resultado', course_id=course_id, chapter_id=chapter_id, resultado_id=resultado_id))
             else:
                 flash(f'Error al procesar el examen: {resultado_id}', 'danger')
+                return redirect(url_for('course.chapter_examenes', course_id=course_id, chapter_id=chapter_id))
         
         try:
-            return render_template('course/take_exam.html', 
+            return render_template('course/exams/take.html', 
                                 course=course, 
                                 chapter=chapter, 
                                 chapters=chapters,
@@ -150,7 +155,7 @@ def view_resultado(course_id, chapter_id, resultado_id):
             return redirect(url_for('course.chapter_examenes', course_id=course_id, chapter_id=chapter_id))
         
         try:
-            return render_template('course/resultado.html', 
+            return render_template('course/exams/result.html', 
                                 course=course, 
                                 chapter=chapter, 
                                 chapters=chapters,

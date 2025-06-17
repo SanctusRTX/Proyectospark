@@ -1,0 +1,882 @@
+/* Estilos modernos y animados para la visualización de cursos - Escuela El Recreo */
+:root {
+    /* Colores principales */
+    --primary-color: #0f0a06;      /* Negro/Oscuro */
+    --accent-color: #00FFDD;       /* Turquesa brillante */
+    --accent-light: #7affee;       /* Turquesa claro */
+    --accent-dark: #00e6c5;        /* Turquesa oscuro */
+    
+    /* Colores complementarios */
+    --blue-accent: #4cc9f0;        /* Azul claro */
+    --purple-accent: #8338ec;      /* Púrpura */
+    --pink-accent: #ff006e;        /* Rosa */
+    --orange-accent: #fb5607;      /* Naranja */
+    --yellow-accent: #ffbe0b;      /* Amarillo */
+    
+    /* Colores neutros */
+    --light-color: #f8f9fa;        /* Blanco/Claro */
+    --gray-color: #858796;         /* Gris medio */
+    --gray-light: #eaecf4;         /* Gris claro */
+    --gray-dark: #5a5c69;          /* Gris oscuro */
+    
+    /* Dimensiones */
+    --sidebar-width: 280px;
+}
+
+/* Estilos generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-color);
+    overflow-x: hidden;
+}
+
+/* Animaciones globales */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -100% 0; }
+    100% { background-position: 100% 0; }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px rgba(0, 255, 221, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(0, 255, 221, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(0, 255, 221, 0.5); }
+}
+
+/* Contenedor principal */
+.course-container {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Sidebar mejorado */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(135deg, #1a2a3a 0%, #0f1a25 100%);
+    color: white;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1000;
+    box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+    font-size: 0.8rem;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 10px;
+}
+
+.sidebar-header {
+    padding: 15px;
+    background: linear-gradient(to right, rgba(0, 255, 221, 0.1), transparent);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(0, 255, 221, 0.2);
+}
+
+.sidebar-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 221, 0.1), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite;
+    z-index: 0;
+}
+
+.sidebar-title {
+    margin: 0;
+    font-size: 1.1rem !important;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(to right, var(--accent-color), var(--blue-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+}
+
+.sidebar-logo {
+    border: 2px solid var(--accent-color);
+    padding: 2px;
+    box-shadow: 0 0 10px rgba(0, 255, 221, 0.5);
+    animation: glow 3s infinite;
+    transition: all 0.3s;
+    width: 35px;
+    height: 35px;
+}
+
+.sidebar-logo:hover {
+    transform: rotate(360deg);
+    transition: all 0.8s;
+}
+
+.sidebar-course-info {
+    padding: 15px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+}
+
+.sidebar-course-title {
+    font-size: 0.9rem !important;
+    font-weight: 600;
+    margin-bottom: 3px;
+    color: var(--accent-light);
+}
+
+.sidebar-course-subtitle {
+    font-size: 0.7rem !important;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+.sidebar-divider {
+    position: relative;
+    text-align: center;
+    margin: 10px 0;
+    height: 20px;
+}
+
+.sidebar-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: rgba(0, 255, 221, 0.2);
+    z-index: 1;
+}
+
+.sidebar-divider span {
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(135deg, #1a2a3a 0%, #0f1a25 100%);
+    padding: 0 15px;
+    font-size: 0.65rem !important;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 2;
+}
+
+/* Lista de capítulos mejorada */
+.chapters-list {
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+.chapters-list li {
+    border-bottom: 1px solid rgba(0, 255, 221, 0.1);
+    transition: all 0.3s;
+}
+
+.chapters-list a {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    font-size: 0.75rem !important;
+}
+
+.chapters-list a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 221, 0.1), transparent);
+    transition: all 0.5s;
+    z-index: -1;
+}
+
+.chapters-list a:hover::before {
+    left: 100%;
+    transition: all 0.5s;
+}
+
+.chapters-list a:hover, .chapters-list a.active {
+    background-color: rgba(0, 255, 221, 0.15);
+    color: var(--accent-color);
+    transform: translateX(5px);
+}
+
+.chapters-list a.active {
+    border-left: 3px solid var(--accent-color);
+    background: linear-gradient(to right, rgba(0, 255, 221, 0.2), transparent);
+}
+
+.chapter-icon {
+    width: 24px !important;
+    height: 24px !important;
+    background: rgba(0, 255, 221, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    transition: all 0.3s;
+    border: 1px solid rgba(0, 255, 221, 0.2);
+    flex-shrink: 0;
+}
+
+.chapter-icon i {
+    font-size: 0.7rem !important;
+    color: var(--accent-color);
+    transition: all 0.3s;
+}
+
+.chapters-list a:hover .chapter-icon {
+    background: rgba(0, 255, 221, 0.2);
+    transform: scale(1.1);
+}
+
+.chapters-list a:hover .chapter-icon i {
+    transform: scale(1.2);
+}
+
+.chapter-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chapter-title {
+    font-weight: 500;
+    font-size: 0.75rem !important;
+    margin-bottom: 2px;
+    transition: all 0.3s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chapter-number {
+    font-size: 0.6rem !important;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s;
+}
+
+.chapters-list a:hover .chapter-title {
+    color: var(--accent-light);
+}
+
+.chapters-list a:hover .chapter-number {
+    color: var(--accent-color);
+}
+
+.sidebar-footer {
+    padding: 15px;
+    margin-top: 15px;
+    border-top: 1px solid rgba(0, 255, 221, 0.1);
+    text-align: center;
+}
+
+.sidebar-footer .btn {
+    width: 100%;
+    padding: 8px !important;
+    border: 1px solid var(--accent-color) !important;
+    color: var(--accent-color) !important;
+    background: transparent !important;
+    transition: all 0.3s !important;
+    font-size: 0.8rem !important;
+}
+
+.sidebar-footer .btn:hover {
+    background: rgba(0, 255, 221, 0.1) !important;
+    color: var(--accent-light) !important;
+    transform: translateY(-3px) !important;
+}
+
+/* Contenido principal */
+.content {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    padding: 30px;
+    transition: all 0.3s;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Navegación de migas de pan (breadcrumb) mejorada */
+.breadcrumb-arrow {
+    display: flex;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    list-style: none;
+    background: transparent;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.breadcrumb-arrow li {
+    position: relative;
+    margin-right: 10px;
+}
+
+.breadcrumb-arrow li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border-top: 17px solid transparent;
+    border-bottom: 17px solid transparent;
+    border-left: 10px solid var(--accent-color);
+    z-index: 1;
+}
+
+.breadcrumb-arrow li a,
+.breadcrumb-arrow li span {
+    display: block;
+    position: relative;
+    padding: 8px 15px 8px 25px;
+    color: var(--primary-color);
+    background: linear-gradient(135deg, var(--accent-color), var(--blue-accent));
+    text-decoration: none;
+    border-radius: 0 30px 30px 0;
+    transition: all 0.3s;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-arrow li:first-child a,
+.breadcrumb-arrow li:first-child span {
+    padding-left: 15px;
+    border-radius: 30px 30px 30px 30px;
+}
+
+.breadcrumb-arrow li:not(:first-child) a,
+.breadcrumb-arrow li:not(:first-child) span {
+    margin-left: 0;
+}
+
+.breadcrumb-arrow li a:hover {
+    background: linear-gradient(135deg, var(--blue-accent), var(--accent-color));
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.breadcrumb-arrow li.active span {
+    background: linear-gradient(135deg, var(--gray-light), white);
+    color: var(--gray-dark);
+    font-weight: 600;
+}
+
+.breadcrumb-arrow li a i,
+.breadcrumb-arrow li span i {
+    margin-right: 5px;
+}
+
+/* Tarjetas de curso mejoradas */
+.card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--accent-color), var(--blue-accent));
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: 15px 20px;
+    border-bottom: none;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+/* Título del curso */
+.course-title {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--accent-color);
+    color: var(--primary-color);
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+}
+
+.course-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background-color: var(--accent-color);
+    animation: pulse 2s infinite;
+}
+
+/* Imagen del curso */
+.course-image {
+    max-height: 300px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s;
+    animation: float 6s ease-in-out infinite;
+}
+
+.course-image:hover {
+    transform: scale(1.02);
+}
+
+/* Descripción del curso */
+.course-description {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-top: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.course-description::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--accent-color), var(--blue-accent));
+}
+
+.course-description h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Lista de capítulos en la página del curso */
+.list-group-item {
+    border: none;
+    border-radius: 10px !important;
+    margin-bottom: 10px;
+    transition: all 0.3s;
+    background-color: var(--gray-light);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.list-group-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 221, 0.1), transparent);
+    transition: all 0.5s;
+    z-index: -1;
+}
+
+.list-group-item:hover::before {
+    left: 100%;
+}
+
+.list-group-item:hover {
+    transform: translateX(5px);
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.list-group-item h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.list-group-item:hover h5 {
+    color: var(--accent-dark);
+}
+
+/* Botones estilizados */
+.btn {
+    border-radius: 50px !important;
+    padding: 0.8rem 2rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    position: relative !important;
+    overflow: hidden !important;
+    z-index: 1 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+.btn::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 0 !important;
+    height: 100% !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    transition: width 0.3s ease !important;
+    z-index: -1 !important;
+}
+
+.btn:hover::before {
+    width: 100% !important;
+}
+
+.btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.btn-primary, .btn-outline-primary:hover {
+    background: linear-gradient(135deg, var(--accent-color), var(--blue-accent)) !important;
+    color: var(--primary-color) !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--blue-accent), var(--accent-color)) !important;
+}
+
+.btn-outline-primary {
+    background: transparent !important;
+    border: 2px solid var(--accent-color) !important;
+    color: var(--accent-dark) !important;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--gray-color), var(--gray-dark)) !important;
+    color: white !important;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, var(--gray-dark), var(--gray-color)) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+    color: white !important;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+}
+
+.btn i {
+    margin-right: 0.5rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn:hover i {
+    transform: translateX(-3px) !important;
+}
+
+.btn:hover i.bi-arrow-right {
+    transform: translateX(3px) !important;
+}
+
+/* Efecto Ripple para botones */
+.btn-ripple {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.btn-ripple:after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    pointer-events: none !important;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%) !important;
+    background-repeat: no-repeat !important;
+    background-position: 50% !important;
+    transform: scale(10, 10) !important;
+    opacity: 0 !important;
+    transition: transform .5s, opacity 1s !important;
+}
+
+.btn-ripple:active:after {
+    transform: scale(0, 0) !important;
+    opacity: .3 !important;
+    transition: 0s !important;
+}
+
+/* Contenido del capítulo */
+.chapter-content {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.chapter-content h1, 
+.chapter-content h2, 
+.chapter-content h3, 
+.chapter-content h4, 
+.chapter-content h5, 
+.chapter-content h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.chapter-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+.chapter-content img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.chapter-content pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    border-left: 4px solid var(--accent-color);
+}
+
+.chapter-content blockquote {
+    border-left: 4px solid var(--accent-color);
+    padding: 1rem 1.5rem;
+    background-color: rgba(0, 255, 221, 0.05);
+    border-radius: 0 10px 10px 0;
+    font-style: italic;
+    color: var(--gray-dark);
+    margin: 1.5rem 0;
+}
+
+/* Navegación entre capítulos */
+.chapter-navigation {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--gray-light);
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Tarjeta de evaluación */
+.card.border-primary {
+    border: none !important;
+    background: linear-gradient(135deg, #f6f9fc, #ffffff);
+    overflow: hidden;
+    position: relative;
+}
+
+.card.border-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, var(--accent-color), var(--blue-accent));
+}
+
+.card-header.bg-primary {
+    background: linear-gradient(135deg, var(--accent-color), var(--blue-accent)) !important;
+    color: var(--primary-color) !important;
+    font-weight: 700;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+/* Adaptación para móviles */
+@media (max-width: 768px) {
+    .sidebar {
+        margin-left: -280px;
+    }
+    
+    .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px 15px;
+    }
+    
+    .sidebar.active {
+        margin-left: 0;
+    }
+    
+    .toggle-sidebar {
+        display: block;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent-color), var(--blue-accent));
+        color: var(--primary-color);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s;
+    }
+    
+    .toggle-sidebar:hover {
+        transform: rotate(90deg);
+    }
+    
+    .course-image {
+        max-height: 200px;
+    }
+    
+    .btn {
+        padding: 0.6rem 1.5rem !important;
+    }
+}
+
+/* Elementos interactivos para niños */
+.interactive-element {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.interactive-element:hover {
+    transform: scale(1.05);
+}
+
+/* Decoraciones flotantes */
+.floating-decoration {
+    position: absolute;
+    z-index: -1;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.float-1 {
+    top: 10%;
+    right: 5%;
+    animation: float 8s ease-in-out infinite;
+}
+
+.float-2 {
+    bottom: 15%;
+    left: 10%;
+    animation: float 12s ease-in-out infinite;
+}
+
+.float-3 {
+    top: 40%;
+    right: 15%;
+    animation: float 10s ease-in-out infinite 2s;
+}
+
+/* Destacados para niños */
+.highlight-box {
+    background: linear-gradient(135deg, rgba(0, 255, 221, 0.1), rgba(76, 201, 240, 0.1));
+    border-radius: 15px;
+    padding: 20px;
+    margin: 25px 0;
+    border-left: 4px solid var(--accent-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.highlight-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: all 0.6s;
+}
+
+.highlight-box:hover::before {
+    transform: translateX(100%);
+}
+
+.highlight-title {
+    color: var(--accent-dark);
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.highlight-title i {
+    margin-right: 10px;
+    font-size: 1.5rem;
+}
+
+/* Iconos animados */
+.animated-icon {
+    display: inline-block;
+    transition: all 0.3s;
+}
+
+.animated-icon:hover {
+    transform: scale(1.2) rotate(10deg);
+}
+
+/* Efectos de partículas para el contenido */
+.content-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Título del capítulo más grande */
+.chapter-container .chapter-title {
+    font-size: 2.8rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 1.8rem !important;
+    letter-spacing: -0.5px !important;
+} 

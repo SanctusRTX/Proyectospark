@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %} - Spark IA</title>
+    <title>{% block title %}{% endblock %} - Spark</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/spark.jpg') }}">
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons/bootstrap-icons.css') }}">
+    <link href="{{ url_for('static', filename='css/course-view.css') }}?v={{ range(1, 1000) | random }}" rel="stylesheet">
     <style>
         :root {
             --primary-color: #0f0a06;
@@ -26,24 +27,32 @@
         
         .sidebar {
             width: var(--sidebar-width);
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, #1a2a3a 0%, #0f1a25 100%);
             color: white;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
             transition: all 0.3s;
             z-index: 1000;
+            font-size: 0.8rem !important;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
         }
         
         .sidebar-header {
             padding: 20px;
-            background-color: rgba(0, 0, 0, 0.2);
+            background: linear-gradient(to right, rgba(0, 255, 221, 0.1), transparent);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(0, 255, 221, 0.2);
         }
         
         .sidebar-header h3 {
             margin: 0;
-            font-size: 1.2rem;
+            font-size: 1.1rem !important;
             font-weight: 600;
+            color: white;
+            position: relative;
+            z-index: 1;
         }
         
         .chapters-list {
@@ -58,14 +67,31 @@
         .chapters-list a {
             padding: 15px 20px;
             display: block;
-            color: rgba(255, 255, 255, 0.8);
+            color: white;
             text-decoration: none;
             transition: all 0.3s;
+            font-size: 0.75rem !important;
         }
         
         .chapters-list a:hover, .chapters-list a.active {
             background-color: rgba(0, 255, 221, 0.1);
             color: var(--accent-color);
+        }
+        
+        /* Estilo especial para el elemento activo */
+        .chapters-list a.active {
+            position: relative;
+            border-left: 3px solid var(--accent-color);
+            background: linear-gradient(90deg, rgba(0, 255, 221, 0.15), transparent);
+        }
+        
+        .chapters-list a.active .chapter-icon {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chapters-list a.active .chapter-title {
+            color: var(--accent-color) !important;
         }
         
         .content {
@@ -149,141 +175,249 @@
                 display: block;
             }
         }
+        
+        /* Ajustes específicos para la barra lateral */
+        .sidebar-course-title {
+            font-size: 0.9rem !important;
+            color: white !important;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-course-subtitle {
+            font-size: 0.7rem !important;
+            color: white !important;
+            margin-bottom: 0;
+            opacity: 0.9;
+        }
+        
+        .chapter-title {
+            font-size: 0.75rem !important;
+            color: white !important;
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        .chapter-number {
+            font-size: 0.6rem !important;
+            color: white !important;
+            opacity: 0.8;
+        }
+        
+        /* Estilos para los iconos de la barra lateral */
+        .chapter-icon {
+            width: 28px !important;
+            height: 28px !important;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            border-radius: 50%;
+            background: rgba(0,255,221,0.15);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chapter-icon i {
+            font-size: 0.8rem !important;
+            color: white !important;
+        }
+        
+        /* Variaciones de color para los iconos */
+        .icon-home {
+            background: linear-gradient(135deg, rgba(0,255,221,0.2), rgba(0,255,221,0.1));
+        }
+        
+        .icon-book {
+            background: linear-gradient(135deg, rgba(76,201,240,0.2), rgba(76,201,240,0.1));
+        }
+        
+        .icon-video {
+            background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(255,107,107,0.1));
+        }
+        
+        .icon-code {
+            background: linear-gradient(135deg, rgba(255,184,76,0.2), rgba(255,184,76,0.1));
+        }
+        
+        .icon-lab {
+            background: linear-gradient(135deg, rgba(120,90,255,0.2), rgba(120,90,255,0.1));
+        }
+        
+        .icon-quiz {
+            background: linear-gradient(135deg, rgba(255,76,166,0.2), rgba(255,76,166,0.1));
+        }
+        
+        /* Efecto hover para los iconos */
+        a:hover .chapter-icon {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Contenedor para el título y número del capítulo */
+        .chapter-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Estilos para el contenido principal (NO la barra lateral) */
+        .chapter-container .chapter-title {
+            font-size: 2.8rem !important;
+            color: var(--primary-color) !important;
+            font-weight: 700;
+        }
+        
+        /* Restablecer los estilos del título de capítulo en el contenido principal */
+        main .chapter-title {
+            color: var(--primary-color) !important;
+            font-size: 2.8rem !important;
+        }
+        
+        /* Breadcrumb con flechas */
+        .breadcrumb-arrow {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            list-style: none;
+            background-color: #fff;
+            border-radius: 0.25rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .breadcrumb-arrow li {
+            position: relative;
+            display: flex;
+        }
     </style>
+    
     {% block customCSS %}{% endblock %}
 </head>
 <body>
-    <button class="toggle-sidebar" id="sidebarToggle">
-        <i class="bi bi-list"></i>
-    </button>
-    
     <div class="course-container">
-        <nav class="sidebar" id="sidebar">
+        <!-- Barra lateral -->
+        <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="{{ url_for('main.home') }}" class="d-flex align-items-center text-decoration-none">
-                    <img src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo" width="30" height="30" class="me-2 rounded-circle">
-                    <h3>Spark IA</h3>
-                </a>
+                <div class="d-flex align-items-center">
+                    <img src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo" class="me-2" width="30" height="30">
+                    <h3>Spark</h3>
+                </div>
             </div>
             
-            <div class="sidebar-body">
-                <div class="p-3">
-                    <h5 class="text-white">{{ course[1] }}</h5>
-                    <p class="text-white small">Capítulos del curso</p>
+            <!-- Información del curso -->
+            <div class="py-3 px-3" style="background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2));">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle" style="background: linear-gradient(135deg, rgba(0,255,221,0.2), rgba(0,255,221,0.1));">
+                        <i class="bi bi-mortarboard"></i>
+                    </div>
+                    <h5 class="sidebar-course-title mb-0">{{ course[1] }}</h5>
                 </div>
+                <div class="d-flex align-items-center ps-2">
+                    <i class="bi bi-collection me-2" style="font-size: 0.7rem; opacity: 0.8;"></i>
+                    <p class="sidebar-course-subtitle mb-0">Capítulos del curso</p>
+                </div>
+            </div>
+            
+            <!-- Lista de capítulos -->
+            <ul class="chapters-list">
+                <li>
+                    <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="d-flex align-items-center">
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle" style="background: linear-gradient(135deg, rgba(0,255,221,0.3), rgba(0,255,221,0.15));">
+                            <i class="bi bi-house-door"></i>
+                        </div>
+                        <div class="chapter-info">
+                            <span class="chapter-title">Inicio del Curso</span>
+                            <div class="chapter-number">Visión general</div>
+                        </div>
+                    </a>
+                </li>
                 
-                <ul class="chapters-list">
-                    {% for ch in chapters %}
-                    <li>
-                        <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=ch[0]) }}" class="{% if chapter and chapter[0] == ch[0] %}active{% endif %}">
-                            <i class="bi bi-journal-text me-2"></i> {{ ch[1] }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                    <li>
-                        <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="{% if not chapter %}active{% endif %}">
-                            <i class="bi bi-house-door me-2"></i> Inicio del Curso
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+                {% for ch in chapters %}
+                <li>
+                    <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=ch[0]) }}" class="d-flex align-items-center {% if chapter and chapter[0] == ch[0] %}active{% endif %}">
+                        {% set title_lower = ch[1]|lower %}
+                        
+                        {% if 'introducción' in title_lower or 'introduccion' in title_lower or 'inicio' in title_lower %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-home">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                        {% elif 'video' in title_lower or 'vídeo' in title_lower or 'multimedia' in title_lower %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-video">
+                            <i class="bi bi-play-circle"></i>
+                        </div>
+                        {% elif 'código' in title_lower or 'codigo' in title_lower or 'programación' in title_lower or 'programacion' in title_lower %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-code">
+                            <i class="bi bi-code-square"></i>
+                        </div>
+                        {% elif 'ejercicio' in title_lower or 'práctica' in title_lower or 'practica' in title_lower or 'laboratorio' in title_lower %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-lab">
+                            <i class="bi bi-lightbulb"></i>
+                        </div>
+                        {% elif 'examen' in title_lower or 'evaluación' in title_lower or 'evaluacion' in title_lower or 'test' in title_lower or 'quiz' in title_lower %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-quiz">
+                            <i class="bi bi-question-circle"></i>
+                        </div>
+                        {% elif 'herramienta' in title_lower or 'tool' in title_lower %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-code">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        {% elif 'inteligencia' in title_lower or 'ia' in title_lower or 'ai' in title_lower %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-lab">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+                        {% elif 'diseño' in title_lower or 'diseno' in title_lower or 'interfaz' in title_lower or 'ui' in title_lower or 'ux' in title_lower %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-video">
+                            <i class="bi bi-palette"></i>
+                        </div>
+                        {% else %}
+                        <div class="chapter-icon d-flex align-items-center justify-content-center me-2 rounded-circle icon-book">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="chapter-info">
+                            <span class="chapter-title">{{ ch[1] }}</span>
+                            <div class="chapter-number">Capítulo {{ loop.index }}</div>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </aside>
         
-        <div class="content">
-            <div class="container-fluid">
-                {% block content %}{% endblock %}
-            </div>
-        </div>
+        <!-- Contenido principal -->
+        <main class="content">
+            <button class="toggle-sidebar" id="toggleSidebar">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            {% block content %}{% endblock %}
+        </main>
     </div>
     
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/particles.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('sidebarToggle').addEventListener('click', function() {
-                document.getElementById('sidebar').classList.toggle('active');
-            });
+            // Toggle sidebar en móviles
+            const toggleBtn = document.getElementById('toggleSidebar');
+            const sidebar = document.querySelector('.sidebar');
+            const content = document.querySelector('.content');
             
-            // Cerrar sidebar al hacer clic en un enlace en dispositivos móviles
-            if (window.innerWidth < 768) {
-                document.querySelectorAll('.chapters-list a').forEach(function(link) {
-                    link.addEventListener('click', function() {
-                        document.getElementById('sidebar').classList.remove('active');
-                    });
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                    
+                    if (sidebar.classList.contains('active')) {
+                        content.style.marginLeft = '0';
+                    } else {
+                        content.style.marginLeft = '0';
+                    }
                 });
             }
-            
-            // Añadir contenedor de partículas a la sidebar
-            const sidebar = document.getElementById('sidebar');
-            const particlesContainer = document.createElement('div');
-            particlesContainer.className = 'particles-container';
-            particlesContainer.style.position = 'absolute';
-            particlesContainer.style.top = '0';
-            particlesContainer.style.left = '0';
-            particlesContainer.style.width = '100%';
-            particlesContainer.style.height = '100%';
-            particlesContainer.style.zIndex = '0';
-            particlesContainer.style.pointerEvents = 'none';
-            sidebar.prepend(particlesContainer);
-            
-            // Asegurar que todos los elementos dentro del sidebar estén por encima de las partículas
-            document.querySelectorAll('.sidebar-header, .sidebar-body').forEach(el => {
-                el.style.position = 'relative';
-                el.style.zIndex = '1';
-            });
-            
-            // Crear partículas con colores oscuros para el sidebar
-            createParticles(particlesContainer, {
-                count: 15,
-                minSize: 3,
-                maxSize: 8,
-                minDuration: 20,
-                maxDuration: 40,
-                hueMin: 160,  // Tonos turquesa/verde azulado
-                hueMax: 200,  // Hasta azul
-                satMin: 70,
-                satMax: 100,
-                lightMin: 50,
-                lightMax: 70,
-                opacityMin: 0.2,
-                opacityMax: 0.4
-            });
-            
-            // Añadir partículas al contenido principal
-            const content = document.querySelector('.content');
-            const contentParticlesContainer = document.createElement('div');
-            contentParticlesContainer.className = 'particles-container';
-            contentParticlesContainer.style.position = 'absolute';
-            contentParticlesContainer.style.top = '0';
-            contentParticlesContainer.style.left = '0';
-            contentParticlesContainer.style.width = '100%';
-            contentParticlesContainer.style.height = '100%';
-            contentParticlesContainer.style.zIndex = '0';
-            contentParticlesContainer.style.pointerEvents = 'none';
-            content.prepend(contentParticlesContainer);
-            
-            // Asegurar que el contenido esté por encima de las partículas
-            document.querySelector('.container-fluid').style.position = 'relative';
-            document.querySelector('.container-fluid').style.zIndex = '1';
-            
-            // Crear partículas con colores claros para el contenido
-            createParticles(contentParticlesContainer, {
-                count: 12,
-                minSize: 4,
-                maxSize: 10,
-                minDuration: 15,
-                maxDuration: 30,
-                hueMin: 200,
-                hueMax: 240,
-                satMin: 60,
-                satMax: 90,
-                lightMin: 60,
-                lightMax: 80,
-                opacityMin: 0.1,
-                opacityMax: 0.3
-            });
         });
     </script>
+    
     {% block customJS %}{% endblock %}
 </body>
 </html>

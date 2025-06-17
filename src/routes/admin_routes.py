@@ -269,8 +269,8 @@ def edit_examen(course_id, chapter_id, examen_id):
             flash('Curso, capítulo o examen no encontrado', 'danger')
             return redirect(url_for('admin.admin_courses'))
         
-        # Obtener preguntas del examen
-        preguntas = ExamController.get_questions_by_exam(examen_id)
+        # Obtener preguntas del examen con sus opciones
+        preguntas = ExamController.get_questions_with_options(examen_id)
         
         if request.method == 'POST':
             if 'update_examen' in request.form:
@@ -291,12 +291,24 @@ def edit_examen(course_id, chapter_id, examen_id):
             elif 'add_pregunta' in request.form:
                 # Agregar nueva pregunta
                 texto = request.form['texto_pregunta']
-                puntos = int(request.form['puntos']) if request.form['puntos'] else 1
+                tipo = request.form['tipo_pregunta']
+                valor = int(request.form['valor_pregunta']) if request.form['valor_pregunta'] else 1
                 
-                success, error_or_id = ExamController.add_question(examen_id, texto, puntos)
+                success, error_or_id = ExamController.add_question(examen_id, texto, tipo, valor)
                 
                 if success:
                     flash('Pregunta agregada correctamente', 'success')
+                    
+                    # Si es una pregunta de verdadero/falso, agregar opciones automáticamente
+                    if tipo == 'verdadero_falso':
+                        # Determinar cuál es la respuesta correcta
+                        es_verdadero = request.form.get('opcion_correcta') == 'verdadero'
+                        
+                        # Agregar opción Verdadero
+                        ExamController.add_option(error_or_id, 'Verdadero', es_verdadero)
+                        
+                        # Agregar opción Falso
+                        ExamController.add_option(error_or_id, 'Falso', not es_verdadero)
                 else:
                     flash(f'Error al agregar pregunta: {error_or_id}', 'danger')
                 

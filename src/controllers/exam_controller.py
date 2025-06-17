@@ -61,13 +61,14 @@ class ExamController:
             return False, str(ex)
     
     @staticmethod
-    def add_question(exam_id, texto, puntos):
+    def add_question(exam_id, texto, tipo, valor):
         """Añade una pregunta a un examen"""
         try:
             pregunta = {
                 'examen_id': exam_id,
                 'texto': texto,
-                'puntos': puntos
+                'tipo': tipo,
+                'valor': valor
             }
             
             return ModelExamen.add_pregunta(db, pregunta), None
@@ -108,7 +109,11 @@ class ExamController:
     def submit_exam(examen_id, usuario_id, respuestas):
         """Procesa la entrega de un examen"""
         try:
-            return ModelExamen.procesar_examen(db, examen_id, usuario_id, respuestas), None
+            resultado_id = ModelExamen.procesar_examen(db, examen_id, usuario_id, respuestas)
+            if resultado_id:
+                return True, resultado_id
+            else:
+                return False, "No se pudo procesar el examen"
         except Exception as ex:
             return False, str(ex)
     

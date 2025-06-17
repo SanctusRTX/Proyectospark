@@ -78,13 +78,14 @@
         automatic_uploads: true,
         relative_urls: false,
         remove_script_host: false,
-        convert_urls: false,
+        convert_urls: true,
         
         // Configuración para videos
         media_live_embeds: true,
         media_alt_source: false,
         media_poster: false,
-        media_dimensions: false,
+        media_dimensions: true,
+        extended_valid_elements: 'video[*],source[*]',
         
         // Configuración para subida de archivos de imagen
         images_upload_handler: function (blobInfo, progress) {
@@ -174,16 +175,49 @@
                     var formData = new FormData();
                     formData.append('file', file);
                     
+                    // Mostrar indicador de carga
+                    var loadingIndicator = document.createElement('div');
+                    loadingIndicator.id = 'video-upload-loading';
+                    loadingIndicator.style.position = 'fixed';
+                    loadingIndicator.style.top = '50%';
+                    loadingIndicator.style.left = '50%';
+                    loadingIndicator.style.transform = 'translate(-50%, -50%)';
+                    loadingIndicator.style.padding = '20px';
+                    loadingIndicator.style.background = 'rgba(0,0,0,0.7)';
+                    loadingIndicator.style.color = 'white';
+                    loadingIndicator.style.borderRadius = '10px';
+                    loadingIndicator.style.zIndex = '9999';
+                    loadingIndicator.textContent = 'Subiendo video...';
+                    document.body.appendChild(loadingIndicator);
+                    
                     var xhr = new XMLHttpRequest();
                     xhr.open('POST', '{{ url_for("media.upload_media") }}');
                     
                     xhr.onload = function() {
+                        // Eliminar indicador de carga
+                        document.body.removeChild(loadingIndicator);
+                        
                         if (xhr.status === 200) {
                             var json = JSON.parse(xhr.responseText);
-                            callback(json.location, { title: file.name });
+                            
+                            // Insertar el video con controles y autoplay desactivado
+                            var videoHtml = '<video controls width="640" height="360" src="' + json.location + '"></video>';
+                            
+                            // Usar la API de TinyMCE para insertar el HTML directamente
+                            tinymce.activeEditor.execCommand('mceInsertContent', false, videoHtml);
+                            
+                            // Cerrar el diálogo
+                            tinymce.activeEditor.windowManager.close();
                         } else {
                             console.error('Error al subir video:', xhr.responseText);
+                            alert('Error al subir el video. Por favor, inténtelo de nuevo.');
                         }
+                    };
+                    
+                    xhr.onerror = function() {
+                        // Eliminar indicador de carga
+                        document.body.removeChild(loadingIndicator);
+                        alert('Error de red al subir el video. Por favor, inténtelo de nuevo.');
                     };
                     
                     xhr.send(formData);
@@ -191,6 +225,19 @@
                 
                 input.click();
             }
+        },
+        
+        // Configuración para permitir videos en el contenido
+        extended_valid_elements: 'video[controls|autoplay|width|height|src],source[src|type]',
+        
+        // Permitir atributos de datos personalizados
+        valid_elements: '*[*]',
+        
+        // Configuración para videos
+        video_template_callback: function(data) {
+            return '<video controls width="' + data.width + '" height="' + data.height + '">' +
+                   '<source src="' + data.source + '"' + (data.sourcemime ? ' type="' + data.sourcemime + '"' : '') + ' />' +
+                   '</video>';
         }
     });
 </script>

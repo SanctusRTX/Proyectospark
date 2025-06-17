@@ -1,7 +1,8 @@
-
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_from_directory
 import os
 import time
+import secrets
+from datetime import timedelta
 from werkzeug.utils import secure_filename
 from config import config
 
@@ -14,6 +15,10 @@ from routes.main_routes import main_bp
 from routes.admin_routes import admin_bp
 from routes.course_routes import course_bp
 from routes.media_routes import media_bp
+
+# Nota: Para herramientas de diagnóstico, utilizar:
+# from utils.check_exams import check_exams
+# from utils.debug_exams import debug_exams
 
 # Definir constantes
 UPLOAD_FOLDER = os.path.join('static', 'img', 'courses')
@@ -30,6 +35,15 @@ def create_app(config_name='development'):
     app.config['VIDEO_FOLDER'] = VIDEO_FOLDER
     app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
     
+    # Configuración de sesión para mejorar la seguridad
+    app.config['SESSION_PERMANENT'] = False  # Las sesiones no son permanentes
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)  # Duración máxima de 1 hora
+    app.config['SESSION_COOKIE_HTTPONLY'] = True  # Evitar acceso a cookies por JavaScript
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Protección contra CSRF
+    
+    # Asegurarse de que la clave secreta sea única en cada inicio de la aplicación
+    app.secret_key = secrets.token_hex(32)
+    
     # Asegurarse de que las carpetas existan
     os.makedirs(os.path.join(app.root_path, UPLOAD_FOLDER), exist_ok=True)
     os.makedirs(os.path.join(app.root_path, VIDEO_FOLDER), exist_ok=True)
@@ -43,6 +57,35 @@ def create_app(config_name='development'):
     app.register_blueprint(admin_bp)
     app.register_blueprint(course_bp)
     app.register_blueprint(media_bp)
+    
+    # Middleware para verificar la validez de la sesión en cada solicitud
+    @app.before_request
+    def validate_session():
+        # Ignorar rutas estáticas y de autenticación para evitar redirecciones infinitas
+        if request.endpoint and (request.endpoint.startswith('static') or 
+                                request.endpoint == 'auth.login' or 
+                                request.endpoint == 'auth.logout'):
+            return
+            
+        # Verificar si hay una sesión iniciada
+        if 'user_id' in session:
+            # Verificar si la sesión tiene una marca de tiempo
+            if 'timestamp' not in session:
+                # Si no tiene marca de tiempo, es una sesión antigua o inválida, limpiarla
+                session.clear()
+                flash('Tu sesión ha caducado. Por favor, inicia sesión nuevamente.', 'warning')
+                return redirect(url_for('auth.login'))
+                
+            # Verificar si la sesión ha expirado (1 hora = 3600 segundos)
+            current_time = int(time.time())
+            session_age = current_time - session['timestamp']
+            if session_age > 3600:
+                session.clear()
+                flash('Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.', 'warning')
+                return redirect(url_for('auth.login'))
+                
+            # Actualizar la marca de tiempo para extender la sesión
+            session['timestamp'] = current_time
     
     # Manejadores de errores
     @app.errorhandler(404)

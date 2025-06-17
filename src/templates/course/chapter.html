@@ -1,120 +1,423 @@
-{% extends "course/base_course.html" %}
+{% extends 'course/base_course.html' %}
 
-{% block title %}{{ chapter[1] }} - {{ course[1] }}{% endblock %}
+{% block title %}{{ chapter[1] }}{% endblock %}
 
 {% block customCSS %}
 <style>
-    .chapter-content {
-        font-size: 1.05rem;
-        line-height: 1.7;
+    /* Barra de progreso de lectura */
+    .reading-progress-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background-color: rgba(0, 0, 0, 0.1);
+        z-index: 9999;
     }
     
-    .chapter-content h1, 
-    .chapter-content h2, 
-    .chapter-content h3, 
-    .chapter-content h4, 
-    .chapter-content h5, 
-    .chapter-content h6 {
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-        color: #333;
+    .reading-progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent-color), var(--blue-accent));
+        transition: width 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
     
+    .reading-progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 3s infinite;
+    }
+    
+    /* Estilos para el contenido del capítulo */
+    .chapter-container {
+        background-color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .chapter-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--accent-color), var(--blue-accent));
+    }
+    
+    .chapter-container .chapter-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 1.8rem;
+        color: var(--primary-color);
+        position: relative;
+        display: inline-block;
+        letter-spacing: -0.5px;
+    }
+    
+    .chapter-container .chapter-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: var(--accent-color);
+    }
+    
+    /* Estilos para imágenes interactivas */
     .chapter-content img {
-        max-width: 100%;
-        height: auto;
+        cursor: pointer;
+        transition: all 0.3s;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .chapter-content img:hover {
+        transform: scale(1.03);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Estilos para párrafos interactivos */
+    .chapter-content p {
+        transition: all 0.3s;
+        padding: 5px 0;
         border-radius: 5px;
-        margin: 1.5rem 0;
     }
     
-    .chapter-content pre {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 5px;
-        overflow-x: auto;
+    .chapter-content p:hover {
+        background-color: rgba(0, 255, 221, 0.05);
+        padding-left: 10px;
     }
     
-    .chapter-content blockquote {
-        border-left: 4px solid #00FFDD;
-        padding-left: 1rem;
-        font-style: italic;
-        color: #6c757d;
+    /* Consejos educativos destacados */
+    .tip-box {
+        background: linear-gradient(135deg, rgba(0, 255, 221, 0.1), rgba(76, 201, 240, 0.1));
+        border-radius: 15px;
+        padding: 20px;
+        margin: 25px 0;
+        border-left: 4px solid var(--accent-color);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s;
     }
     
-    .chapter-navigation {
-        margin-top: 3rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid #dee2e6;
+    .tip-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tip-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        transition: all 0.6s;
+    }
+    
+    .tip-box:hover::before {
+        transform: translateX(100%);
+    }
+    
+    .tip-title {
+        color: var(--accent-dark);
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .tip-title i {
+        margin-right: 10px;
+        font-size: 1.5rem;
+    }
+    
+    /* Botón de examen pulsante */
+    .exam-btn {
+        animation: pulse 2s infinite;
+    }
+    
+    /* Modal para imágenes */
+    .img-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        overflow: auto;
+    }
+    
+    .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 80%;
+        max-height: 80%;
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+    
+    .modal-close:hover {
+        color: var(--accent-color);
+    }
+    
+    /* Tarjeta de examen */
+    .exam-card {
+        background: linear-gradient(135deg, #f6f9fc, #ffffff);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        margin-top: 2.5rem;
+        overflow: hidden;
+        position: relative;
+        border: none;
+    }
+    
+    .exam-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, var(--accent-color), var(--blue-accent));
+    }
+    
+    .exam-header {
+        background: linear-gradient(135deg, var(--accent-color), var(--blue-accent));
+        color: var(--primary-color);
+        padding: 1.2rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+    }
+    
+    .exam-header i {
+        font-size: 1.5rem;
+        margin-right: 0.8rem;
+    }
+    
+    .exam-body {
+        padding: 1.5rem;
+    }
+    
+    .exam-footer {
+        padding: 1.2rem;
+        background: rgba(0, 0, 0, 0.02);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        text-align: center;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="course-header mb-4">
-    <h1 class="course-title">{{ chapter[1] }}</h1>
-    
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+<!-- Barra de progreso de lectura -->
+<div class="reading-progress-container">
+    <div class="reading-progress-bar" id="readingProgressBar"></div>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-body chapter-content">
-        {{ chapter[2]|safe }}
-        
-        <div class="mt-5 mb-4">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="fas fa-graduation-cap me-2"></i> Evaluación del Capítulo</h4>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Navegación de migas de pan con flechas -->
+            <ul class="breadcrumb-arrow">
+                <li>
+                    <a href="{{ url_for('main.home') }}">
+                        <i class="bi bi-house-door"></i> Inicio
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('course.view_course', course_id=course[0]) }}">
+                        <i class="bi bi-book"></i> {{ course[1] }}
+                    </a>
+                </li>
+                <li class="active">
+                    <span>
+                        <i class="bi bi-journal-text"></i> {{ chapter[1] }}
+                    </span>
+                </li>
+            </ul>
+            
+            <div class="chapter-container">
+                <h1 class="chapter-title">{{ chapter[1] }}</h1>
+                
+                <div class="chapter-content">
+                    {{ chapter[2]|safe }}
+                    
+                    <!-- Consejo educativo destacado -->
+                    <div class="tip-box">
+                        <div class="tip-title">
+                            <i class="bi bi-lightbulb"></i>
+                            <span>Consejo de estudio</span>
+                        </div>
+                        <p>Recuerda que puedes repasar este capítulo las veces que necesites. ¡La práctica constante es la clave del aprendizaje!</p>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p class="lead">Comprueba tu conocimiento sobre este capítulo realizando los exámenes disponibles.</p>
-                    <div class="text-center">
-                        <a href="{{ url_for('course.chapter_examenes', course_id=course[0], chapter_id=chapter[0], _external=True) }}" class="btn btn-lg btn-primary">
-                            <i class="fas fa-clipboard-check me-2"></i> Ver Exámenes Disponibles
+                
+                <!-- Sección de exámenes -->
+                <div class="exam-card">
+                    <div class="exam-header">
+                        <i class="bi bi-award"></i>
+                        <h4 class="mb-0">Evaluación del Capítulo</h4>
+                    </div>
+                    <div class="exam-body">
+                        <p class="lead mb-0">¡Comprueba cuánto has aprendido realizando los exámenes disponibles!</p>
+                    </div>
+                    <div class="exam-footer">
+                        <a href="{{ url_for('course.chapter_examenes', course_id=course[0], chapter_id=chapter[0]) }}" class="btn btn-primary btn-lg exam-btn">
+                            <i class="bi bi-pencil-square me-2"></i> ¡Ponte a prueba!
                         </a>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="chapter-navigation">
-            {% set current_index = -1 %}
-            {% for i in range(chapters|length) %}
-                {% if chapters[i][0] == chapter[0] %}
-                    {% set current_index = i %}
-                {% endif %}
-            {% endfor %}
-            
-            <div class="d-flex justify-content-between">
-                {% if current_index > 0 %}
-                <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapters[current_index-1][0]) }}" class="btn btn-outline-primary">
-                    <i class="bi bi-arrow-left me-2"></i> Capítulo Anterior
-                </a>
-                {% else %}
-                <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-house-door me-2"></i> Inicio del Curso
-                </a>
-                {% endif %}
                 
-                {% if current_index < chapters|length - 1 %}
-                <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapters[current_index+1][0]) }}" class="btn btn-outline-primary">
-                    Siguiente Capítulo <i class="bi bi-arrow-right ms-2"></i>
-                </a>
-                {% else %}
-                <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="btn btn-outline-success">
-                    <i class="bi bi-check-circle me-2"></i> Finalizar Curso
-                </a>
-                {% endif %}
+                <!-- Navegación entre capítulos -->
+                {% set current_index = -1 %}
+                {% for i in range(chapters|length) %}
+                    {% if chapters[i][0] == chapter[0] %}
+                        {% set current_index = i %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="d-flex justify-content-between mt-4">
+                    {% if current_index > 0 %}
+                    <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapters[current_index-1][0]) }}" class="btn btn-outline-primary btn-ripple">
+                        <i class="bi bi-arrow-left me-2"></i> Capítulo Anterior
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="btn btn-outline-primary btn-ripple">
+                        <i class="bi bi-house-door me-2"></i> Inicio del Curso
+                    </a>
+                    {% endif %}
+                    
+                    {% if current_index < chapters|length - 1 %}
+                    <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapters[current_index+1][0]) }}" class="btn btn-primary btn-ripple">
+                        Siguiente Capítulo <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="btn btn-success btn-ripple">
+                        <i class="bi bi-check-circle me-2"></i> ¡Completaste el Curso!
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal para imágenes -->
+<div id="imgModal" class="img-modal">
+    <span class="modal-close">&times;</span>
+    <img class="modal-content" id="modalImg">
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Barra de progreso de lectura
+        const progressBar = document.getElementById('readingProgressBar');
+        
+        window.addEventListener('scroll', function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+        
+        // Hacer que las imágenes sean ampliables
+        const images = document.querySelectorAll('.chapter-content img');
+        const modal = document.getElementById('imgModal');
+        const modalImg = document.getElementById('modalImg');
+        const closeBtn = document.querySelector('.modal-close');
+        
+        images.forEach(img => {
+            img.addEventListener('click', function() {
+                modal.style.display = 'block';
+                modalImg.src = this.src;
+            });
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Cerrar modal al hacer clic fuera de la imagen
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Animación para títulos
+        const headings = document.querySelectorAll('.chapter-content h1, .chapter-content h2, .chapter-content h3, .chapter-content h4, .chapter-content h5, .chapter-content h6');
+        
+        headings.forEach((heading, index) => {
+            heading.style.opacity = '0';
+            heading.style.transform = 'translateY(20px)';
+            heading.style.transition = 'all 0.5s ease';
+            
+            // Detectar cuando el elemento está en el viewport
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            heading.style.opacity = '1';
+                            heading.style.transform = 'translateY(0)';
+                        }, index * 100);
+                        observer.unobserve(heading);
+                    }
+                });
+            });
+            
+            observer.observe(heading);
+        });
+        
+        // Añadir consejos interactivos
+        const paragraphs = document.querySelectorAll('.chapter-content p');
+        let tipAdded = false;
+        
+        paragraphs.forEach((p, index) => {
+            // Añadir un consejo después del tercer párrafo si aún no se ha añadido
+            if (index === 2 && !tipAdded) {
+                const tip = document.createElement('div');
+                tip.className = 'tip-box';
+                tip.innerHTML = `
+                    <div class="tip-title">
+                        <i class="bi bi-stars"></i>
+                        <span>¡Dato interesante!</span>
+                    </div>
+                    <p>Cuando aprendemos algo nuevo, nuestro cerebro crea nuevas conexiones neuronales. ¡Cada vez que estudias, tu cerebro se hace más fuerte!</p>
+                `;
+                
+                p.parentNode.insertBefore(tip, p.nextSibling);
+                tipAdded = true;
+            }
+        });
+    });
+</script>
 {% endblock %}

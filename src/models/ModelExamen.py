@@ -462,3 +462,147 @@ class ModelExamen():
             return resultados
         except Exception as ex:
             raise Exception(ex)
+
+    @classmethod
+    def get_preguntas_con_opciones(self, db, examen_id):
+        """Obtiene todas las preguntas de un examen con sus opciones"""
+        try:
+            cursor = db.connection.cursor()
+            # Obtener todas las preguntas del examen
+            sql_preguntas = """
+                SELECT id, examen_id, texto, tipo, valor, created_at, updated_at 
+                FROM preguntas 
+                WHERE examen_id = %s
+                ORDER BY id ASC
+            """
+            cursor.execute(sql_preguntas, (examen_id,))
+            preguntas = cursor.fetchall()
+            
+            # Crear una lista para almacenar las preguntas con sus opciones
+            preguntas_con_opciones = []
+            
+            # Para cada pregunta, obtener sus opciones
+            for pregunta in preguntas:
+                sql_opciones = """
+                    SELECT id, pregunta_id, texto, es_correcta, created_at, updated_at 
+                    FROM opciones 
+                    WHERE pregunta_id = %s
+                    ORDER BY id ASC
+                """
+                cursor.execute(sql_opciones, (pregunta[0],))
+                opciones = cursor.fetchall()
+                
+                # Crear un diccionario con la pregunta y sus opciones
+                pregunta_dict = {
+                    'pregunta': pregunta,
+                    'opciones': opciones
+                }
+                
+                preguntas_con_opciones.append(pregunta_dict)
+            
+            return preguntas_con_opciones
+        except Exception as ex:
+            raise Exception(ex)
+
+    @classmethod
+    def procesar_examen(self, db, examen_id, usuario_id, respuestas):
+        """Procesa la entrega de un examen"""
+        try:
+            cursor = db.connection.cursor()
+            
+            # Iniciar el examen (crear registro en resultados_examenes)
+            resultado_id = self.iniciar_examen(db, usuario_id, examen_id)
+            if not resultado_id:
+                return False
+            
+            # Guardar cada respuesta
+            for pregunta_id, opcion_id in respuestas.items():
+                respuesta = {
+                    'resultado_id': resultado_id,
+                    'pregunta_id': pregunta_id,
+                    'opcion_id': opcion_id
+                }
+                self.guardar_respuesta(db, respuesta)
+            
+            # Finalizar el examen y calcular puntuación
+            self.finalizar_examen(db, resultado_id)
+            
+            return resultado_id
+        except Exception as ex:
+            print(f"Error en procesar_examen: {str(ex)}")
+            return False
+
+    @classmethod
+    def get_resultado_by_id(self, db, resultado_id):
+        """Obtiene un resultado de examen por su ID"""
+        try:
+            cursor = db.connection.cursor()
+            
+            # Obtener información básica del resultado
+            sql_resultado = """
+                SELECT r.id, r.examen_id, r.usuario_id, r.puntuacion, r.fecha_inicio, r.fecha_fin, r.completado
+                FROM resultados_examenes r
+                WHERE r.id = %s
+            """
+            cursor.execute(sql_resultado, (resultado_id,))
+            resultado_base = cursor.fetchone()
+            
+            if not resultado_base:
+                return None
+                
+            # Obtener información del examen
+            sql_examen = """
+                SELECT e.titulo, e.descripcion
+                FROM examenes e
+                WHERE e.id = %s
+            """
+            cursor.execute(sql_examen, (resultado_base[1],))
+            examen_info = cursor.fetchone()
+            
+            # Obtener respuestas correctas
+            sql_respuestas = """
+                SELECT COUNT(*)
+                FROM respuestas_usuarios
+                WHERE resultado_id = %s AND es_correcta = 1
+            """
+            cursor.execute(sql_respuestas, (resultado_id,))
+            respuestas_correctas = cursor.fetchone()[0]
+            
+            # Obtener puntuación obtenida y total
+            sql_preguntas = """
+                SELECT p.valor, ru.es_correcta
+                FROM preguntas p
+                LEFT JOIN respuestas_usuarios ru ON p.id = ru.pregunta_id AND ru.resultado_id = %s
+                WHERE p.examen_id = %s
+            """
+            cursor.execute(sql_preguntas, (resultado_id, resultado_base[1]))
+            preguntas_respuestas = cursor.fetchall()
+            
+            puntuacion_obtenida = 0
+            puntuacion_total = 0
+            
+            for pregunta in preguntas_respuestas:
+                puntuacion_total += pregunta[0]
+                if pregunta[1]:
+                    puntuacion_obtenida += pregunta[0]
+            
+            # Crear diccionario con toda la información
+            resultado = {
+                'id': resultado_base[0],
+                'examen_id': resultado_base[1],
+                'usuario_id': resultado_base[2],
+                'puntuacion': resultado_base[3],
+                'fecha_inicio': resultado_base[4],
+                'fecha_fin': resultado_base[5],
+                'completado': resultado_base[6],
+                'examen_titulo': examen_info[0] if examen_info else "Desconocido",
+                'examen_descripcion': examen_info[1] if examen_info else "",
+                'respuestas_correctas': respuestas_correctas,
+                'puntuacion_obtenida': puntuacion_obtenida,
+                'puntuacion_total': puntuacion_total
+            }
+            
+            return resultado
+        except Exception as ex:
+            print(f"Error en get_resultado_by_id: {str(ex)}")
+            return None

@@ -4,34 +4,136 @@
 
 {% block customCSS %}
 <style>
-    .course-image {
-        max-height: 300px;
+    /* Animaciones adicionales para esta página */
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+    
+    .bounce-animation {
+        animation: bounce 3s infinite ease-in-out;
+    }
+    
+    .course-badge {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        background: linear-gradient(135deg, #00FFDD, #4cc9f0);
+        color: #0f0a06;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 2;
+        transform: rotate(15deg);
+        transition: all 0.3s;
+    }
+    
+    .course-badge:hover {
+        transform: rotate(0) scale(1.1);
+    }
+    
+    .progress-container {
+        height: 10px;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        margin: 15px 0;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #00FFDD, #4cc9f0);
+        border-radius: 10px;
+        transition: width 1s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        animation: shimmer 2s infinite;
+    }
+    
+    /* Contenedor principal del curso */
+    .course-main-container {
+        background-color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-main-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--accent-color), var(--blue-accent));
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="course-header mb-4">
-    <h1 class="course-title">{{ course[1] }}</h1>
-    
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Navegación de migas de pan con flechas -->
+            <ul class="breadcrumb-arrow">
+                <li>
+                    <a href="{{ url_for('main.home') }}">
+                        <i class="bi bi-house-door"></i> Inicio
+                    </a>
+                </li>
+                <li class="active">
+                    <span>
+                        <i class="bi bi-book"></i> {{ course[1] }}
+                    </span>
+                </li>
+            </ul>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
     </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-</div>
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="card shadow mb-4">
-            <div class="card-body chapter-content">
-                <div class="text-center mb-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="course-main-container mb-4">
+                <h1 class="chapter-title">{{ course[1] }}</h1>
+                
+                <div class="text-center mb-4 position-relative">
+                    <div class="course-badge bounce-animation">
+                        <i class="bi bi-stars"></i>
+                    </div>
                     <img src="{{ url_for('static', filename=course[2]) }}" alt="{{ course[1] }}" class="img-fluid rounded course-image">
+                </div>
+                
+                <div class="highlight-box">
+                    <h2 class="highlight-title"><i class="bi bi-lightbulb animated-icon"></i> ¡Bienvenido a tu aventura de aprendizaje!</h2>
+                    <p>Explora este curso y descubre todo lo que puedes aprender. ¡Cada capítulo te espera con nuevos conocimientos!</p>
                 </div>
                 
                 <div class="course-description">
@@ -41,56 +143,132 @@
                 
                 {% if chapters %}
                 <div class="mt-5">
-                    <h3>Contenido del Curso</h3>
+                    <h3><i class="bi bi-journal-richtext me-2 animated-icon"></i> Contenido del Curso</h3>
+                    
+                    <div class="progress-container" data-bs-toggle="tooltip" data-bs-placement="top" title="¡Sigue avanzando en tu aprendizaje!">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    
                     <div class="list-group mt-3">
                         {% for chapter in chapters %}
                         <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapter[0]) }}" class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">{{ chapter[1] }}</h5>
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h5 class="mb-1">
+                                    <i class="bi bi-journal-text me-2"></i>
+                                    {{ chapter[1] }}
+                                </h5>
+                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: #0f0a06;">
+                                    Capítulo {{ loop.index }}
+                                </span>
                             </div>
+                            <p class="mb-1 text-muted small">Haz clic para comenzar este capítulo</p>
                         </a>
                         {% endfor %}
                     </div>
                 </div>
                 {% else %}
                 <div class="alert alert-info mt-4">
-                    <p>Este curso aún no tiene capítulos disponibles. Vuelve pronto para ver el contenido actualizado.</p>
+                    <p><i class="bi bi-info-circle-fill me-2"></i> Este curso aún no tiene capítulos disponibles. ¡Vuelve pronto para ver el contenido actualizado!</p>
                 </div>
                 {% endif %}
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-4">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Información del Curso</h6>
+        
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold"><i class="bi bi-info-circle me-2"></i> Información del Curso</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-book me-2 animated-icon"></i> Capítulos</span>
+                            <span class="badge rounded-pill" style="background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: #0f0a06;">
+                                {{ chapters|length }}
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-clock me-2 animated-icon"></i> Tiempo estimado</span>
+                            <span class="badge rounded-pill" style="background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: #0f0a06;">
+                                {{ chapters|length * 20 }} minutos
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-stars me-2 animated-icon"></i> Dificultad</span>
+                            <span class="badge rounded-pill" style="background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: #0f0a06;">
+                                Básico
+                            </span>
+                        </li>
+                        {% if course[3] %}
+                        <li class="list-group-item">
+                            <span>
+                                <a href="{{ course[3] }}" target="_blank" class="btn btn-outline-primary w-100 btn-ripple">
+                                    <i class="bi bi-robot me-2"></i> Hablar con IA
+                                </a>
+                            </span>
+                        </li>
+                        {% endif %}
+                        <li class="list-group-item">
+                            <span>
+                                <a href="{{ url_for('main.home') }}" class="btn btn-primary w-100 btn-ripple">
+                                    <i class="bi bi-arrow-left me-2"></i> Volver a Inicio
+                                </a>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-book me-2"></i> Capítulos</span>
-                        <span class="badge bg-primary rounded-pill">{{ chapters|length }}</span>
-                    </li>
-                    {% if course[3] %}
-                    <li class="list-group-item">
-                        <span>
-                            <a href="{{ course[3] }}" target="_blank" class="btn btn-outline-primary w-100">
-                                <i class="bi bi-link-45deg me-2"></i> Recursos Externos
-                            </a>
-                        </span>
-                    </li>
-                    {% endif %}
-                    <li class="list-group-item">
-                        <span>
-                            <a href="{{ url_for('main.home') }}" class="btn btn-secondary w-100">
-                                <i class="bi bi-arrow-left me-2"></i> Volver a Inicio
-                            </a>
-                        </span>
-                    </li>
-                </ul>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold"><i class="bi bi-lightning me-2"></i> Consejos de Estudio</h6>
+                </div>
+                <div class="card-body">
+                    <div class="highlight-box">
+                        <p><i class="bi bi-check-circle me-2"></i> Sigue los capítulos en orden</p>
+                        <p><i class="bi bi-check-circle me-2"></i> Toma notas mientras aprendes</p>
+                        <p><i class="bi bi-check-circle me-2"></i> Realiza los exámenes al final de cada capítulo</p>
+                        <p><i class="bi bi-check-circle me-2"></i> ¡Pregunta a tu profesor si tienes dudas!</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block customJS %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Animar la barra de progreso
+        setTimeout(function() {
+            const progressBar = document.querySelector('.progress-bar');
+            const chaptersCount = {{ chapters|length }};
+            const completedChapters = Math.floor(Math.random() * (chaptersCount + 1)); // Simulación
+            const progressPercentage = (chaptersCount > 0) ? (completedChapters / chaptersCount) * 100 : 0;
+            
+            progressBar.style.width = progressPercentage + '%';
+            progressBar.setAttribute('aria-valuenow', progressPercentage);
+        }, 500);
+        
+        // Añadir animaciones a las tarjetas de capítulos
+        const chapterItems = document.querySelectorAll('.list-group-item');
+        chapterItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'all 0.3s ease';
+            
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 300 + (index * 100));
+        });
+    });
+</script>
 {% endblock %}

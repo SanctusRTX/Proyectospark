@@ -1,0 +1,210 @@
+/* Archivo de corrección para asegurar que los estilos de botones se apliquen correctamente */
+
+/* Forzar estilos para todos los botones */
+.btn.btn-primary, 
+a.btn.btn-primary, 
+button.btn.btn-primary, 
+input.btn.btn-primary {
+    background: linear-gradient(135deg, #00FFDD, #4cc9f0) !important;
+    color: #0f0a06 !important;
+    border-radius: 50px !important;
+    padding: 0.8rem 2rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    position: relative !important;
+    overflow: hidden !important;
+    z-index: 1 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+.btn.btn-primary:hover, 
+a.btn.btn-primary:hover, 
+button.btn.btn-primary:hover, 
+input.btn.btn-primary:hover {
+    background: linear-gradient(135deg, #4cc9f0, #00FFDD) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Botón de advertencia - Editar */
+.btn.btn-warning, 
+a.btn.btn-warning, 
+button.btn.btn-warning {
+    background: linear-gradient(135deg, #00FFDD, #4cc9f0) !important;
+    color: #0f0a06 !important;
+    border-radius: 50px 0 0 50px !important;
+    margin-right: 5px !important;
+}
+
+.btn.btn-warning:hover, 
+a.btn.btn-warning:hover, 
+button.btn.btn-warning:hover {
+    background: linear-gradient(135deg, #4cc9f0, #00FFDD) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Botón de peligro - Eliminar */
+.btn.btn-danger, 
+a.btn.btn-danger, 
+button.btn.btn-danger {
+    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+    color: white !important;
+    border-radius: 0 50px 50px 0 !important;
+    margin-left: 5px !important;
+}
+
+.btn.btn-danger:hover, 
+a.btn.btn-danger:hover, 
+button.btn.btn-danger:hover {
+    background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Botón de información */
+.btn.btn-info, 
+a.btn.btn-info, 
+button.btn.btn-info {
+    background: linear-gradient(135deg, #00FFDD, #4cc9f0) !important;
+    color: #0f0a06 !important;
+    border-radius: 0 !important;
+}
+
+.btn.btn-info:hover, 
+a.btn.btn-info:hover, 
+button.btn.btn-info:hover {
+    background: linear-gradient(135deg, #4cc9f0, #00FFDD) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Botón de Ver */
+.btn.btn-info[href*="/course/"], 
+a.btn.btn-info[target="_blank"] {
+    background: linear-gradient(135deg, #00FFDD, #4cc9f0) !important;
+    color: #0f0a06 !important;
+    border-radius: 50px 0 0 50px !important;
+}
+
+.btn.btn-info[href*="/course/"]:hover, 
+a.btn.btn-info[target="_blank"]:hover {
+    background: linear-gradient(135deg, #4cc9f0, #00FFDD) !important;
+}
+
+/* Botón secundario */
+.btn.btn-secondary, 
+a.btn.btn-secondary, 
+button.btn.btn-secondary {
+    background: linear-gradient(135deg, #00FFDD, #4cc9f0) !important;
+    color: #0f0a06 !important;
+}
+
+.btn.btn-secondary:hover, 
+a.btn.btn-secondary:hover, 
+button.btn.btn-secondary:hover {
+    background: linear-gradient(135deg, #4cc9f0, #00FFDD) !important;
+}
+
+/* Botón de éxito */
+.btn.btn-success, 
+a.btn.btn-success, 
+button.btn.btn-success {
+    background: linear-gradient(135deg, #00FFDD, #4cc9f0) !important;
+    color: #0f0a06 !important;
+}
+
+.btn.btn-success:hover, 
+a.btn.btn-success:hover, 
+button.btn.btn-success:hover {
+    background: linear-gradient(135deg, #4cc9f0, #00FFDD) !important;
+}
+
+/* Botones pequeños */
+.btn.btn-sm {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.875rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+}
+
+/* Grupos de botones */
+.btn-group {
+    display: flex !important;
+    border-radius: 50px !important;
+}
+
+.btn-group .btn {
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: 50px !important;
+    border-bottom-left-radius: 50px !important;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: 50px !important;
+    border-bottom-right-radius: 50px !important;
+}
+
+/* Efecto Ripple para botones */
+.btn.btn-ripple, 
+a.btn.btn-ripple, 
+button.btn.btn-ripple {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.btn.btn-ripple:after, 
+a.btn.btn-ripple:after, 
+button.btn.btn-ripple:after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+    pointer-events: none !important;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%) !important;
+    background-repeat: no-repeat !important;
+    background-position: 50% !important;
+    transform: scale(10, 10) !important;
+    opacity: 0 !important;
+    transition: transform .5s, opacity 1s !important;
+}
+
+.btn.btn-ripple:active:after, 
+a.btn.btn-ripple:active:after, 
+button.btn.btn-ripple:active:after {
+    transform: scale(0, 0) !important;
+    opacity: .3 !important;
+    transition: 0s !important;
+}
+
+/* Ajustes responsivos para botones en móviles */
+@media (max-width: 768px) {
+    .btn-group {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    .btn-group .btn {
+        margin: 2px 0 !important;
+        border-radius: 50px !important;
+    }
+    
+    .btn.btn-warning, 
+    .btn.btn-danger, 
+    .btn.btn-info {
+        margin: 2px 0 !important;
+        border-radius: 50px !important;
+    }
+} 

@@ -1,5 +1,9 @@
+import os
+import secrets
+
 class Config:
-    SECRET_KEY = 'Tutankamon'
+    # Generar una clave secreta aleatoria cada vez que se inicia la aplicación
+    SECRET_KEY = secrets.token_hex(32)
 
 
 class DevelopmentConfig(Config):
