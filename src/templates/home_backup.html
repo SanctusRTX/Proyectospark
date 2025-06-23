@@ -1,0 +1,1446 @@
+{% extends './base_courses.html' %}
+
+{% block title %}Spark - Plataforma Educativa{% endblock %}
+{% block body %}
+{% block customCSS %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+        --primary-color: #3a86ff;
+        --secondary-color: #00FFDD;
+        --dark-color: #0f0a06;
+        --light-color: #f8f9fa;
+        --accent-color: #ff006e;
+    }
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--light-color);
+        overflow-x: hidden;
+    }
+    
+    /* Navbar Styles */
+    .navbar {
+        background-color: var(--dark-color);
+        padding: 1rem 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+    
+    .navbar-brand {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .navbar-brand:hover {
+        color: var(--secondary-color);
+    }
+    
+    .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+        margin: 0 0.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .nav-link:hover, .nav-link.active {
+        color: var(--secondary-color);
+    }
+    
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--secondary-color);
+        transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after, .nav-link.active::after {
+        width: 100%;
+    }
+    
+    /* Login Button */
+    .login-btn {
+        background-color: transparent;
+        border: 1px solid var(--secondary-color);
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem !important;
+        margin-left: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .login-btn:hover {
+        background-color: var(--secondary-color);
+        color: var(--dark-color) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Hero Section con Video de Fondo - Tamaño reducido y efecto parallax */
+    .hero-section {
+        color: white;
+        padding: 4rem 0;
+        position: relative;
+        overflow: hidden;
+        height: 70vh; /* Altura reducida */
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0f0a06 0%, #1a1a2e 100%);
+    }
+    
+    /* Nuevo estilo para el carrusel del hero */
+    .hero-carousel {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+    
+    .hero-carousel .carousel-item {
+        height: 70vh;
+        min-height: 500px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+    
+    /* Fondos predefinidos para las diapositivas del carrusel */
+    .carousel-bg-1 {
+        background-image: url("{{ url_for('static', filename='img/background.png') }}");
+    }
+    
+    .carousel-bg-2 {
+        background-image: url("{{ url_for('static', filename='img/courses/python-course.jpg') }}");
+    }
+    
+    .carousel-bg-3 {
+        background-image: url("{{ url_for('static', filename='img/courses/html-course.jpg') }}");
+    }
+    
+    .hero-carousel .carousel-item::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(15, 10, 6, 0.8) 0%, rgba(26, 26, 46, 0.7) 100%);
+        z-index: 1;
+    }
+    
+    .hero-carousel .carousel-indicators {
+        margin-bottom: 2rem;
+    }
+    
+    .hero-carousel .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+        margin: 0 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .hero-carousel .carousel-indicators button.active {
+        width: 15px;
+        height: 15px;
+        background-color: var(--secondary-color);
+        transform: scale(1.2);
+    }
+    
+    .hero-carousel .carousel-control-prev,
+    .hero-carousel .carousel-control-next {
+        z-index: 10;
+        width: 10%;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .hero-carousel:hover .carousel-control-prev,
+    .hero-carousel:hover .carousel-control-next {
+        opacity: 0.8;
+    }
+    
+    .hero-carousel .carousel-control-prev-icon,
+    .hero-carousel .carousel-control-next-icon {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(0, 255, 221, 0.3);
+        border-radius: 50%;
+        background-size: 50%;
+        background-position: center;
+    }
+    
+    /* Mantenemos la animación para las partículas flotantes */
+    @keyframes float {
+        0% {
+            transform: translateY(0) translateX(0) rotate(0);
+        }
+        25% {
+            transform: translateY(-20px) translateX(10px) rotate(5deg);
+        }
+        50% {
+            transform: translateY(10px) translateX(-15px) rotate(-5deg);
+        }
+        75% {
+            transform: translateY(-15px) translateX(5px) rotate(2deg);
+        }
+        100% {
+            transform: translateY(0) translateX(0) rotate(0);
+        }
+    }
+    
+    /* Animaciones para elementos que aparecen */
+    @keyframes slideInLeft {
+        from {
+            transform: translateX(-100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    /* Nuevos estilos para elementos animados en el carrusel */
+    .hero-carousel .animated-title {
+        animation: slideInLeft 1s ease-out forwards;
+    }
+    
+    .hero-carousel .animated-subtitle {
+        animation: slideInRight 1s ease-out 0.3s forwards;
+        opacity: 0;
+    }
+    
+    .hero-carousel .animated-button {
+        animation: fadeIn 1s ease-out 0.6s forwards;
+        opacity: 0;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        animation: fadeInUp 1s ease-out forwards;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .hero-title {
+        font-size: 3.8rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(90deg, #fff, var(--secondary-color), #4cc9f0);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.2;
+        animation: shine 3s linear infinite;
+        text-shadow: 0 5px 15px rgba(0, 255, 221, 0.3);
+    }
+    
+    @keyframes shine {
+        to {
+            background-position: 200% center;
+        }
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+        font-weight: 300;
+        margin-bottom: 2rem;
+        max-width: 700px;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 1.5s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .hero-btn {
+        background-color: var(--secondary-color);
+        color: var(--dark-color);
+        border: none;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        animation: fadeIn 2s ease-out forwards;
+    }
+    
+    .hero-btn:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: width 0.4s ease;
+        z-index: -1;
+    }
+    
+    .hero-btn:hover:before {
+        width: 100%;
+    }
+    
+    .hero-btn:hover {
+        background-color: #00e6c5;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 255, 221, 0.5);
+    }
+    
+    /* Course Cards */
+    .courses-section {
+        padding: 5rem 0;
+        background-color: #f8f9fa;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+        text-align: center;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #6c757d;
+        text-align: center;
+        margin-bottom: 3rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Estilos mejorados para las tarjetas de cursos */
+    .card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        height: 100%;
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+        background-color: #ffffff;
+        position: relative;
+    }
+    
+    .course-card {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+    }
+    
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    
+    .card-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, var(--secondary-color), #4cc9f0);
+        color: var(--dark-color);
+        font-weight: 600;
+        font-size: 0.8rem;
+        padding: 5px 12px;
+        border-radius: 30px;
+        z-index: 10;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        animation: pulse 2s infinite;
+    }
+    
+    .card-img-container {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        background-color: #f8f9fa;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+        opacity: 0;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+    
+    .card:hover .card-overlay {
+        opacity: 1;
+    }
+    
+    .overlay-content {
+        text-align: center;
+        color: white;
+        transform: translateY(20px);
+        transition: all 0.4s ease;
+    }
+    
+    .card:hover .overlay-content {
+        transform: translateY(0);
+    }
+    
+    .overlay-content i {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        display: block;
+        color: var(--secondary-color);
+    }
+    
+    .overlay-content span {
+        font-size: 1rem;
+        font-weight: 500;
+        display: block;
+    }
+    
+    .card-img-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.1) 100%);
+        z-index: 1;
+    }
+    
+    .card-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+        z-index: 0;
+    }
+    
+    .card:hover .card-img-container img {
+        transform: scale(1.05);
+    }
+    
+    .card-link {
+        color: inherit;
+        text-decoration: none;
+        display: block;
+        height: 100%;
+    }
+    
+    .card-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .card-title {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+        text-align: center;
+    }
+    
+    .card-text {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .card-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .stat-item i {
+        margin-right: 5px;
+        color: var(--secondary-color);
+    }
+    
+    .card-footer {
+        background: transparent;
+        border-top: none;
+        padding: 0 1.5rem 1.5rem;
+    }
+    
+    .card-footer .btn {
+        background: linear-gradient(135deg, var(--secondary-color), #4cc9f0);
+        color: var(--dark-color);
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s;
+    }
+    
+    .card-footer .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 255, 221, 0.3);
+    }
+    
+    /* Login Required Message */
+    .login-required-message {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin: 2rem 0;
+    }
+    
+    .login-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    /* Features Section */
+    .features-section {
+        padding: 5rem 0;
+        background-color: #ffffff;
+    }
+    
+    .feature-box {
+        text-align: center;
+        padding: 2rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .feature-box:hover {
+        transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+    }
+    
+    .feature-text {
+        color: #6c757d;
+    }
+    
+    /* Footer */
+    footer {
+        background-color: var(--dark-color);
+        color: white;
+        padding: 3rem 0;
+    }
+    
+    .footer-title {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: white;
+    }
+    
+    .footer-links {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .footer-links li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+        color: var(--secondary-color);
+    }
+    
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .social-link:hover {
+        background-color: var(--secondary-color);
+        color: var(--dark-color);
+        transform: translateY(-3px);
+    }
+    
+    .copyright {
+        text-align: center;
+        padding-top: 2rem;
+        margin-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 4rem 0;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+<!-- Barra de navegación -->
+<nav class="navbar navbar-expand-lg navbar-dark" role="navigation" aria-label="Barra de navegación">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo de Spark" width="40" height="40" class="d-inline-block align-text-top rounded-circle me-2">
+            Spark
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('main.home') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#proyecto">Sobre el Proyecto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#cursos">Contenidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#caracteristicas">Beneficios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#programadores">Desarrolladores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contacto">Contacto</a>
+                </li>
+                {% if is_authenticated %}
+                {% if session.get('user_role') == 'profesor' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin.admin_courses') }}">
+                        <i class="bi bi-gear"></i> Administración
+                    </a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                        <i class="bi bi-box-arrow-right"></i> 
+                        {% if session.get('user_role') == 'guest' %}
+                            Salir ({{ session.get('username').split(':')[1].strip() }})
+                        {% else %}
+                            Cerrar Sesión
+                        {% endif %}
+                    </a>
+                </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-light login-btn" href="{{ url_for('auth.login') }}">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section con Video de Fondo -->
+<section class="hero-section">
+    <!-- Nuevo carrusel -->
+    <div id="heroCarousel" class="carousel slide carousel-fade hero-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        
+        <div class="carousel-inner">
+            <div class="carousel-item active carousel-bg-1">
+                <div class="container position-relative" style="z-index: 2;">
+                    <div class="row align-items-center" style="height: 70vh; min-height: 500px;">
+                        <div class="col-lg-8 text-center text-lg-start">
+                            <h1 class="hero-title animated-title">Spark: Innovación Educativa Digital</h1>
+                            <p class="hero-subtitle animated-subtitle">Plataforma educativa diseñada para estudiantes de 5to y 6to grado de la Escuela Bolivariana "Gustavo Domínguez" en Venezuela.</p>
+                            <a href="#cursos" class="hero-btn animated-button">Explorar Contenidos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-item carousel-bg-2">
+                <div class="container position-relative" style="z-index: 2;">
+                    <div class="row align-items-center" style="height: 70vh; min-height: 500px;">
+                        <div class="col-lg-8 text-center text-lg-start">
+                            <h1 class="hero-title animated-title">Aprende a tu ritmo</h1>
+                            <p class="hero-subtitle animated-subtitle">Descubre contenidos educativos interactivos diseñados para facilitar tu aprendizaje de manera divertida.</p>
+                            <a href="#cursos" class="hero-btn animated-button">Ver Cursos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-item carousel-bg-3">
+                <div class="container position-relative" style="z-index: 2;">
+                    <div class="row align-items-center" style="height: 70vh; min-height: 500px;">
+                        <div class="col-lg-8 text-center text-lg-start">
+                            <h1 class="hero-title animated-title">Tecnología y Educación</h1>
+                            <p class="hero-subtitle animated-subtitle">Desarrolla competencias digitales esenciales para el futuro mientras aprendes sobre temas fundamentales.</p>
+                            <a href="#caracteristicas" class="hero-btn animated-button">Descubrir Beneficios</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+        
+        <!-- Partículas flotantes decorativas -->
+        <div class="particles-container"></div>
+    </div>
+    
+    <!-- El contenido estático no lo usamos más ya que ahora está en cada slide -->
+</section>
+
+<!-- Sección Sobre el Proyecto -->
+<section class="py-5" id="proyecto" style="background-color: #f8f9fa;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center mb-5">
+                <h2 class="section-title" data-aos="fade-up">Sobre el Proyecto</h2>
+                <div class="d-flex justify-content-center" data-aos="fade-up">
+                    <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row align-items-center">
+            <div class="col-lg-10 mx-auto mb-5" data-aos="fade-up">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="mb-4 fw-bold text-center" style="color: var(--primary-color);">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+                                <i class="bi bi-laptop fs-2"></i>
+                                <i class="bi bi-code-slash fs-4" style="position: absolute; top: 15px; right: 15px;"></i>
+                                <i class="bi bi-pencil-square fs-4" style="position: absolute; bottom: 15px; left: 15px;"></i>
+                            </div>
+                            Programa Educativo Digital
+                        </h3>
+                        <p class="mb-0">El proyecto "Spark" es un programa educativo digital diseñado para los estudiantes de 5to y 6to grado de la Escuela Bolivariana 'Gustavo Domínguez' en Venezuela. Su propósito es impulsar la integración de tecnología en el ámbito educativo, facilitando a alumnos y profesores una plataforma que fortalece el proceso de enseñanza-aprendizaje a través de herramientas digitales.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección Misión -->
+<section class="py-5" style="background: linear-gradient(135deg, rgba(58, 134, 255, 0.05) 0%, rgba(0, 255, 221, 0.05) 100%);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                <img src="{{ url_for('static', filename='img/mision.svg') }}" alt="Misión" class="img-fluid" style="max-height: 300px;">
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--secondary-color), #4cc9f0); color: var(--dark-color); position: relative;">
+                        <i class="bi bi-lightbulb fs-2"></i>
+                        <i class="bi bi-book fs-4" style="position: absolute; top: 5px; right: 5px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                        <i class="bi bi-mortarboard fs-4" style="position: absolute; bottom: 5px; left: 5px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                    </div>
+                    <h2 class="mb-0 fw-bold">Misión</h2>
+                </div>
+                <p class="lead mb-4">Proporcionar a los estudiantes y docentes una plataforma educativa que fomente el aprendizaje interactivo y el desarrollo de competencias digitales esenciales para el siglo XXI.</p>
+                <p>Buscamos crear un entorno digital donde los estudiantes puedan explorar, aprender y desarrollar habilidades tecnológicas de manera segura y guiada, mientras los docentes cuentan con herramientas que enriquecen su práctica pedagógica.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección Visión -->
+<section class="py-5" style="background-color: #ffffff;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0" data-aos="fade-left">
+                <img src="{{ url_for('static', filename='img/vision.svg') }}" alt="Visión" class="img-fluid" style="max-height: 300px;">
+            </div>
+            <div class="col-lg-6 order-lg-1" data-aos="fade-right">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; position: relative;">
+                        <i class="bi bi-eye fs-2"></i>
+                        <i class="bi bi-binoculars fs-4" style="position: absolute; top: 5px; right: 5px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                        <i class="bi bi-rocket fs-4" style="position: absolute; bottom: 5px; left: 5px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                    </div>
+                    <h2 class="mb-0 fw-bold">Visión</h2>
+                </div>
+                <p class="lead mb-4">Transformar la experiencia educativa en la Escuela Bolivariana "Gustavo Domínguez" mediante la integración efectiva de tecnologías digitales que preparen a los estudiantes para los desafíos del futuro.</p>
+                <p>Aspiramos a ser un referente de innovación educativa en Venezuela, donde la tecnología se convierte en un aliado fundamental para el desarrollo integral de los estudiantes, potenciando sus capacidades y ampliando sus oportunidades de aprendizaje.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección Objetivos -->
+<section class="py-5" style="background: linear-gradient(135deg, rgba(58, 134, 255, 0.05) 0%, rgba(0, 255, 221, 0.05) 100%);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                <img src="{{ url_for('static', filename='img/objetivos.svg') }}" alt="Objetivos" class="img-fluid" style="max-height: 300px;">
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <span>Fomentar el uso efectivo de herramientas digitales en el proceso de enseñanza-aprendizaje.</span>
+                </div>
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <span>Desarrollar competencias digitales en estudiantes de 5to y 6to grado.</span>
+                </div>
+                <div class="d-flex align-items-center mb-4">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <span>Proporcionar recursos educativos que complementen el currículo escolar.</span>
+                </div>
+                <div class="d-flex">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <span>Facilitar a los docentes herramientas para la evaluación y seguimiento del progreso de los estudiantes.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección Planes Futuros -->
+<section class="py-5" style="background-color: #ffffff;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center mb-5">
+                <h2 class="section-title" data-aos="fade-up">Planes Futuros</h2>
+                <div class="d-flex justify-content-center" data-aos="fade-up">
+                    <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
+                </div>
+                <p class="mb-5" data-aos="fade-up">Estamos comprometidos con la mejora continua de nuestra plataforma educativa para ofrecer una experiencia de aprendizaje cada vez más enriquecedora.</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px; background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: var(--dark-color); position: relative;">
+                            <i class="bi bi-controller fs-2"></i>
+                            <i class="bi bi-puzzle fs-4" style="position: absolute; top: 10px; right: 10px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                            <i class="bi bi-stars fs-4" style="position: absolute; bottom: 10px; left: 10px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                        </div>
+                        <h4 class="text-center mb-3">Actividades Interactivas</h4>
+                        <p class="text-center mb-0">Desarrollo de actividades educativas interactivas que combinen aprendizaje con elementos de gamificación para una experiencia más atractiva.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; position: relative;">
+                            <i class="bi bi-graph-up fs-2"></i>
+                            <i class="bi bi-bar-chart-line fs-4" style="position: absolute; top: 10px; right: 10px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                            <i class="bi bi-arrow-up-circle fs-4" style="position: absolute; bottom: 10px; left: 10px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                        </div>
+                        <h4 class="text-center mb-3">Análisis de Progreso</h4>
+                        <p class="text-center mb-0">Implementación de un sistema avanzado de seguimiento que permita a docentes y estudiantes visualizar el progreso de aprendizaje de manera detallada.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px; background: linear-gradient(135deg, #7c4dff, #b388ff); color: white; position: relative;">
+                            <i class="bi bi-people fs-2"></i>
+                            <i class="bi bi-chat-dots fs-4" style="position: absolute; top: 10px; right: 10px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                            <i class="bi bi-share fs-4" style="position: absolute; bottom: 10px; left: 10px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
+                        </div>
+                        <h4 class="text-center mb-3">Comunidad Educativa</h4>
+                        <p class="text-center mb-0">Creación de un espacio colaborativo donde estudiantes y docentes puedan compartir recursos, proyectos y experiencias de aprendizaje.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Cursos Section -->
+<section class="courses-section" id="cursos">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Contenidos Educativos Interactivos</h2>
+        <div class="d-flex justify-content-center" data-aos="fade-up">
+            <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
+        </div>
+        <p class="section-subtitle" data-aos="fade-up" data-aos-delay="200">Explora nuestra selección de contenidos diseñados especialmente para estudiantes de 5to y 6to grado, con actividades interactivas que potencian el aprendizaje de herramientas digitales.</p>
+        
+        <div class="row">
+            {% if is_authenticated %}
+            {% for course in courses %}
+            <div class="col-md-4 mb-4">
+                <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="card-link" aria-label="Enlace a {{ course[1] }}">
+                    <div class="card h-100 shadow course-card">
+                        <div class="card-badge">
+                            <span>¡Nuevo!</span>
+                        </div>
+                        <div class="card-img-container">
+                            <div class="card-overlay">
+                                <div class="overlay-content">
+                                    <i class="bi bi-play-circle"></i>
+                                    <span>Explorar curso</span>
+                                </div>
+                            </div>
+                            <img src="{{ url_for('static', filename=course[2]) }}" alt="{{ course[1] }}" class="img-fluid" loading="lazy">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ course[1] }}</h5>
+                            <p class="card-text">Explora este contenido y comienza tu aventura de aprendizaje</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <i class="bi bi-book"></i>
+                                    <span>{{ loop.index * 3 }} lecciones</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="bi bi-clock"></i>
+                                    <span>{{ loop.index * 10 }} min</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="btn btn-sm btn-primary w-100">¡Comenzar ahora!</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% else %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info" role="alert">
+                    No hay contenidos disponibles en este momento.
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <div class="login-required-message">
+                        <div class="login-icon mb-4">
+                            <i class="bi bi-lock-fill"></i>
+                        </div>
+                        <h3 class="mb-3">Inicia sesión para acceder a los contenidos</h3>
+                        <p class="mb-4">Para explorar nuestros cursos y comenzar tu aventura de aprendizaje, necesitas iniciar sesión o registrarte como invitado.</p>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="caracteristicas">
+    <div class="container">
+        <h2 class="section-title">Beneficios de Nuestra Plataforma</h2>
+        <p class="section-subtitle">Ofrecemos una experiencia de aprendizaje única con características diseñadas para estudiantes de primaria.</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightning"></i>
+                    </div>
+                    <h3 class="feature-title">Aprendizaje Divertido</h3>
+                    <p class="feature-text">Metodología de enseñanza que combina el juego con el aprendizaje para hacer la experiencia más entretenida.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <h3 class="feature-title">Contenido Adaptado</h3>
+                    <p class="feature-text">Material educativo diseñado específicamente para estudiantes de la Escuela El Recreo, adaptado a sus necesidades de aprendizaje.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="bi bi-laptop"></i>
+                    </div>
+                    <h3 class="feature-title">Actividades Interactivas</h3>
+                    <p class="feature-text">Ejercicios prácticos y juegos educativos que refuerzan el aprendizaje de manera interactiva.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Programadores Section -->
+<section class="features-section bg-light" id="programadores">
+    <div class="container">
+        <h2 class="section-title">Nuestro Equipo de Desarrollo</h2>
+        <p class="section-subtitle">Conoce a los jóvenes programadores universitarios que han hecho posible esta plataforma educativa.</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-img-container">
+                        <!-- Espacio para foto -->
+                        <img src="{{ url_for('static', filename='img/placeholder-profile.jpg') }}" alt="Josue Santos" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Josue Santos</h5>
+                        <p class="card-text">Estudiante universitario de Ingeniería Informática. Especializado en desarrollo backend.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-img-container">
+                        <!-- Espacio para foto -->
+                        <img src="{{ url_for('static', filename='img/placeholder-profile.jpg') }}" alt="Daniel Moncayo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Daniel Moncayo</h5>
+                        <p class="card-text">Estudiante universitario de Ingeniería de Sistemas. Enfocado en diseño de interfaces y experiencia de usuario.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-img-container">
+                        <!-- Espacio para foto -->
+                        <img src="{{ url_for('static', filename='img/placeholder-profile.jpg') }}" alt="Gabriel Villegas" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Gabriel Villegas</h5>
+                        <p class="card-text">Estudiante universitario de Ciencias de la Computación. Especialista en desarrollo de contenidos educativos.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-img-container">
+                        <!-- Espacio para foto -->
+                        <img src="{{ url_for('static', filename='img/placeholder-profile.jpg') }}" alt="Juan Diego" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Juan Diego</h5>
+                        <p class="card-text">Estudiante universitario de Ingeniería de Software. Experto en bases de datos y seguridad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer id="contacto">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h4 class="footer-title">Escuela El Recreo</h4>
+                <p>Transformando la educación primaria con herramientas digitales innovadoras que hacen del aprendizaje una experiencia divertida e interactiva.</p>
+                <div class="social-links mt-4">
+                    <a href="#" class="social-link" title="Facebook de Escuela El Recreo" aria-label="Visitar Facebook de Escuela El Recreo"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-link" title="Twitter de Escuela El Recreo" aria-label="Visitar Twitter de Escuela El Recreo"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="social-link" title="YouTube de Escuela El Recreo" aria-label="Visitar canal de YouTube de Escuela El Recreo"><i class="bi bi-youtube"></i></a>
+                    <a href="#" class="social-link" title="Instagram de Escuela El Recreo" aria-label="Visitar Instagram de Escuela El Recreo"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-lg-2 col-md-4 mb-4">
+                <h5 class="footer-title">Enlaces</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Inicio</a></li>
+                    <li><a href="#proyecto">Sobre el Proyecto</a></li>
+                    <li><a href="#cursos">Contenidos</a></li>
+                    <li><a href="#caracteristicas">Beneficios</a></li>
+                    <li><a href="#programadores">Desarrolladores</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-2 col-md-4 mb-4">
+                <h5 class="footer-title">Contenidos</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Matemáticas</a></li>
+                    <li><a href="#">Ciencias Naturales</a></li>
+                    <li><a href="#">Lenguaje</a></li>
+                    <li><a href="#">Informática</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-4 col-md-4 mb-4">
+                <h5 class="footer-title">Contacto</h5>
+                <ul class="footer-links">
+                    <li><i class="bi bi-geo-alt me-2"></i> Av. Principal, Escuela Bolivariana "Gustavo Domínguez", Venezuela</li>
+                    <li><i class="bi bi-envelope me-2"></i> contacto@spark-edu.org</li>
+                    <li><i class="bi bi-telephone me-2"></i> +58 123 456 7890</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 Spark - Plataforma desarrollada por estudiantes universitarios</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Script para efecto parallax con movimiento del mouse y partículas -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const videoBackground = document.querySelector('.video-background');
+        const heroSection = document.querySelector('.hero-section');
+        
+        // Efecto parallax con movimiento del mouse
+        heroSection.addEventListener('mousemove', function(e) {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            videoBackground.style.transform = `translateZ(-10px) scale(2) translate(${xAxis}px, ${yAxis}px)`;
+        });
+        
+        // Restaurar posición cuando el mouse sale de la sección
+        heroSection.addEventListener('mouseleave', function() {
+            videoBackground.style.transform = 'translateZ(-10px) scale(2)';
+        });
+        
+        // Efecto parallax con scroll
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            if (scrollPosition <= window.innerHeight) {
+                const parallaxValue = scrollPosition * 0.5;
+                videoBackground.style.transform = `translateZ(-10px) scale(2) translateY(${parallaxValue}px)`;
+            }
+        });
+        
+        // Función para crear partículas
+        function createParticles(container, options) {
+            const defaults = {
+                count: 20,
+                minSize: 5,
+                maxSize: 15,
+                minDuration: 10,
+                maxDuration: 30,
+                hueMin: 160,
+                hueMax: 240,
+                satMin: 70,
+                satMax: 100,
+                lightMin: 60,
+                lightMax: 80,
+                opacityMin: 0.3,
+                opacityMax: 0.8
+            };
+            
+            const settings = Object.assign({}, defaults, options);
+            
+            for (let i = 0; i < settings.count; i++) {
+                createParticle(container, settings);
+            }
+        }
+        
+        function createParticle(container, settings) {
+            const particle = document.createElement('div');
+            const size = Math.floor(Math.random() * (settings.maxSize - settings.minSize + 1)) + settings.minSize;
+            const duration = Math.floor(Math.random() * (settings.maxDuration - settings.minDuration + 1)) + settings.minDuration;
+            const hue = Math.floor(Math.random() * (settings.hueMax - settings.hueMin + 1)) + settings.hueMin;
+            const sat = Math.floor(Math.random() * (settings.satMax - settings.satMin + 1)) + settings.satMin;
+            const light = Math.floor(Math.random() * (settings.lightMax - settings.lightMin + 1)) + settings.lightMin;
+            const opacity = Math.random() * (settings.opacityMax - settings.opacityMin) + settings.opacityMin;
+            
+            // Estilos de la partícula
+            particle.style.position = 'absolute';
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.borderRadius = '50%';
+            particle.style.backgroundColor = `hsla(${hue}, ${sat}%, ${light}%, ${opacity})`;
+            particle.style.boxShadow = `0 0 ${size/2}px hsla(${hue}, ${sat}%, ${light}%, ${opacity/2})`;
+            
+            // Posición inicial
+            const startLeft = Math.random() * 100;
+            const startTop = Math.random() * 100;
+            
+            particle.style.left = `${startLeft}%`;
+            particle.style.top = `${startTop}%`;
+            
+            // Crear animación única para cada partícula
+            const keyframesName = `float-${Math.floor(Math.random() * 1000000)}`;
+            const animationDuration = `${duration}s`;
+            const animationDelay = `${Math.random() * 5}s`;
+            
+            // Crear regla de keyframes dinámica
+            const keyframes = `
+                @keyframes ${keyframesName} {
+                    0% { transform: translateY(0) translateX(0) rotate(0); }
+                    25% { transform: translateY(-${Math.random() * 30}px) translateX(${Math.random() * 20}px) rotate(${Math.random() * 10}deg); }
+                    50% { transform: translateY(${Math.random() * 20}px) translateX(-${Math.random() * 30}px) rotate(-${Math.random() * 10}deg); }
+                    75% { transform: translateY(-${Math.random() * 25}px) translateX(${Math.random() * 15}px) rotate(${Math.random() * 5}deg); }
+                    100% { transform: translateY(0) translateX(0) rotate(0); }
+                }
+            `;
+            
+            // Añadir regla de keyframes al documento
+            const styleSheet = document.createElement('style');
+            styleSheet.type = 'text/css';
+            styleSheet.innerHTML = keyframes;
+            document.head.appendChild(styleSheet);
+            
+            // Aplicar animación
+            particle.style.animation = `${keyframesName} ${animationDuration} ease-in-out infinite`;
+            particle.style.animationDelay = animationDelay;
+            
+            // Añadir al contenedor
+            container.appendChild(particle);
+            
+            // Reemplazar partícula después de completar animación
+            setTimeout(() => {
+                container.removeChild(particle);
+                document.head.removeChild(styleSheet);
+                createParticle(container, settings);
+            }, duration * 1000 + parseFloat(animationDelay) * 1000);
+        }
+        
+        // Inicializar partículas con colores personalizados para la página home
+        const heroParticlesContainer = document.querySelector('.particles-container');
+        if (heroParticlesContainer) {
+            createParticles(heroParticlesContainer, {
+                count: 30,
+                minSize: 8,
+                maxSize: 20,
+                hueMin: 160,  // Tonos más turquesa/verde azulado
+                hueMax: 200,  // Hasta azul
+                satMin: 80,
+                satMax: 100,
+                lightMin: 60,
+                lightMax: 80,
+                opacityMin: 0.4,
+                opacityMax: 0.8
+            });
+        }
+        
+        // Añadir partículas a todas las secciones importantes
+        const sections = document.querySelectorAll('.py-5');
+        sections.forEach((section, index) => {
+            // Crear un contenedor para las partículas si no existe
+            let particlesContainer = section.querySelector('.particles-container');
+            if (!particlesContainer) {
+                particlesContainer = document.createElement('div');
+                particlesContainer.className = 'particles-container';
+                particlesContainer.style.position = 'absolute';
+                particlesContainer.style.top = '0';
+                particlesContainer.style.left = '0';
+                particlesContainer.style.width = '100%';
+                particlesContainer.style.height = '100%';
+                particlesContainer.style.zIndex = '0';
+                particlesContainer.style.pointerEvents = 'none';
+                
+                // Asegurarse de que la sección tenga posición relativa
+                if (getComputedStyle(section).position === 'static') {
+                    section.style.position = 'relative';
+                }
+                
+                section.prepend(particlesContainer);
+                
+                // Configuración de color diferente para cada sección
+                let hueMin, hueMax;
+                switch (index % 4) {
+                    case 0: // Azul/turquesa
+                        hueMin = 160;
+                        hueMax = 200;
+                        break;
+                    case 1: // Púrpura/violeta
+                        hueMin = 240;
+                        hueMax = 280;
+                        break;
+                    case 2: // Naranja/rojo
+                        hueMin = 0;
+                        hueMax = 30;
+                        break;
+                    case 3: // Verde
+                        hueMin = 100;
+                        hueMax = 150;
+                        break;
+                }
+                
+                // Crear partículas con configuración específica para esta sección
+                createParticles(particlesContainer, {
+                    count: 15,
+                    minSize: 5,
+                    maxSize: 12,
+                    minDuration: 15,
+                    maxDuration: 30,
+                    hueMin: hueMin,
+                    hueMax: hueMax,
+                    opacityMin: 0.2,
+                    opacityMax: 0.5
+                });
+            }
+        });
+        
+        // Añadir efectos a las tarjetas de cursos
+        const courseCards = document.querySelectorAll('.course-card');
+        courseCards.forEach((card, index) => {
+            // Añadir animación de entrada con retraso
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.5s ease-out';
+            card.style.transitionDelay = `${0.1 * index}s`;
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Añadir efecto de hover 3D
+            card.addEventListener('mousemove', function(e) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            
+            // Restablecer al salir
+            card.addEventListener('mouseleave', function() {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+    });
+</script>
+{% endblock %}
+

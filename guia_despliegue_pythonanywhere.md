@@ -39,7 +39,7 @@ Hay varias formas de subir tu código:
    - En el dashboard de PythonAnywhere, abre una consola Bash.
    - Clona tu repositorio:
      ```bash
-     git clone https://github.com/tu-usuario/Proyectospark.git
+     git clone https://github.com/SanctusRTX/Proyectospark.git
      ```
 
 ### Opción 2: Subir archivos manualmente
@@ -71,8 +71,8 @@ Hay varias formas de subir tu código:
    - Sube el archivo a PythonAnywhere
    - Importa el esquema:
      ```sql
-     USE tu_usuario$proyectox;
-     SOURCE ruta/al/archivo.sql;
+     USE Sanctusrtx$proyectox;
+     SOURCE /home/Sanctusrtx/Proyectospark/database/proyectox.sql;
      ```
 3. Modifica el archivo `src/config.py` en tu proyecto para usar los datos de conexión de PythonAnywhere:
 
@@ -118,11 +118,11 @@ config = {
 5. Selecciona la versión de Python que estás utilizando (Python 3.10).
 6. En la sección "Virtualenv", ingresa la ruta a tu entorno virtual:
    ```
-   /home/tu_usuario/.virtualenvs/spark_env
+   /home/Sanctusrtx/.virtualenvs/spark_env
    ```
 7. En la sección "Code", establece la ruta a tu código:
    ```
-   /home/tu_usuario/Proyectospark
+   /home/Sanctusrtx/Proyectospark
    ```
 
 ## Paso 8: Configurar el archivo WSGI

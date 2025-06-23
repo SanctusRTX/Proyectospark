@@ -85,6 +85,496 @@
         height: 100%;
         background: linear-gradient(to bottom, var(--accent-color), var(--blue-accent));
     }
+
+
+
+    /* Botón flotante para volver a la página de cursos */
+    .courses-fab {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #4cc9f0, #4361ee);
+        border-radius: 50%;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        overflow: hidden;
+        border: 3px solid white;
+    }
+
+    .courses-fab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+    
+    .courses-fab-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .courses-fab-icon svg {
+        stroke-width: 2;
+        transition: all 0.3s ease;
+    }
+    
+    .courses-fab:hover .courses-fab-icon svg {
+        transform: scale(1.1);
+        stroke-width: 2.5;
+    }
+
+    .courses-fab .tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        bottom: 80px;
+        right: 0;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .courses-fab:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-5px);
+    }
+    
+    /* Estilo para el menú de navegación con migas de pan */
+    .breadcrumb-arrow {
+        display: flex;
+        list-style: none;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .breadcrumb-arrow li {
+        display: flex;
+        align-items: center;
+    }
+    
+    .breadcrumb-arrow li a,
+    .breadcrumb-arrow li span {
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        text-decoration: none;
+        color: #555;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+    
+    .breadcrumb-arrow li a:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: #000;
+        transform: translateY(-2px);
+    }
+    
+    .breadcrumb-arrow li.active span {
+        color: #007bff;
+        font-weight: 600;
+    }
+    
+    .breadcrumb-arrow li:not(:last-child)::after {
+        content: '';
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        margin: 0 5px;
+        animation: arrowPulse 2s infinite;
+    }
+    
+    @keyframes arrowPulse {
+        0% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+        100% { opacity: 0.5; transform: scale(1); }
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .courses-fab i.bi {
+        font-size: 2.2rem;
+    }
+    
+    /* Animación para el botón flotante */
+    @keyframes floatAnimation {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+    
+    .float-animation {
+        animation: floatAnimation 3s ease-in-out infinite;
+    }
+
+    /* Estilos para los botones con efecto ripple */
+    .btn-ripple {
+        position: relative;
+        overflow: hidden;
+        transform: translate3d(0, 0, 0);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 15px;
+    }
+    
+    .btn-ripple:after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        opacity: 0;
+        transition: transform .5s, opacity 1s;
+    }
+    
+    .btn-ripple:active:after {
+        transform: scale(0, 0);
+        opacity: .3;
+        transition: 0s;
+    }
+    
+    .btn-ripple:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Mejora para el botón Ver Cursos */
+    .btn-info.btn-ripple {
+        background: linear-gradient(135deg, #4cc9f0, #4361ee);
+        border: none;
+    }
+    
+    .btn-primary.btn-ripple {
+        background: linear-gradient(135deg, #3a86ff, #0077b6);
+        border: none;
+    }
+    
+    /* Contenedor de iconos para botones */
+    .btn-icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 5px;
+        transition: all 0.3s ease;
+        margin-top: 2px;
+    }
+    
+    .btn-ripple:hover .btn-icon-container {
+        transform: rotate(360deg);
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-icon-container svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* Animaciones para SVG en hover */
+    .btn-ripple:hover svg {
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        animation: dash 1.5s linear forwards;
+    }
+    
+    @keyframes dash {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+    
+    /* Estilos para la barra lateral */
+    .course-info-item {
+        display: inline-flex;
+        align-items: center;
+        width: auto;
+    }
+    
+    .info-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        background: none;
+        padding: 0;
+    }
+    
+    .info-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .list-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 15px;
+    }
+    
+    .list-group-item span {
+        font-size: 15px;
+    }
+    
+    /* Mejoras para los botones de navegación */
+    .navigation-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .navigation-buttons .btn {
+        padding: 10px 15px;
+        font-size: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    
+    .navigation-buttons .btn-icon-container {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        padding: 0;
+    }
+    
+    .navigation-buttons .btn-icon-container svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .navigation-buttons .btn span {
+        flex-grow: 1;
+        text-align: center;
+    }
+    
+    /* Mejora para la tarjeta de consejos */
+    .highlight-box {
+        background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(0, 255, 221, 0.1));
+        border-radius: 12px;
+        padding: 20px;
+        margin: 15px 0;
+        border-left: 4px solid var(--accent-color);
+        transition: all 0.3s;
+    }
+    
+    .highlight-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .card-header {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(0, 255, 221, 0.1));
+        border-bottom: none;
+        padding: 12px 16px;
+    }
+    
+    .card-header .info-icon {
+        margin-right: 10px;
+    }
+    
+    .card-header h6 {
+        margin: 0;
+        font-weight: 600;
+        color: #333;
+        font-size: 16px;
+    }
+    
+    /* Estilos para los consejos de estudio */
+    .study-tip {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed rgba(76, 201, 240, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .study-tip:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .tip-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        background: none;
+        padding: 0;
+    }
+    
+    .tip-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .study-tip p {
+        margin: 0;
+        font-size: 15px;
+        color: #444;
+    }
+
+    /* Asegurar que los botones de IA tengan el mismo estilo que los botones de navegación */
+    .btn-ai.btn-ripple {
+        position: relative;
+        overflow: hidden;
+        transform: translate3d(0, 0, 0);
+    }
+    
+    .btn-ai.btn-ripple:after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        opacity: 0;
+        transition: transform .5s, opacity 1s;
+    }
+    
+    .btn-ai.btn-ripple:active:after {
+        transform: scale(0, 0);
+        opacity: .3;
+        transition: 0s;
+    }
+
+    /* Estilos para los botones de IA personalizados */
+    .ai-buttons-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 0;
+        width: 100%;
+        padding: 0;
+    }
+    
+    .custom-ai-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        padding: 8px 15px;
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        font-size: 15px;
+        font-weight: 500;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .custom-ai-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        color: white;
+    }
+    
+    .custom-ai-button svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    
+    .custom-ai-button span {
+        display: inline-block;
+        text-align: center;
+        flex-grow: 1;
+    }
+    
+    .custom-ai-button:after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        opacity: 0;
+        transition: transform .5s, opacity 1s;
+    }
+    
+    .custom-ai-button:active:after {
+        transform: scale(0, 0);
+        opacity: .3;
+        transition: 0s;
+    }
+    
+    .btn-external-ai {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+    
+    .btn-sparky-ai {
+        background: linear-gradient(135deg, #00b09b, #96c93d);
+    }
 </style>
 {% endblock %}
 
@@ -182,38 +672,97 @@
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span><i class="bi bi-book me-2 animated-icon"></i> Capítulos</span>
+                            <div class="course-info-item">
+                                <div class="info-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                    </svg>
+                                </div>
+                                <span>Capítulos</span>
+                            </div>
                             <span class="badge rounded-pill" style="background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: #0f0a06;">
                                 {{ chapters|length }}
                             </span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span><i class="bi bi-clock me-2 animated-icon"></i> Tiempo estimado</span>
+                            <div class="course-info-item">
+                                <div class="info-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                </div>
+                                <span>Tiempo estimado</span>
+                            </div>
                             <span class="badge rounded-pill" style="background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: #0f0a06;">
                                 {{ chapters|length * 20 }} minutos
                             </span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span><i class="bi bi-stars me-2 animated-icon"></i> Dificultad</span>
+                            <div class="course-info-item">
+                                <div class="info-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                </div>
+                                <span>Dificultad</span>
+                            </div>
                             <span class="badge rounded-pill" style="background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: #0f0a06;">
                                 Básico
                             </span>
                         </li>
-                        {% if course[3] %}
                         <li class="list-group-item">
-                            <span>
-                                <a href="{{ course[3] }}" target="_blank" class="btn btn-outline-primary w-100 btn-ripple">
-                                    <i class="bi bi-robot me-2"></i> Hablar con IA
+                            <div class="navigation-buttons">
+                                {% if course[3] %}
+                                <a href="{{ course[3] }}" target="_blank" class="btn btn-primary btn-lg btn-ripple w-100 mb-2">
+                                    <div class="btn-icon-container">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                            <polyline points="15 3 21 3 21 9"></polyline>
+                                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                                        </svg>
+                                    </div>
+                                    <span>IA Externa</span>
                                 </a>
-                            </span>
+                                {% endif %}
+                                {% if chapters|length > 0 %}
+                                <a href="{{ url_for('gemini.gemini_chat', course_id=course[0], chapter_id=chapters[0][0]) }}" class="btn btn-info btn-lg btn-ripple w-100 position-relative">
+                                    <div class="btn-icon-container">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                        </svg>
+                                    </div>
+                                    <span>Sparky</span>
+                                </a>
+                                {% endif %}
+                            </div>
                         </li>
-                        {% endif %}
                         <li class="list-group-item">
-                            <span>
-                                <a href="{{ url_for('main.home') }}" class="btn btn-primary w-100 btn-ripple">
-                                    <i class="bi bi-arrow-left me-2"></i> Volver a Inicio
+                            <div class="navigation-buttons">
+                                <a href="{{ url_for('main.home') }}" class="btn btn-primary btn-lg btn-ripple w-100 mb-2">
+                                    <div class="btn-icon-container">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                                        </svg>
+                                    </div>
+                                    <span>Volver a Inicio</span>
                                 </a>
-                            </span>
+                                <a href="{{ url_for('main.home') }}#cursos" class="btn btn-info btn-lg btn-ripple w-100 position-relative">
+                                    <div class="btn-icon-container">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                                            <path d="M10 8l6 4-6 4V8z"></path>
+                                        </svg>
+                                    </div>
+                                    <span>Ver Cursos</span>
+                                </a>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -221,20 +770,74 @@
             
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold"><i class="bi bi-lightning me-2"></i> Consejos de Estudio</h6>
+                    <div class="info-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <h6 class="m-0 font-weight-bold">Consejos de Estudio</h6>
                 </div>
                 <div class="card-body">
                     <div class="highlight-box">
-                        <p><i class="bi bi-check-circle me-2"></i> Sigue los capítulos en orden</p>
-                        <p><i class="bi bi-check-circle me-2"></i> Toma notas mientras aprendes</p>
-                        <p><i class="bi bi-check-circle me-2"></i> Realiza los exámenes al final de cada capítulo</p>
-                        <p><i class="bi bi-check-circle me-2"></i> ¡Pregunta a tu profesor si tienes dudas!</p>
+                        <div class="study-tip">
+                            <div class="tip-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 11 12 14 22 4"></polyline>
+                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                                </svg>
+                            </div>
+                            <p>Sigue los capítulos en orden</p>
+                        </div>
+                        <div class="study-tip">
+                            <div class="tip-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            <p>Toma notas mientras aprendes</p>
+                        </div>
+                        <div class="study-tip">
+                            <div class="tip-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </div>
+                            <p>Realiza los exámenes al final de cada capítulo</p>
+                        </div>
+                        <div class="study-tip">
+                            <div class="tip-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4cc9f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    <circle cx="9" cy="10" r="1"></circle>
+                                    <circle cx="15" cy="10" r="1"></circle>
+                                </svg>
+                            </div>
+                            <p>¡Pregunta a tu profesor si tienes dudas!</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Botón flotante para acceder rápidamente a la página de cursos -->
+<a href="{{ url_for('main.home') }}#cursos" class="courses-fab float-animation">
+    <div class="courses-fab-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <circle cx="12" cy="10" r="2"></circle>
+            <path d="M12 14v4"></path>
+        </svg>
+    </div>
+    <span class="tooltip">Ver todos los cursos</span>
+</a>
 {% endblock %}
 
 {% block customJS %}
@@ -249,9 +852,9 @@
         // Animar la barra de progreso
         setTimeout(function() {
             const progressBar = document.querySelector('.progress-bar');
-            const chaptersCount = {{ chapters|length }};
-            const completedChapters = Math.floor(Math.random() * (chaptersCount + 1)); // Simulación
-            const progressPercentage = (chaptersCount > 0) ? (completedChapters / chaptersCount) * 100 : 0;
+            const chaptersCount = "{{ chapters|length }}";
+            const completedChapters = Math.floor(Math.random() * (parseInt(chaptersCount) + 1)); // Simulación
+            const progressPercentage = (parseInt(chaptersCount) > 0) ? (completedChapters / parseInt(chaptersCount)) * 100 : 0;
             
             progressBar.style.width = progressPercentage + '%';
             progressBar.setAttribute('aria-valuenow', progressPercentage);

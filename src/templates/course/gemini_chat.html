@@ -1,0 +1,566 @@
+{% extends "course/base_course.html" %}
+
+{% block title %}Sparky IA - {{ course[1] }}{% endblock %}
+
+{% block customCSS %}
+<style>
+    .chat-container {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        height: calc(100vh - 200px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .chat-header {
+        background: linear-gradient(135deg, #00b09b, #96c93d);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .chat-header h4 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .chat-header h4 i {
+        margin-right: 10px;
+        font-size: 1.5rem;
+    }
+    
+    .chat-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-footer {
+        padding: 15px;
+        background-color: white;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        max-width: 80%;
+        padding: 12px 15px;
+        border-radius: 15px;
+        position: relative;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .user-message {
+        align-self: flex-end;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .ai-message {
+        align-self: flex-start;
+        background-color: white;
+        border: 1px solid #e9ecef;
+        border-bottom-left-radius: 5px;
+    }
+    
+    .ai-message pre {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+        margin: 10px 0;
+    }
+    
+    .message-time {
+        font-size: 0.7rem;
+        opacity: 0.7;
+        margin-top: 5px;
+        text-align: right;
+    }
+    
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        max-width: 80%;
+        padding: 12px 15px;
+        border-radius: 15px;
+        align-self: flex-start;
+        background-color: white;
+        border: 1px solid #e9ecef;
+    }
+    
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #aaa;
+        border-radius: 50%;
+        margin: 0 2px;
+        display: inline-block;
+        animation: typing 1.5s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typing {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    .activities-container {
+        margin-top: 20px;
+    }
+    
+    .activity-card {
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .activity-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .activity-card .card-body {
+        padding: 15px;
+    }
+    
+    .activity-card .card-title {
+        font-size: 1rem;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    
+    .activity-card .card-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+    
+    .btn-send {
+        background: linear-gradient(135deg, #00b09b, #96c93d);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+    
+    .btn-send:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-send i {
+        margin-left: 5px;
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(0, 176, 155, 0.25);
+        border-color: #00b09b;
+    }
+    
+    .activity-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .btn-activity {
+        flex: 1;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 20px;
+    }
+    
+    .btn-activity.btn-fill {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        border: none;
+    }
+    
+    .btn-activity.btn-outline {
+        background: transparent;
+        color: #6a11cb;
+        border: 1px solid #6a11cb;
+    }
+    
+    .welcome-message {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-left: 4px solid #00b09b;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .welcome-message h5 {
+        color: #343a40;
+        margin-bottom: 10px;
+    }
+    
+    .welcome-message p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+    
+    /* Botón flotante para volver a la página de cursos */
+    .courses-fab {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        border-radius: 50%;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .courses-fab:hover {
+        transform: scale(1.1) rotate(-10deg);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        color: white;
+    }
+
+    .courses-fab i.bi {
+        font-size: 1.5rem;
+    }
+
+    .courses-fab .tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        bottom: 70px;
+        left: 0;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .courses-fab:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .courses-fab ion-icon {
+        font-size: 1.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h4><i class="bi bi-cpu"></i> Sparky IA</h4>
+                    <span class="badge bg-light text-dark">Curso: {{ course[1] }}</span>
+                </div>
+                <div class="chat-body" id="chatBody">
+                    <!-- El mensaje de bienvenida se cargará dinámicamente -->
+                </div>
+                <div class="chat-footer">
+                    <form id="chatForm">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="messageInput" placeholder="Escribe tu mensaje aquí..." autocomplete="off">
+                            <button class="btn btn-send" type="submit">
+                                Enviar <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="welcome-message">
+                <h5><i class="bi bi-stars me-2"></i>¡Bienvenido al asistente de {{ course[1] }}!</h5>
+                <p>Este asistente está diseñado especialmente para ayudarte con este curso. Puedes hacerme preguntas o probar las actividades sugeridas.</p>
+            </div>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold"><i class="bi bi-lightbulb me-2"></i> Actividades Sugeridas</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Selecciona una actividad para comenzar:</p>
+                    <div id="activitiesContainer" class="activities-container">
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold"><i class="bi bi-info-circle me-2"></i> Acerca de Sparky</h6>
+                </div>
+                <div class="card-body">
+                    <p>Sparky es una inteligencia artificial que puede ayudarte con:</p>
+                    <ul class="mb-0">
+                        <li>Responder preguntas sobre el curso</li>
+                        <li>Crear historias y cuentos educativos</li>
+                        <li>Explicar conceptos de manera sencilla</li>
+                        <li>Proponer actividades divertidas</li>
+                        <li>¡Y mucho más!</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2 mt-4">
+                <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left me-2"></i> Volver al curso
+                </a>
+                <a href="{{ url_for('main.home') }}#cursos" class="btn btn-info">
+                    <i class="bi bi-grid-3x3-gap me-2"></i> Ver todos los cursos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botón flotante para acceder rápidamente a la página de cursos -->
+<a href="{{ url_for('main.home') }}#cursos" class="courses-fab">
+    <i class="bi bi-grid-3x3-gap"></i>
+    <span class="tooltip">Ver todos los cursos</span>
+</a>
+{% endblock %}
+
+{% block customJS %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatBody = document.getElementById('chatBody');
+        const chatForm = document.getElementById('chatForm');
+        const messageInput = document.getElementById('messageInput');
+        const activitiesContainer = document.getElementById('activitiesContainer');
+        
+        // Obtener IDs del curso y capítulo
+        const courseId = parseInt("{{ course[0] }}");
+        const courseName = "{{ course[1] }}";
+        const chapterId = parseInt("{{ chapter[0] }}");
+        const chapterName = "{{ chapter[1] }}";
+        
+        // Verificar si hay un prompt inicial
+        let initialPrompt = null;
+        {% if initial_prompt %}
+        initialPrompt = "{{ initial_prompt|safe }}";
+        {% endif %}
+        
+        // Mensajes de bienvenida personalizados según el curso
+        const welcomeMessages = {
+            1: `¡Hola! Soy Sparky, tu asistente para el curso de ${courseName}. Estoy aquí para ayudarte a aprender sobre inteligencia artificial básica de una manera divertida y fácil de entender. ¿Qué te gustaría hacer hoy?`,
+            2: `¡Hola! Soy Sparky, tu asistente creativo para el curso de ${courseName}. Puedo ayudarte a crear historias, personajes y aventuras relacionadas con la tecnología. ¿Comenzamos a crear algo juntos?`,
+            3: `¡Hola! Soy Sparky, tu tutor de programación para el curso de ${courseName}. Estoy aquí para explicarte conceptos de programación de manera sencilla y divertida. ¿Qué te gustaría aprender hoy?`
+        };
+        
+        // Mensaje de bienvenida predeterminado
+        const defaultWelcome = `¡Hola! Soy Sparky, tu asistente de IA para el curso de ${courseName}. Estoy aquí para responder tus preguntas y ayudarte con actividades divertidas. ¿En qué puedo ayudarte hoy?`;
+        
+        // Mostrar mensaje de bienvenida personalizado
+        const welcomeMessage = welcomeMessages[courseId] || defaultWelcome;
+        addMessage(welcomeMessage);
+        
+        // Si hay un prompt inicial, enviarlo automáticamente después de un breve retraso
+        if (initialPrompt) {
+            setTimeout(function() {
+                sendMessage(initialPrompt);
+            }, 1000);
+        }
+        
+        // Función para agregar un mensaje al chat
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isUser ? 'message user-message' : 'message ai-message';
+            
+            // Procesar el texto para detectar bloques de código
+            let processedText = text;
+            if (!isUser) {
+                processedText = text.replace(/```([\s\S]*?)```/g, function(match, code) {
+                    return `<pre>${code}</pre>`;
+                });
+            }
+            
+            messageDiv.innerHTML = `
+                <p>${processedText}</p>
+                <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            `;
+            
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        
+        // Función para mostrar el indicador de escritura
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.id = 'typingIndicator';
+            indicator.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            chatBody.appendChild(indicator);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        
+        // Función para ocultar el indicador de escritura
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+        
+        // Función para enviar mensaje a la API
+        function sendMessage(message) {
+            // Agregar el mensaje del usuario al chat
+            addMessage(message, true);
+            
+            // Mostrar indicador de escritura
+            showTypingIndicator();
+            
+            // Enviar la solicitud a la API
+            fetch('{{ url_for("gemini.generate_content") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    prompt: message,
+                    course_id: courseId,
+                    chapter_id: chapterId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Ocultar indicador de escritura
+                hideTypingIndicator();
+                
+                if (data.success) {
+                    // Agregar la respuesta de la IA al chat
+                    addMessage(data.text);
+                } else {
+                    // Mostrar mensaje de error
+                    addMessage('Lo siento, ocurrió un error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                // Ocultar indicador de escritura
+                hideTypingIndicator();
+                
+                // Mostrar mensaje de error
+                addMessage('Lo siento, ocurrió un error al comunicarse con el servidor.');
+                console.error('Error:', error);
+            });
+        }
+        
+        // Manejar el envío del formulario
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Enviar mensaje
+            sendMessage(message);
+            
+            // Limpiar el campo de entrada
+            messageInput.value = '';
+        });
+        
+        // Cargar actividades sugeridas específicas del capítulo
+        const activitiesUrl = `{{ url_for("gemini.get_activities", course_id=course[0]) }}?chapter_id=${chapterId}`;
+        
+        fetch(activitiesUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Limpiar el contenedor de actividades
+                    activitiesContainer.innerHTML = '';
+                    
+                    // Agregar cada actividad
+                    data.activities.forEach(activity => {
+                        const activityCard = document.createElement('div');
+                        activityCard.className = 'card activity-card';
+                        activityCard.innerHTML = `
+                            <div class="card-body">
+                                <h5 class="card-title">${activity.title}</h5>
+                                <p class="card-text">${activity.prompt.substring(0, 50)}...</p>
+                                <div class="activity-buttons">
+                                    <button class="btn btn-activity btn-fill btn-execute">Ejecutar</button>
+                                    <button class="btn btn-activity btn-outline btn-copy">Copiar</button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Botón para ejecutar directamente
+                        const executeBtn = activityCard.querySelector('.btn-execute');
+                        executeBtn.addEventListener('click', function() {
+                            sendMessage(activity.prompt);
+                        });
+                        
+                        // Botón para copiar al campo de entrada
+                        const copyBtn = activityCard.querySelector('.btn-copy');
+                        copyBtn.addEventListener('click', function() {
+                            messageInput.value = activity.prompt;
+                            messageInput.focus();
+                        });
+                        
+                        activitiesContainer.appendChild(activityCard);
+                    });
+                } else {
+                    activitiesContainer.innerHTML = `
+                        <div class="alert alert-warning">
+                            No se pudieron cargar las actividades sugeridas.
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                activitiesContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        Error al cargar las actividades sugeridas.
+                    </div>
+                `;
+                console.error('Error:', error);
+            });
+    });
+</script>
+{% endblock %}

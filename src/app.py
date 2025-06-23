@@ -15,6 +15,7 @@ from routes.main_routes import main_bp
 from routes.admin_routes import admin_bp
 from routes.course_routes import course_bp
 from routes.media_routes import media_bp
+from routes.gemini_routes import gemini_bp
 
 # Nota: Para herramientas de diagnóstico, utilizar:
 # from utils.check_exams import check_exams
@@ -36,8 +37,9 @@ def create_app(config_name='development'):
     app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
     
     # Configuración de sesión para mejorar la seguridad
-    app.config['SESSION_PERMANENT'] = False  # Las sesiones no son permanentes
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)  # Duración máxima de 1 hora
+    # Para sesiones normales: 1 hora (controlado por middleware). 
+    # Para sesiones con "Recuérdame" activado: 30 días
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
     app.config['SESSION_COOKIE_HTTPONLY'] = True  # Evitar acceso a cookies por JavaScript
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Protección contra CSRF
     
@@ -57,6 +59,7 @@ def create_app(config_name='development'):
     app.register_blueprint(admin_bp)
     app.register_blueprint(course_bp)
     app.register_blueprint(media_bp)
+    app.register_blueprint(gemini_bp)
     
     # Middleware para verificar la validez de la sesión en cada solicitud
     @app.before_request
@@ -76,13 +79,15 @@ def create_app(config_name='development'):
                 flash('Tu sesión ha caducado. Por favor, inicia sesión nuevamente.', 'warning')
                 return redirect(url_for('auth.login'))
                 
-            # Verificar si la sesión ha expirado (1 hora = 3600 segundos)
+            # Si session.permanent es True (remember me), extender la sesión
+            # Si no, verificar si ha expirado (1 hora = 3600 segundos)
             current_time = int(time.time())
-            session_age = current_time - session['timestamp']
-            if session_age > 3600:
-                session.clear()
-                flash('Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.', 'warning')
-                return redirect(url_for('auth.login'))
+            if not session.get('permanent', False):
+                session_age = current_time - session['timestamp']
+                if session_age > 3600:
+                    session.clear()
+                    flash('Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.', 'warning')
+                    return redirect(url_for('auth.login'))
                 
             # Actualizar la marca de tiempo para extender la sesión
             session['timestamp'] = current_time

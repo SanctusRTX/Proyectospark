@@ -1,8 +1,9 @@
-from flask import session, flash
+from flask import session, flash, request
 from extensions.extensions import db
 from models.ModelUser import ModelUser
 from models.entities.User import User
 import time
+from datetime import timedelta
 
 class AuthController:
     @staticmethod
@@ -21,6 +22,15 @@ class AuthController:
                 session['fullname'] = logged_user.fullname
                 session['user_role'] = logged_user.role
                 session['timestamp'] = int(time.time())
+                
+                # Si el checkbox "remember me" está marcado
+                remember = request.form.get('remember')
+                if remember:
+                    # Establecer la sesión como permanente
+                    session.permanent = True
+                else:
+                    session.permanent = False
+                
                 return True, None
             else:
                 return False, "Contraseña incorrecta"

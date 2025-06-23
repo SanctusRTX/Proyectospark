@@ -1,7 +1,7 @@
 {% extends './base_courses.html' %}
 
 {% block title %}Spark - Plataforma Educativa{% endblock %}
-{% block body %}
+
 {% block customCSS %}
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -12,6 +12,7 @@
         --dark-color: #0f0a06;
         --light-color: #f8f9fa;
         --accent-color: #ff006e;
+        --blue-accent: #4cc9f0;
     }
     
     body {
@@ -86,174 +87,305 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     
-    /* Hero Section con Video de Fondo - Tamaño reducido y efecto parallax */
+    /* Hero Section con Carrusel - Animaciones mejoradas */
     .hero-section {
         color: white;
-        padding: 4rem 0;
+        padding: 0;
         position: relative;
         overflow: hidden;
-        height: 70vh; /* Altura reducida */
+        height: 70vh;
         min-height: 500px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        perspective: 1000px; /* Para efecto parallax */
+        background: linear-gradient(135deg, #0f0a06 0%, #1a1a2e 100%);
     }
     
-    .video-background {
+    /* Carrusel mejorado con transiciones */
+    .hero-carousel {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         z-index: 0;
-        overflow: hidden;
-        transform: translateZ(-10px) scale(2); /* Efecto parallax */
-        transform-origin: center;
-        transition: transform 0.5s ease-out;
     }
     
-    .video-background::after {
+    .hero-carousel .carousel-item {
+        height: 70vh;
+        min-height: 500px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        transition: transform 1.2s ease-in-out, opacity 1.2s ease-in-out;
+    }
+    
+    /* Fondos predefinidos para las diapositivas del carrusel */
+    .carousel-bg-1 {
+        background-image: url("{{ url_for('static', filename='img/background2.png') }}");
+    }
+    
+    .carousel-bg-2 {
+        background-image: url("{{ url_for('static', filename='img/background3.png') }}");
+    }
+    
+    .carousel-bg-3 {
+        background-image: url("{{ url_for('static', filename='img/background4.png') }}");
+    }
+    
+    /* Mejora de overlay con gradiente animado */
+    .hero-carousel .carousel-item::after {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, rgba(15, 10, 6, 0.8) 0%, rgba(42, 42, 42, 0.7) 100%);
+        background: rgba(0, 0, 0, 0.4); /* Reemplazado con un overlay sencillo y sutil */
         z-index: 1;
+        pointer-events: none;
     }
     
-    /* Contenedor de partículas */
-    .particles-container {
+    /* Eliminar la animación gradientShift que causaba el overlay azul */
+    @keyframes gradientShift {
+        0%, 100% { 
+            background: rgba(0, 0, 0, 0.4);
+        }
+    }
+    
+    /* Indicadores del carrusel mejorados y animados */
+    .hero-carousel .carousel-indicators {
+        margin-bottom: 2rem;
+        z-index: 5;
+    }
+    
+    .hero-carousel .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.5);
+        margin: 0 5px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-carousel .carousel-indicators button::after {
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        overflow: hidden;
-        z-index: 1;
+        background: var(--secondary-color);
+        transform: scale(0);
+        opacity: 0;
+        transition: all 0.5s ease;
+        border-radius: 50%;
     }
     
-    /* Animación para las partículas flotantes */
-    @keyframes float {
-        0% {
-            transform: translateY(0) translateX(0) rotate(0);
-        }
-        25% {
-            transform: translateY(-20px) translateX(10px) rotate(5deg);
-        }
-        50% {
-            transform: translateY(10px) translateX(-15px) rotate(-5deg);
-        }
-        75% {
-            transform: translateY(-15px) translateX(5px) rotate(2deg);
-        }
-        100% {
-            transform: translateY(0) translateX(0) rotate(0);
-        }
+    .hero-carousel .carousel-indicators button.active::after {
+        transform: scale(1);
+        opacity: 1;
     }
     
-    .video-background video {
-        position: absolute;
-        min-width: 100%;
-        min-height: 100%;
-        width: auto;
-        height: auto;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        object-fit: cover;
+    .hero-carousel .carousel-indicators button.active {
+        transform: scale(1.2);
+        background-color: transparent;
     }
     
-    .hero-content {
-        position: relative;
-        z-index: 2;
-        animation: fadeInUp 1s ease-out forwards;
+    /* Controles del carrusel con efectos al pasar el mouse */
+    .hero-carousel .carousel-control-prev,
+    .hero-carousel .carousel-control-next {
+        z-index: 5;
+        width: 10%;
+        opacity: 0.7;
+        transition: all 0.3s ease;
     }
     
-    @keyframes fadeInUp {
+    .hero-carousel .carousel-control-prev:hover,
+    .hero-carousel .carousel-control-next:hover {
+        opacity: 1;
+    }
+    
+    .hero-carousel .carousel-control-prev-icon,
+    .hero-carousel .carousel-control-next-icon {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(0, 255, 221, 0.3);
+        border-radius: 50%;
+        background-size: 50%;
+        background-position: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+    
+    .hero-carousel .carousel-control-prev:hover .carousel-control-prev-icon,
+    .hero-carousel .carousel-control-next:hover .carousel-control-next-icon {
+        background-color: rgba(0, 255, 221, 0.5);
+        transform: scale(1.2);
+    }
+    
+    /* Animaciones para contenido del carrusel */
+    .carousel-item.active .hero-title {
+        animation: slideInDown 1s ease forwards;
+    }
+    
+    .carousel-item.active .hero-subtitle {
+        animation: slideInUp 1s ease 0.3s forwards;
+        opacity: 0;
+        animation-fill-mode: forwards;
+    }
+    
+    .carousel-item.active .carousel-btn {
+        animation: fadeInZoom 1s ease 0.6s forwards;
+        opacity: 0;
+        animation-fill-mode: forwards;
+    }
+    
+    @keyframes slideInDown {
         from {
+            transform: translateY(-50px);
             opacity: 0;
-            transform: translateY(30px);
         }
         to {
-            opacity: 1;
             transform: translateY(0);
+            opacity: 1;
         }
     }
     
+    @keyframes slideInUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeInZoom {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    /* Contenido del Hero con animaciones */
+    .hero-content {
+        position: relative;
+        z-index: 10;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Estilos de texto con efectos más dinámicos */
     .hero-title {
         font-size: 3.8rem;
         font-weight: 800;
         margin-bottom: 1.5rem;
-        background: linear-gradient(90deg, #fff, var(--secondary-color), #4cc9f0);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: white;
         line-height: 1.2;
-        animation: shine 3s linear infinite;
-        text-shadow: 0 5px 15px rgba(0, 255, 221, 0.3);
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        position: relative;
     }
     
-    @keyframes shine {
-        to {
-            background-position: 200% center;
-        }
+    .hero-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--secondary-color), var(--blue-accent));
+        border-radius: 2px;
     }
     
     .hero-subtitle {
         font-size: 1.5rem;
         font-weight: 300;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
         max-width: 700px;
-        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-        animation: fadeIn 1.5s ease-out forwards;
+        color: rgba(255, 255, 255, 0.9);
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
     
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    .hero-btn {
-        background-color: var(--secondary-color);
-        color: var(--dark-color);
-        border: none;
-        padding: 0.8rem 2rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        border-radius: 50px;
-        transition: all 0.3s ease;
-        text-decoration: none;
+    /* Botones del carrusel con efectos mejorados */
+    .carousel-btn {
         display: inline-block;
+        background: linear-gradient(135deg, var(--secondary-color), var(--blue-accent));
+        color: var(--dark-color);
+        font-weight: 700;
+        padding: 15px 35px;
+        border-radius: 50px;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+        font-size: 1.1rem;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         position: relative;
+        z-index: 15;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 255, 221, 0.2);
+        min-width: 220px;
+        text-align: center;
         overflow: hidden;
-        z-index: 1;
-        animation: fadeIn 2s ease-out forwards;
     }
     
-    .hero-btn:before {
+    .carousel-btn::before {
         content: '';
         position: absolute;
         top: 0;
-        left: 0;
-        width: 0%;
+        left: -100%;
+        width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.2);
-        transition: width 0.4s ease;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: all 0.6s ease;
         z-index: -1;
     }
     
-    .hero-btn:hover:before {
-        width: 100%;
+    .carousel-btn:hover::before {
+        left: 100%;
     }
     
-    .hero-btn:hover {
-        background-color: #00e6c5;
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 255, 221, 0.5);
+    .carousel-btn::after {
+        content: "→";
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .carousel-btn:hover {
+        transform: translateY(-5px) scale(1.03);
+        padding-right: 50px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 255, 221, 0.4);
+        background: linear-gradient(135deg, var(--blue-accent), var(--secondary-color));
+        color: var(--dark-color);
+        text-decoration: none;
+    }
+    
+    .carousel-btn:hover::after {
+        opacity: 1;
+    }
+    
+    .carousel-btn:active {
+        transform: translateY(-2px) scale(0.98);
+    }
+    
+    /* Estilo para resaltar secciones al navegar */
+    .highlight-section {
+        animation: highlight-pulse 1s ease-in-out;
+    }
+    
+    @keyframes highlight-pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 221, 0); }
+        50% { box-shadow: 0 0 25px 5px rgba(0, 255, 221, 0.5); }
     }
     
     /* Course Cards */
@@ -262,123 +394,38 @@
         background-color: #f8f9fa;
     }
     
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--dark-color);
-        text-align: center;
-    }
-    
-    .section-subtitle {
-        font-size: 1.1rem;
-        color: #6c757d;
-        text-align: center;
-        margin-bottom: 3rem;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    /* Estilos mejorados para las tarjetas de cursos */
-    .card {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        cursor: pointer;
-        height: 100%;
-        border-radius: 15px;
+    .course-card {
+        transition: all 0.3s ease;
+        position: relative;
         overflow: hidden;
         border: none;
-        background-color: #ffffff;
-        position: relative;
+        border-radius: 12px;
     }
     
-    .course-card {
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
-    }
-    
-    .card:hover {
+    .course-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
     }
     
     .card-badge {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        background: linear-gradient(135deg, var(--secondary-color), #4cc9f0);
+        top: 10px;
+        right: 10px;
+        background: linear-gradient(135deg, var(--secondary-color), var(--blue-accent));
         color: var(--dark-color);
-        font-weight: 600;
+        padding: 5px 15px;
+        border-radius: 20px;
         font-size: 0.8rem;
-        padding: 5px 12px;
-        border-radius: 30px;
-        z-index: 10;
+        font-weight: bold;
+        z-index: 2;
         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        animation: pulse 2s infinite;
+        transform: rotate(5deg);
     }
-    
+
     .card-img-container {
-        height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        background-color: #f8f9fa;
         position: relative;
         overflow: hidden;
-    }
-    
-    .card-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-        opacity: 0;
-        transition: all 0.4s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2;
-    }
-    
-    .card:hover .card-overlay {
-        opacity: 1;
-    }
-    
-    .overlay-content {
-        text-align: center;
-        color: white;
-        transform: translateY(20px);
-        transition: all 0.4s ease;
-    }
-    
-    .card:hover .overlay-content {
-        transform: translateY(0);
-    }
-    
-    .overlay-content i {
-        font-size: 3rem;
-        margin-bottom: 10px;
-        display: block;
-        color: var(--secondary-color);
-    }
-    
-    .overlay-content span {
-        font-size: 1rem;
-        font-weight: 500;
-        display: block;
-    }
-    
-    .card-img-container::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.1) 100%);
-        z-index: 1;
+        height: 200px;
     }
     
     .card-img-container img {
@@ -386,236 +433,61 @@
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s ease;
-        z-index: 0;
     }
     
-    .card:hover .card-img-container img {
-        transform: scale(1.05);
+    .course-card:hover .card-img-container img {
+        transform: scale(1.1);
     }
     
     .card-link {
-        color: inherit;
         text-decoration: none;
+        color: inherit;
         display: block;
         height: 100%;
     }
     
-    .card-link:hover {
-        text-decoration: none;
-        color: inherit;
-    }
-    
-    .card-body {
-        padding: 1.5rem;
-    }
-    
-    .card-title {
-        font-weight: 600;
-        color: var(--dark-color);
-        margin-bottom: 0.5rem;
-        font-size: 1.25rem;
-        text-align: center;
-    }
-    
-    .card-text {
-        color: #6c757d;
-        font-size: 0.9rem;
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-    
-    .card-stats {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(0,0,0,0.05);
-    }
-    
-    .stat-item {
-        display: flex;
-        align-items: center;
-        font-size: 0.85rem;
-        color: #6c757d;
-    }
-    
-    .stat-item i {
-        margin-right: 5px;
-        color: var(--secondary-color);
-    }
-    
-    .card-footer {
-        background: transparent;
-        border-top: none;
-        padding: 0 1.5rem 1.5rem;
-    }
-    
-    .card-footer .btn {
-        background: linear-gradient(135deg, var(--secondary-color), #4cc9f0);
-        color: var(--dark-color);
-        font-weight: 600;
-        border: none;
-        transition: all 0.3s;
-    }
-    
-    .card-footer .btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 255, 221, 0.3);
-    }
-    
-    /* Login Required Message */
     .login-required-message {
-        background-color: #f8f9fa;
+        padding: 3rem;
+        background-color: rgba(255, 255, 255, 0.7);
         border-radius: 15px;
-        padding: 3rem 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        margin: 2rem 0;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
     }
     
     .login-icon {
         font-size: 4rem;
         color: var(--primary-color);
-        animation: pulse 2s infinite;
     }
     
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-            opacity: 1;
-        }
-        50% {
-            transform: scale(1.1);
-            opacity: 0.8;
-        }
-        100% {
-            transform: scale(1);
-            opacity: 1;
-        }
-    }
-    
-    /* Features Section */
+    /* Estilos para la sección features (beneficios) */
     .features-section {
         padding: 5rem 0;
-        background-color: #ffffff;
+        background-color: #f8f9fa;
     }
     
-    .feature-box {
-        text-align: center;
-        padding: 2rem;
-        transition: transform 0.3s ease;
-    }
-    
-    .feature-box:hover {
-        transform: translateY(-5px);
-    }
-    
-    .feature-icon {
-        font-size: 3rem;
-        color: var(--primary-color);
-        margin-bottom: 1.5rem;
-    }
-    
-    .feature-title {
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: var(--dark-color);
-    }
-    
-    .feature-text {
-        color: #6c757d;
-    }
-    
-    /* Footer */
-    footer {
-        background-color: var(--dark-color);
-        color: white;
-        padding: 3rem 0;
-    }
-    
-    .footer-title {
+    /* Estilos comunes para todas las secciones */
+    .section-title {
+        font-size: 2.5rem;
         font-weight: 700;
-        margin-bottom: 1.5rem;
-        color: white;
-    }
-    
-    .footer-links {
-        list-style: none;
-        padding: 0;
-    }
-    
-    .footer-links li {
-        margin-bottom: 0.5rem;
-    }
-    
-    .footer-links a {
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-    
-    .footer-links a:hover {
-        color: var(--secondary-color);
-    }
-    
-    .social-links {
-        display: flex;
-        gap: 1rem;
-    }
-    
-    .social-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.1);
-        color: white;
-        transition: all 0.3s ease;
-    }
-    
-    .social-link:hover {
-        background-color: var(--secondary-color);
-        color: var(--dark-color);
-        transform: translateY(-3px);
-    }
-    
-    .copyright {
+        margin-bottom: 1rem;
         text-align: center;
-        padding-top: 2rem;
-        margin-top: 2rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.7);
     }
     
-    /* Responsive Adjustments */
-    @media (max-width: 992px) {
-        .hero-title {
-            font-size: 2.5rem;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.2rem;
-        }
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-bottom: 2rem;
+        text-align: center;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
     }
     
-    @media (max-width: 768px) {
-        .hero-section {
-            padding: 4rem 0;
-        }
-        
-        .hero-title {
-            font-size: 2rem;
-        }
-        
-        .section-title {
-            font-size: 2rem;
-        }
-    }
+    /* Resto de estilos existentes para cards y otras secciones... */
 </style>
 {% endblock %}
 
-<!-- Barra de navegación -->
+{% block body %}
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" role="navigation" aria-label="Barra de navegación">
     <div class="container">
         <a class="navbar-brand" href="#">
@@ -675,31 +547,61 @@
     </div>
 </nav>
 
-<!-- Hero Section con Video de Fondo -->
+<!-- Hero Section con Carrusel Mejorado -->
 <section class="hero-section">
-    <!-- Video de fondo -->
-    <div class="video-background">
-        <video autoplay loop muted playsinline>
-            <source src="{{ url_for('static', filename='videos/videofondo1.mp4') }}" type="video/mp4">
-            <!-- Fallback para navegadores que no soportan video -->
-            Tu navegador no soporta videos HTML5.
-        </video>
+    <div id="heroCarousel" class="carousel slide carousel-fade hero-carousel" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
         
-        <!-- Partículas flotantes usando el nuevo sistema -->
-        <div class="particles-container"></div>
-    </div>
-    
-    <div class="container">
-        <div class="row align-items-center hero-content">
-            <div class="col-lg-7">
-                <h1 class="hero-title" data-aos="fade-down" data-aos-delay="200">Spark: Innovación Educativa Digital</h1>
-                <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="400">Plataforma educativa diseñada para estudiantes de 5to y 6to grado de la Escuela Bolivariana "Gustavo Domínguez" en Venezuela.</p>
-                <a href="#cursos" class="hero-btn" data-aos="zoom-in" data-aos-delay="600">Explorar Contenidos</a>
+        <div class="carousel-inner">
+            <div class="carousel-item active carousel-bg-1">
+                <div class="container hero-content">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h1 class="hero-title">Spark: Innovación Educativa Digital</h1>
+                            <p class="hero-subtitle">Plataforma educativa diseñada para estudiantes de 5to y 6to grado de la Escuela Bolivariana "Gustavo Domínguez" en Venezuela.</p>
+                            <a href="#cursos" class="carousel-btn">Explorar Contenidos</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-5 d-none d-lg-block">
-                <!-- Espacio para posible contenido adicional -->
+            
+            <div class="carousel-item carousel-bg-2">
+                <div class="container hero-content">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h1 class="hero-title">Aprende a tu ritmo</h1>
+                            <p class="hero-subtitle">Descubre contenidos educativos interactivos diseñados para facilitar tu aprendizaje de manera divertida.</p>
+                            <a href="#cursos" class="carousel-btn">Ver Cursos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-item carousel-bg-3">
+                <div class="container hero-content">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <h1 class="hero-title">Tecnología y Educación</h1>
+                            <p class="hero-subtitle">Desarrolla competencias digitales esenciales para el futuro mientras aprendes sobre temas fundamentales.</p>
+                            <a href="#caracteristicas" class="carousel-btn">Descubrir Beneficios</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
     </div>
 </section>
 
@@ -784,19 +686,20 @@
 <!-- Sección Objetivos -->
 <section class="py-5" style="background: linear-gradient(135deg, rgba(58, 134, 255, 0.05) 0%, rgba(0, 255, 221, 0.05) 100%);">
     <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center mb-5">
+                <h2 class="section-title" data-aos="fade-up">Objetivos</h2>
+                <div class="d-flex justify-content-center" data-aos="fade-up">
+                    <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
+                </div>
+            </div>
+        </div>
+        
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
                 <img src="{{ url_for('static', filename='img/objetivos.svg') }}" alt="Objetivos" class="img-fluid" style="max-height: 300px;">
             </div>
             <div class="col-lg-6" data-aos="fade-left">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #7c4dff, #b388ff); color: white; position: relative;">
-                        <i class="bi bi-star fs-2"></i>
-                        <i class="bi bi-trophy fs-4" style="position: absolute; top: 5px; right: 5px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                        <i class="bi bi-flag fs-4" style="position: absolute; bottom: 5px; left: 5px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                    </div>
-                    <h2 class="mb-0 fw-bold">Objetivos</h2>
-                </div>
                 <ul class="list-unstyled">
                     <li class="mb-3 d-flex">
                         <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
@@ -828,59 +731,47 @@
     </div>
 </section>
 
-<!-- Sección Planes Futuros -->
-<section class="py-5" style="background-color: #ffffff;">
+<!-- Sección Features -->
+<section class="features-section py-5" id="caracteristicas">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center mb-5">
-                <h2 class="section-title" data-aos="fade-up">Planes Futuros</h2>
+                <h2 class="section-title" data-aos="fade-up">Beneficios de Nuestra Plataforma</h2>
                 <div class="d-flex justify-content-center" data-aos="fade-up">
                     <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
                 </div>
-                <p class="mb-5" data-aos="fade-up">Estamos comprometidos con la mejora continua de nuestra plataforma educativa para ofrecer una experiencia de aprendizaje cada vez más enriquecedora.</p>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="200">Ofrecemos una experiencia de aprendizaje única con características diseñadas para estudiantes de primaria.</p>
             </div>
         </div>
         
-        <div class="row">
+        <div class="row mt-3">
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px; background: linear-gradient(135deg, #00FFDD, #4cc9f0); color: var(--dark-color); position: relative;">
-                            <i class="bi bi-controller fs-2"></i>
-                            <i class="bi bi-puzzle fs-4" style="position: absolute; top: 10px; right: 10px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                            <i class="bi bi-stars fs-4" style="position: absolute; bottom: 10px; left: 10px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                        </div>
-                        <h4 class="text-center mb-3">Actividades Interactivas</h4>
-                        <p class="text-center mb-0">Desarrollo de actividades educativas interactivas que combinen aprendizaje con elementos de gamificación para una experiencia más atractiva.</p>
+                <div class="text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-lightning text-primary" style="font-size: 3rem;"></i>
                     </div>
+                    <h3>Aprendizaje Divertido</h3>
+                    <p>Metodología de enseñanza que combina el juego con el aprendizaje para hacer la experiencia más entretenida.</p>
                 </div>
             </div>
             
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; position: relative;">
-                            <i class="bi bi-graph-up fs-2"></i>
-                            <i class="bi bi-bar-chart-line fs-4" style="position: absolute; top: 10px; right: 10px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                            <i class="bi bi-arrow-up-circle fs-4" style="position: absolute; bottom: 10px; left: 10px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                        </div>
-                        <h4 class="text-center mb-3">Análisis de Progreso</h4>
-                        <p class="text-center mb-0">Implementación de un sistema avanzado de seguimiento que permita a docentes y estudiantes visualizar el progreso de aprendizaje de manera detallada.</p>
+                <div class="text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-person text-primary" style="font-size: 3rem;"></i>
                     </div>
+                    <h3>Contenido Adaptado</h3>
+                    <p>Material educativo diseñado específicamente para estudiantes de la Escuela, adaptado a sus necesidades de aprendizaje.</p>
                 </div>
             </div>
             
             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 70px; height: 70px; background: linear-gradient(135deg, #7c4dff, #b388ff); color: white; position: relative;">
-                            <i class="bi bi-people fs-2"></i>
-                            <i class="bi bi-chat-dots fs-4" style="position: absolute; top: 10px; right: 10px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                            <i class="bi bi-share fs-4" style="position: absolute; bottom: 10px; left: 10px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                        </div>
-                        <h4 class="text-center mb-3">Comunidad Educativa</h4>
-                        <p class="text-center mb-0">Creación de un espacio colaborativo donde estudiantes y docentes puedan compartir recursos, proyectos y experiencias de aprendizaje.</p>
+                <div class="text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-laptop text-primary" style="font-size: 3rem;"></i>
                     </div>
+                    <h3>Actividades Interactivas</h3>
+                    <p>Ejercicios prácticos y juegos educativos que refuerzan el aprendizaje de manera interactiva.</p>
                 </div>
             </div>
         </div>
@@ -888,172 +779,142 @@
 </section>
 
 <!-- Cursos Section -->
-<section class="courses-section" id="cursos">
+<section class="courses-section py-5" id="cursos">
     <div class="container">
-        <h2 class="section-title" data-aos="fade-up">Contenidos Educativos Interactivos</h2>
-        <div class="d-flex justify-content-center" data-aos="fade-up">
-            <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center mb-5">
+                <h2 class="section-title" data-aos="fade-up">Contenidos Educativos Interactivos</h2>
+                <div class="d-flex justify-content-center" data-aos="fade-up">
+                    <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
+                </div>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="200">Explora nuestra selección de contenidos diseñados especialmente para estudiantes de 5to y 6to grado.</p>
+            </div>
         </div>
-        <p class="section-subtitle" data-aos="fade-up" data-aos-delay="200">Explora nuestra selección de contenidos diseñados especialmente para estudiantes de 5to y 6to grado, con actividades interactivas que potencian el aprendizaje de herramientas digitales.</p>
         
         <div class="row">
             {% if is_authenticated %}
-            {% for course in courses %}
-            <div class="col-md-4 mb-4">
-                <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="card-link" aria-label="Enlace a {{ course[1] }}">
-                    <div class="card h-100 shadow course-card">
-                        <div class="card-badge">
-                            <span>¡Nuevo!</span>
-                        </div>
-                        <div class="card-img-container">
-                            <div class="card-overlay">
-                                <div class="overlay-content">
-                                    <i class="bi bi-play-circle"></i>
-                                    <span>Explorar curso</span>
-                                </div>
-                            </div>
-                            <img src="{{ url_for('static', filename=course[2]) }}" alt="{{ course[1] }}" class="img-fluid" loading="lazy">
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ course[1] }}</h5>
-                            <p class="card-text">Explora este contenido y comienza tu aventura de aprendizaje</p>
-                            <div class="card-stats">
-                                <div class="stat-item">
-                                    <i class="bi bi-book"></i>
-                                    <span>{{ loop.index * 3 }} lecciones</span>
-                                </div>
-                                <div class="stat-item">
-                                    <i class="bi bi-clock"></i>
-                                    <span>{{ loop.index * 10 }} min</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="btn btn-sm btn-primary w-100">¡Comenzar ahora!</div>
-                        </div>
-                    </div>
-                </a>
-            </div>
+              {% for course in courses %}
+              <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                  <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="card-link">
+                      <div class="card h-100 shadow course-card">
+                          <div class="card-badge">
+                              <span>¡Nuevo!</span>
+                          </div>
+                          <div class="card-img-container">
+                              <img src="{{ url_for('static', filename=course[2]) }}" alt="{{ course[1] }}" class="img-fluid" loading="lazy">
+                          </div>
+                          <div class="card-body">
+                              <h5 class="card-title">{{ course[1] }}</h5>
+                              <p class="card-text">Explora este contenido y comienza tu aventura de aprendizaje</p>
+                          </div>
+                          <div class="card-footer">
+                              <div class="btn btn-sm btn-primary w-100">¡Comenzar ahora!</div>
+                          </div>
+                      </div>
+                  </a>
+              </div>
+              {% else %}
+              <div class="col-12 text-center">
+                  <div class="login-required-message">
+                      <div class="login-icon mb-4">
+                          <i class="bi bi-lock-fill"></i>
+                      </div>
+                      <h3 class="mb-3">Inicia sesión para acceder a los contenidos</h3>
+                      <p class="mb-4">Para explorar nuestros cursos y comenzar tu aventura de aprendizaje, necesitas iniciar sesión o registrarte como invitado.</p>
+                      <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                          <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                      </a>
+                  </div>
+              </div>
+              {% endfor %}
             {% else %}
-            <div class="col-12 text-center">
-                <div class="alert alert-info" role="alert">
-                    No hay contenidos disponibles en este momento.
-                </div>
-            </div>
-            {% endfor %}
-            {% else %}
-                <div class="col-12 text-center">
-                    <div class="login-required-message">
-                        <div class="login-icon mb-4">
-                            <i class="bi bi-lock-fill"></i>
-                        </div>
-                        <h3 class="mb-3">Inicia sesión para acceder a los contenidos</h3>
-                        <p class="mb-4">Para explorar nuestros cursos y comenzar tu aventura de aprendizaje, necesitas iniciar sesión o registrarte como invitado.</p>
-                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
-                        </a>
-                    </div>
-                </div>
+              <div class="col-12 text-center">
+                  <div class="login-required-message">
+                      <div class="login-icon mb-4">
+                          <i class="bi bi-lock-fill"></i>
+                      </div>
+                      <h3 class="mb-3">Inicia sesión para acceder a los contenidos</h3>
+                      <p class="mb-4">Para explorar nuestros cursos y comenzar tu aventura de aprendizaje, necesitas iniciar sesión o registrarte como invitado.</p>
+                      <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                          <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                      </a>
+                  </div>
+              </div>
             {% endif %}
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
-<section class="features-section" id="caracteristicas">
+<!-- Sección Desarrolladores -->
+<section id="programadores" class="py-5" style="background-color: #ffffff;">
     <div class="container">
-        <h2 class="section-title">Beneficios de Nuestra Plataforma</h2>
-        <p class="section-subtitle">Ofrecemos una experiencia de aprendizaje única con características diseñadas para estudiantes de primaria.</p>
-        
-        <div class="row mt-5">
-            <div class="col-md-4 mb-4">
-                <div class="feature-box">
-                    <div class="feature-icon">
-                        <i class="bi bi-lightning"></i>
-                    </div>
-                    <h3 class="feature-title">Aprendizaje Divertido</h3>
-                    <p class="feature-text">Metodología de enseñanza que combina el juego con el aprendizaje para hacer la experiencia más entretenida.</p>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center mb-5">
+                <h2 class="section-title" data-aos="fade-up">Equipo de Desarrollo</h2>
+                <div class="d-flex justify-content-center" data-aos="fade-up">
+                    <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
                 </div>
-            </div>
-            
-            <div class="col-md-4 mb-4">
-                <div class="feature-box">
-                    <div class="feature-icon">
-                        <i class="bi bi-person"></i>
-                    </div>
-                    <h3 class="feature-title">Contenido Adaptado</h3>
-                    <p class="feature-text">Material educativo diseñado específicamente para estudiantes de la Escuela El Recreo, adaptado a sus necesidades de aprendizaje.</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4 mb-4">
-                <div class="feature-box">
-                    <div class="feature-icon">
-                        <i class="bi bi-laptop"></i>
-                    </div>
-                    <h3 class="feature-title">Actividades Interactivas</h3>
-                    <p class="feature-text">Ejercicios prácticos y juegos educativos que refuerzan el aprendizaje de manera interactiva.</p>
-                </div>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="200">Conoce a los estudiantes universitarios que han hecho posible esta plataforma educativa.</p>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- Programadores Section -->
-<section class="features-section bg-light" id="programadores">
-    <div class="container">
-        <h2 class="section-title">Nuestro Equipo de Desarrollo</h2>
-        <p class="section-subtitle">Conoce a los jóvenes programadores universitarios que han hecho posible esta plataforma educativa.</p>
         
-        <div class="row mt-5">
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow">
-                    <div class="card-img-container">
-                        <!-- Espacio para foto -->
-                        <img src="{{ url_for('static', filename='img/placeholder-profile.jpg') }}" alt="Josue Santos" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Josue Santos</h5>
-                        <p class="card-text">Estudiante universitario de Ingeniería Informática. Especializado en desarrollo backend.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow">
-                    <div class="card-img-container">
-                        <!-- Espacio para foto -->
-                        <img src="{{ url_for('static', filename='img/placeholder-profile.jpg') }}" alt="Daniel Moncayo" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Daniel Moncayo</h5>
-                        <p class="card-text">Estudiante universitario de Ingeniería de Sistemas. Enfocado en diseño de interfaces y experiencia de usuario.</p>
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100 border-0 shadow-sm developer-card">
+                    <div class="card-body text-center p-4">
+                        <div class="developer-avatar mb-3 mx-auto">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; font-size: 2.5rem; margin: 0 auto;">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        </div>
+                        <h5 class="mb-1">Jhon Doe</h5>
+                        <p class="text-muted mb-3">Desarrollador Principal</p>
+                        <p class="mb-3">Estudiante de Ingeniería en Sistemas, encargado del desarrollo del backend y la integración con bases de datos.</p>
+                        <div class="developer-social">
+                            <a href="#" class="me-2 text-decoration-none"><i class="bi bi-github"></i></a>
+                            <a href="#" class="me-2 text-decoration-none"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="text-decoration-none"><i class="bi bi-envelope"></i></a>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow">
-                    <div class="card-img-container">
-                        <!-- Espacio para foto -->
-                        <img src="{{ url_for('static', filename='img/placeholder-profile.jpg') }}" alt="Gabriel Villegas" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Gabriel Villegas</h5>
-                        <p class="card-text">Estudiante universitario de Ciencias de la Computación. Especialista en desarrollo de contenidos educativos.</p>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100 border-0 shadow-sm developer-card">
+                    <div class="card-body text-center p-4">
+                        <div class="developer-avatar mb-3 mx-auto">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; background: linear-gradient(135deg, #ff006e, #ff4e00); color: white; font-size: 2.5rem; margin: 0 auto;">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        </div>
+                        <h5 class="mb-1">Jane Smith</h5>
+                        <p class="text-muted mb-3">Diseñadora UI/UX</p>
+                        <p class="mb-3">Estudiante de Diseño Gráfico Digital, responsable del diseño de interfaz y experiencia de usuario.</p>
+                        <div class="developer-social">
+                            <a href="#" class="me-2 text-decoration-none"><i class="bi bi-github"></i></a>
+                            <a href="#" class="me-2 text-decoration-none"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="text-decoration-none"><i class="bi bi-envelope"></i></a>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow">
-                    <div class="card-img-container">
-                        <!-- Espacio para foto -->
-                        <img src="{{ url_for('static', filename='img/placeholder-profile.jpg') }}" alt="Juan Diego" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                    </div>
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Juan Diego</h5>
-                        <p class="card-text">Estudiante universitario de Ingeniería de Software. Experto en bases de datos y seguridad.</p>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100 border-0 shadow-sm developer-card">
+                    <div class="card-body text-center p-4">
+                        <div class="developer-avatar mb-3 mx-auto">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; background: linear-gradient(135deg, #7c4dff, #00bcd4); color: white; font-size: 2.5rem; margin: 0 auto;">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        </div>
+                        <h5 class="mb-1">Carlos Rodríguez</h5>
+                        <p class="text-muted mb-3">Desarrollador de Contenido</p>
+                        <p class="mb-3">Estudiante de Educación, encargado de adaptar el contenido pedagógico al formato digital.</p>
+                        <div class="developer-social">
+                            <a href="#" class="me-2 text-decoration-none"><i class="bi bi-github"></i></a>
+                            <a href="#" class="me-2 text-decoration-none"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="text-decoration-none"><i class="bi bi-envelope"></i></a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1061,283 +922,238 @@
     </div>
 </section>
 
-<!-- Footer -->
-<footer id="contacto">
+<!-- Sección Contacto -->
+<section id="contacto" class="py-5" style="background: linear-gradient(135deg, rgba(58, 134, 255, 0.08) 0%, rgba(0, 255, 221, 0.08) 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center mb-5">
+                <h2 class="section-title" data-aos="fade-up">Contáctanos</h2>
+                <div class="d-flex justify-content-center" data-aos="fade-up">
+                    <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
+                </div>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="200">¿Tienes preguntas o sugerencias sobre nuestra plataforma educativa? ¡Contáctanos!</p>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card border-0 shadow-sm" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-5 mb-4 mb-md-0">
+                                <h4 class="mb-4"><i class="bi bi-geo-alt me-2 text-primary"></i>Ubicación</h4>
+                                <p>Escuela Bolivariana "Gustavo Domínguez"<br>Av. Principal, Ciudad<br>Venezuela</p>
+                                
+                                <h4 class="mb-4 mt-5"><i class="bi bi-envelope me-2 text-primary"></i>Correo Electrónico</h4>
+                                <p><a href="mailto:contacto@spark.edu.ve" class="text-decoration-none">contacto@spark.edu.ve</a></p>
+                                
+                                <h4 class="mb-4 mt-5"><i class="bi bi-telephone me-2 text-primary"></i>Teléfono</h4>
+                                <p><a href="tel:+58123456789" class="text-decoration-none">+58 123 456 789</a></p>
+                                
+                                <div class="social-links mt-4">
+                                    <a href="#" class="btn btn-outline-primary rounded-circle me-2"><i class="bi bi-facebook"></i></a>
+                                    <a href="#" class="btn btn-outline-primary rounded-circle me-2"><i class="bi bi-twitter"></i></a>
+                                    <a href="#" class="btn btn-outline-primary rounded-circle me-2"><i class="bi bi-instagram"></i></a>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" id="name" placeholder="Tu nombre">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Correo Electrónico</label>
+                                        <input type="email" class="form-control" id="email" placeholder="tu@email.com">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="subject" class="form-label">Asunto</label>
+                                        <input type="text" class="form-control" id="subject" placeholder="Asunto del mensaje">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="message" class="form-label">Mensaje</label>
+                                        <textarea class="form-control" id="message" rows="4" placeholder="Escribe tu mensaje aquí..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Enviar Mensaje</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Completo -->
+<footer class="bg-dark text-white py-5">
     <div class="container">
         <div class="row">
-            <div class="col-lg-4 mb-4">
-                <h4 class="footer-title">Escuela El Recreo</h4>
-                <p>Transformando la educación primaria con herramientas digitales innovadoras que hacen del aprendizaje una experiencia divertida e interactiva.</p>
-                <div class="social-links mt-4">
-                    <a href="#" class="social-link" title="Facebook de Escuela El Recreo" aria-label="Visitar Facebook de Escuela El Recreo"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="social-link" title="Twitter de Escuela El Recreo" aria-label="Visitar Twitter de Escuela El Recreo"><i class="bi bi-twitter"></i></a>
-                    <a href="#" class="social-link" title="YouTube de Escuela El Recreo" aria-label="Visitar canal de YouTube de Escuela El Recreo"><i class="bi bi-youtube"></i></a>
-                    <a href="#" class="social-link" title="Instagram de Escuela El Recreo" aria-label="Visitar Instagram de Escuela El Recreo"><i class="bi bi-instagram"></i></a>
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="{{ url_for('static', filename='img/spark.jpg') }}" alt="Logo de Spark" width="50" height="50" class="rounded-circle me-3">
+                    <h4 class="m-0">Spark</h4>
+                </div>
+                <p>Plataforma educativa diseñada para estudiantes de 5to y 6to grado de la Escuela Bolivariana "Gustavo Domínguez".</p>
+                <div class="social-links mt-3">
+                    <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
                 </div>
             </div>
-            
-            <div class="col-lg-2 col-md-4 mb-4">
-                <h5 class="footer-title">Enlaces</h5>
-                <ul class="footer-links">
-                    <li><a href="#">Inicio</a></li>
-                    <li><a href="#proyecto">Sobre el Proyecto</a></li>
-                    <li><a href="#cursos">Contenidos</a></li>
-                    <li><a href="#caracteristicas">Beneficios</a></li>
-                    <li><a href="#programadores">Desarrolladores</a></li>
-                    <li><a href="#contacto">Contacto</a></li>
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <h5 class="mb-3">Enlaces Rápidos</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{{ url_for('main.home') }}" class="text-white text-decoration-none"><i class="bi bi-chevron-right me-2"></i>Inicio</a></li>
+                    <li class="mb-2"><a href="#proyecto" class="text-white text-decoration-none"><i class="bi bi-chevron-right me-2"></i>Sobre el Proyecto</a></li>
+                    <li class="mb-2"><a href="#cursos" class="text-white text-decoration-none"><i class="bi bi-chevron-right me-2"></i>Contenidos</a></li>
+                    <li class="mb-2"><a href="#caracteristicas" class="text-white text-decoration-none"><i class="bi bi-chevron-right me-2"></i>Beneficios</a></li>
+                    <li><a href="#contacto" class="text-white text-decoration-none"><i class="bi bi-chevron-right me-2"></i>Contacto</a></li>
                 </ul>
             </div>
-            
-            <div class="col-lg-2 col-md-4 mb-4">
-                <h5 class="footer-title">Contenidos</h5>
-                <ul class="footer-links">
-                    <li><a href="#">Matemáticas</a></li>
-                    <li><a href="#">Ciencias Naturales</a></li>
-                    <li><a href="#">Lenguaje</a></li>
-                    <li><a href="#">Informática</a></li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-4 col-md-4 mb-4">
-                <h5 class="footer-title">Contacto</h5>
-                <ul class="footer-links">
-                    <li><i class="bi bi-geo-alt me-2"></i> Av. Principal, Escuela Bolivariana "Gustavo Domínguez", Venezuela</li>
-                    <li><i class="bi bi-envelope me-2"></i> contacto@spark-edu.org</li>
-                    <li><i class="bi bi-telephone me-2"></i> +58 123 456 7890</li>
+            <div class="col-lg-4">
+                <h5 class="mb-3">Información de Contacto</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-geo-alt me-2"></i>Escuela Bolivariana "Gustavo Domínguez", Venezuela</li>
+                    <li class="mb-2"><i class="bi bi-envelope me-2"></i><a href="mailto:contacto@spark.edu.ve" class="text-white text-decoration-none">contacto@spark.edu.ve</a></li>
+                    <li><i class="bi bi-telephone me-2"></i><a href="tel:+58123456789" class="text-white text-decoration-none">+58 123 456 789</a></li>
                 </ul>
             </div>
         </div>
-        
-        <div class="copyright">
-            <p>&copy; 2025 Spark - Plataforma desarrollada por estudiantes universitarios</p>
+        <hr class="mt-4 mb-4" style="border-color: rgba(255,255,255,0.1);">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; 2025 Spark - Plataforma Educativa. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="mb-0">Desarrollado por estudiantes universitarios para la Escuela Bolivariana "Gustavo Domínguez"</p>
+            </div>
         </div>
     </div>
 </footer>
+{% endblock %}
 
-<!-- Script para efecto parallax con movimiento del mouse y partículas -->
+{% block customJS %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const videoBackground = document.querySelector('.video-background');
-        const heroSection = document.querySelector('.hero-section');
-        
-        // Efecto parallax con movimiento del mouse
-        heroSection.addEventListener('mousemove', function(e) {
-            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-            videoBackground.style.transform = `translateZ(-10px) scale(2) translate(${xAxis}px, ${yAxis}px)`;
+        // Inicializar el carrusel con opciones mejoradas
+        const heroCarouselElement = document.getElementById('heroCarousel');
+        const heroCarousel = new bootstrap.Carousel(heroCarouselElement, {
+            interval: 6000,
+            wrap: true,
+            keyboard: true,
+            touch: true,
+            pause: 'hover',
+            ride: 'carousel'
         });
         
-        // Restaurar posición cuando el mouse sale de la sección
-        heroSection.addEventListener('mouseleave', function() {
-            videoBackground.style.transform = 'translateZ(-10px) scale(2)';
+        // Gestionar animaciones cuando cambia el carrusel
+        heroCarouselElement.addEventListener('slide.bs.carousel', function(e) {
+            // Resetear animaciones en el slide anterior
+            const activeSlide = document.querySelector('.carousel-item.active');
+            const title = activeSlide.querySelector('.hero-title');
+            const subtitle = activeSlide.querySelector('.hero-subtitle');
+            const button = activeSlide.querySelector('.carousel-btn');
+            
+            if (title) title.style.animation = 'none';
+            if (subtitle) subtitle.style.animation = 'none';
+            if (button) button.style.animation = 'none';
         });
         
-        // Efecto parallax con scroll
+        heroCarouselElement.addEventListener('slid.bs.carousel', function(e) {
+            // Aplicar animaciones al nuevo slide activo
+            const activeSlide = document.querySelector('.carousel-item.active');
+            const title = activeSlide.querySelector('.hero-title');
+            const subtitle = activeSlide.querySelector('.hero-subtitle');
+            const button = activeSlide.querySelector('.carousel-btn');
+            
+            // Forzar un reflow para que las animaciones se apliquen nuevamente
+            void activeSlide.offsetWidth;
+            
+            if (title) {
+                title.style.animation = '';
+                title.style.animation = 'slideInDown 1s ease forwards';
+            }
+            if (subtitle) {
+                subtitle.style.animation = '';
+                subtitle.style.opacity = '0';
+                subtitle.style.animation = 'slideInUp 1s ease 0.3s forwards';
+            }
+            if (button) {
+                button.style.animation = '';
+                button.style.opacity = '0';
+                button.style.animation = 'fadeInZoom 1s ease 0.6s forwards';
+            }
+        });
+        
+        // Manejar el scroll suave para enlaces internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    // Offset para navbar
+                    const offset = 80;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - offset;
+                    
+                    // Scroll suave
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Resaltar brevemente la sección
+                    setTimeout(() => {
+                        targetElement.classList.add('highlight-section');
+                        setTimeout(() => {
+                            targetElement.classList.remove('highlight-section');
+                        }, 1000);
+                    }, 500);
+                    
+                    // Actualizar URL sin recargar
+                    history.pushState(null, null, targetId);
+                    
+                    // Cerrar menú móvil si está abierto
+                    const navbarCollapse = document.querySelector('.navbar-collapse');
+                    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                        const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+                        bsCollapse.hide();
+                    }
+                }
+            });
+        });
+        
+        // Detectar sección activa durante el scroll
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+        
         window.addEventListener('scroll', function() {
-            const scrollPosition = window.scrollY;
-            if (scrollPosition <= window.innerHeight) {
-                const parallaxValue = scrollPosition * 0.5;
-                videoBackground.style.transform = `translateZ(-10px) scale(2) translateY(${parallaxValue}px)`;
-            }
-        });
-        
-        // Función para crear partículas
-        function createParticles(container, options) {
-            const defaults = {
-                count: 20,
-                minSize: 5,
-                maxSize: 15,
-                minDuration: 10,
-                maxDuration: 30,
-                hueMin: 160,
-                hueMax: 240,
-                satMin: 70,
-                satMax: 100,
-                lightMin: 60,
-                lightMax: 80,
-                opacityMin: 0.3,
-                opacityMax: 0.8
-            };
+            let current = '';
             
-            const settings = Object.assign({}, defaults, options);
-            
-            for (let i = 0; i < settings.count; i++) {
-                createParticle(container, settings);
-            }
-        }
-        
-        function createParticle(container, settings) {
-            const particle = document.createElement('div');
-            const size = Math.floor(Math.random() * (settings.maxSize - settings.minSize + 1)) + settings.minSize;
-            const duration = Math.floor(Math.random() * (settings.maxDuration - settings.minDuration + 1)) + settings.minDuration;
-            const hue = Math.floor(Math.random() * (settings.hueMax - settings.hueMin + 1)) + settings.hueMin;
-            const sat = Math.floor(Math.random() * (settings.satMax - settings.satMin + 1)) + settings.satMin;
-            const light = Math.floor(Math.random() * (settings.lightMax - settings.lightMin + 1)) + settings.lightMin;
-            const opacity = Math.random() * (settings.opacityMax - settings.opacityMin) + settings.opacityMin;
-            
-            // Estilos de la partícula
-            particle.style.position = 'absolute';
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.borderRadius = '50%';
-            particle.style.backgroundColor = `hsla(${hue}, ${sat}%, ${light}%, ${opacity})`;
-            particle.style.boxShadow = `0 0 ${size/2}px hsla(${hue}, ${sat}%, ${light}%, ${opacity/2})`;
-            
-            // Posición inicial
-            const startLeft = Math.random() * 100;
-            const startTop = Math.random() * 100;
-            
-            particle.style.left = `${startLeft}%`;
-            particle.style.top = `${startTop}%`;
-            
-            // Crear animación única para cada partícula
-            const keyframesName = `float-${Math.floor(Math.random() * 1000000)}`;
-            const animationDuration = `${duration}s`;
-            const animationDelay = `${Math.random() * 5}s`;
-            
-            // Crear regla de keyframes dinámica
-            const keyframes = `
-                @keyframes ${keyframesName} {
-                    0% { transform: translateY(0) translateX(0) rotate(0); }
-                    25% { transform: translateY(-${Math.random() * 30}px) translateX(${Math.random() * 20}px) rotate(${Math.random() * 10}deg); }
-                    50% { transform: translateY(${Math.random() * 20}px) translateX(-${Math.random() * 30}px) rotate(-${Math.random() * 10}deg); }
-                    75% { transform: translateY(-${Math.random() * 25}px) translateX(${Math.random() * 15}px) rotate(${Math.random() * 5}deg); }
-                    100% { transform: translateY(0) translateX(0) rotate(0); }
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.offsetHeight;
+                
+                if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
                 }
-            `;
-            
-            // Añadir regla de keyframes al documento
-            const styleSheet = document.createElement('style');
-            styleSheet.type = 'text/css';
-            styleSheet.innerHTML = keyframes;
-            document.head.appendChild(styleSheet);
-            
-            // Aplicar animación
-            particle.style.animation = `${keyframesName} ${animationDuration} ease-in-out infinite`;
-            particle.style.animationDelay = animationDelay;
-            
-            // Añadir al contenedor
-            container.appendChild(particle);
-            
-            // Reemplazar partícula después de completar animación
-            setTimeout(() => {
-                container.removeChild(particle);
-                document.head.removeChild(styleSheet);
-                createParticle(container, settings);
-            }, duration * 1000 + parseFloat(animationDelay) * 1000);
-        }
-        
-        // Inicializar partículas con colores personalizados para la página home
-        const heroParticlesContainer = document.querySelector('.particles-container');
-        if (heroParticlesContainer) {
-            createParticles(heroParticlesContainer, {
-                count: 30,
-                minSize: 8,
-                maxSize: 20,
-                hueMin: 160,  // Tonos más turquesa/verde azulado
-                hueMax: 200,  // Hasta azul
-                satMin: 80,
-                satMax: 100,
-                lightMin: 60,
-                lightMax: 80,
-                opacityMin: 0.4,
-                opacityMax: 0.8
-            });
-        }
-        
-        // Añadir partículas a todas las secciones importantes
-        const sections = document.querySelectorAll('.py-5');
-        sections.forEach((section, index) => {
-            // Crear un contenedor para las partículas si no existe
-            let particlesContainer = section.querySelector('.particles-container');
-            if (!particlesContainer) {
-                particlesContainer = document.createElement('div');
-                particlesContainer.className = 'particles-container';
-                particlesContainer.style.position = 'absolute';
-                particlesContainer.style.top = '0';
-                particlesContainer.style.left = '0';
-                particlesContainer.style.width = '100%';
-                particlesContainer.style.height = '100%';
-                particlesContainer.style.zIndex = '0';
-                particlesContainer.style.pointerEvents = 'none';
-                
-                // Asegurarse de que la sección tenga posición relativa
-                if (getComputedStyle(section).position === 'static') {
-                    section.style.position = 'relative';
-                }
-                
-                section.prepend(particlesContainer);
-                
-                // Configuración de color diferente para cada sección
-                let hueMin, hueMax;
-                switch (index % 4) {
-                    case 0: // Azul/turquesa
-                        hueMin = 160;
-                        hueMax = 200;
-                        break;
-                    case 1: // Púrpura/violeta
-                        hueMin = 240;
-                        hueMax = 280;
-                        break;
-                    case 2: // Naranja/rojo
-                        hueMin = 0;
-                        hueMax = 30;
-                        break;
-                    case 3: // Verde
-                        hueMin = 100;
-                        hueMax = 150;
-                        break;
-                }
-                
-                // Crear partículas con configuración específica para esta sección
-                createParticles(particlesContainer, {
-                    count: 15,
-                    minSize: 5,
-                    maxSize: 12,
-                    minDuration: 15,
-                    maxDuration: 30,
-                    hueMin: hueMin,
-                    hueMax: hueMax,
-                    opacityMin: 0.2,
-                    opacityMax: 0.5
-                });
-            }
-        });
-        
-        // Añadir efectos a las tarjetas de cursos
-        const courseCards = document.querySelectorAll('.course-card');
-        courseCards.forEach((card, index) => {
-            // Añadir animación de entrada con retraso
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            card.style.transition = 'all 0.5s ease-out';
-            card.style.transitionDelay = `${0.1 * index}s`;
-            
-            setTimeout(() => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, 100);
-            
-            // Añadir efecto de hover 3D
-            card.addEventListener('mousemove', function(e) {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = (y - centerY) / 20;
-                const rotateY = (centerX - x) / 20;
-                
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
             });
             
-            // Restablecer al salir
-            card.addEventListener('mouseleave', function() {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                } else if (current === '' && link.getAttribute('href') === '#') {
+                    link.classList.add('active');
+                }
             });
         });
     });
 </script>
 {% endblock %}
+
