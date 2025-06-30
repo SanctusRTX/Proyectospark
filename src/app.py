@@ -50,6 +50,32 @@ def create_app(config_name='development'):
     os.makedirs(os.path.join(app.root_path, UPLOAD_FOLDER), exist_ok=True)
     os.makedirs(os.path.join(app.root_path, VIDEO_FOLDER), exist_ok=True)
     
+    # Imprimir rutas de carpetas para depuración
+    print(f"Ruta de carpeta de imágenes: {os.path.join(app.root_path, UPLOAD_FOLDER)}")
+    print(f"Ruta de carpeta de videos: {os.path.join(app.root_path, VIDEO_FOLDER)}")
+    
+    # Definir rutas absolutas para carpetas estáticas
+    STATIC_FOLDER = os.path.join(app.root_path, 'static')
+    UPLOAD_FOLDER_FULL = os.path.join(STATIC_FOLDER, 'img', 'courses')
+    VIDEO_FOLDER_FULL = os.path.join(STATIC_FOLDER, 'videos', 'courses')
+    
+    # Configuraciones de la aplicación
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER_FULL
+    app.config['VIDEO_FOLDER'] = VIDEO_FOLDER_FULL
+    app.config['STATIC_FOLDER'] = STATIC_FOLDER
+    
+    # Asegurarse de que las carpetas existan
+    os.makedirs(UPLOAD_FOLDER_FULL, exist_ok=True)
+    os.makedirs(VIDEO_FOLDER_FULL, exist_ok=True)
+    
+    # Imprimir rutas de carpetas para depuración
+    print(f"Ruta de carpeta estática: {STATIC_FOLDER}")
+    print(f"Ruta de carpeta de imágenes: {UPLOAD_FOLDER_FULL}")
+    print(f"Ruta de carpeta de videos: {VIDEO_FOLDER_FULL}")
+    
+    # Configurar la ruta de archivos estáticos
+    app.static_folder = STATIC_FOLDER
+    
     # Inicializar extensiones
     init_extensions(app)
     

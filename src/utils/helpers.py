@@ -12,35 +12,60 @@ def allowed_file(filename, allowed_extensions=None):
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 def generate_unique_filename(filename):
-    """Genera un nombre de archivo único basado en timestamp"""
+    """Genera un nombre de archivo único manteniendo el nombre original"""
     if not filename:
         return None
     
+    # Asegurarse de que el nombre del archivo sea seguro
     secure_name = secure_filename(filename)
-    timestamp = int(time.time())
-    return f"{timestamp}_{secure_name}"
+    
+    # Si el nombre seguro está vacío, generar un nombre aleatorio
+    if not secure_name:
+        secure_name = f"file_{int(time.time())}"
+    
+    return secure_name
 
 def save_file(file, folder, app):
     """Guarda un archivo en la carpeta especificada y devuelve la URL"""
     if file and file.filename:
+        # Usar el nombre de archivo original, asegurándolo
         filename = secure_filename(file.filename)
-        # Generar nombre único para evitar colisiones
-        unique_filename = generate_unique_filename(filename)
         
         # Determinar si es imagen o video por la extensión
         ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
         
+        # Rutas específicas para imágenes y videos
         if ext in {'mp4', 'webm', 'ogg'}:
-            filepath = os.path.join(app.root_path, app.config['VIDEO_FOLDER'], unique_filename)
-            file.save(filepath)
-            # Devolver URL completa para videos
-            file_url = url_for('static', filename=f'videos/courses/{unique_filename}')
+            relative_path = f'videos/courses/{filename}'
+            folder_path = os.path.join(app.root_path, 'static', 'videos', 'courses')
         else:
-            filepath = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], unique_filename)
-            file.save(filepath)
-            # Devolver URL completa para imágenes
-            file_url = url_for('static', filename=f'img/courses/{unique_filename}')
+            relative_path = f'img/courses/{filename}'
+            folder_path = os.path.join(app.root_path, 'static', 'img', 'courses')
         
-        return file_url
+        # Crear la carpeta si no existe
+        os.makedirs(folder_path, exist_ok=True)
+        
+        # Ruta completa del archivo
+        filepath = os.path.join(folder_path, filename)
+        
+        try:
+            # Guardar el archivo
+            file.save(filepath)
+            
+            # Verificar que el archivo se haya guardado
+            if not os.path.exists(filepath):
+                print(f"Error: No se pudo guardar el archivo {filepath}")
+                return None
+            
+            # Generar URL usando la ruta relativa
+            file_url = url_for('static', filename=relative_path)
+            
+            print(f"Archivo guardado exitosamente: {filepath}")
+            print(f"URL generada: {file_url}")
+            
+            return relative_path  # Devolver la ruta relativa para guardar en la base de datos
+        except Exception as e:
+            print(f"Error al guardar el archivo: {e}")
+            return None
     
     return None

@@ -21,7 +21,9 @@ class CourseController:
             # Manejo de la imagen
             image_url = ''
             if image and image.filename != '':
+                print(f"Imagen recibida: {image.filename}")
                 image_url = save_file(image, current_app.config['UPLOAD_FOLDER'], current_app)
+                print(f"URL de imagen generada: {image_url}")
             
             course = {
                 'title': title,
@@ -33,6 +35,7 @@ class CourseController:
             
             return ModelCourse.add_course(db, course), None
         except Exception as ex:
+            print(f"Error al crear curso: {ex}")
             return False, str(ex)
     
     @staticmethod
@@ -47,7 +50,9 @@ class CourseController:
             # Mantener la imagen actual si no se sube una nueva
             image_url = current_course[2]  # image_url está en la posición 2
             if image and image.filename != '':
+                print(f"Imagen recibida: {image.filename}")
                 image_url = save_file(image, current_app.config['UPLOAD_FOLDER'], current_app)
+                print(f"URL de imagen generada: {image_url}")
             
             updated_course = {
                 'id': course_id,
@@ -60,6 +65,7 @@ class CourseController:
             
             return ModelCourse.update_course(db, updated_course), None
         except Exception as ex:
+            print(f"Error al actualizar curso: {ex}")
             return False, str(ex)
     
     @staticmethod

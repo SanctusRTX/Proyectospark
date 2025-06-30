@@ -15,6 +15,12 @@ def upload_media():
         print(f"Archivos en la solicitud: {list(request.files.keys())}")
         print(f"Formulario en la solicitud: {list(request.form.keys())}")
         
+        # Depuración adicional del entorno
+        import os
+        print(f"Directorio de trabajo actual: {os.getcwd()}")
+        print(f"Ruta raíz de la aplicación: {current_app.root_path}")
+        print(f"Carpeta de carga configurada: {current_app.config['UPLOAD_FOLDER']}")
+        
         if 'file' not in request.files:
             # Intentar buscar el archivo con otro nombre
             if len(request.files) > 0:
@@ -29,6 +35,8 @@ def upload_media():
             file = request.files['file']
         
         print(f"Nombre del archivo: {file.filename}")
+        print(f"Tamaño del archivo: {len(file.read())} bytes")
+        file.seek(0)  # Reiniciar el puntero del archivo después de leerlo
         
         success, error, file_url = MediaController.upload_media(file)
         
