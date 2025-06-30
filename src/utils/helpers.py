@@ -4,12 +4,31 @@ import time
 from flask import url_for
 
 def allowed_file(filename, allowed_extensions=None):
-    """Verifica si un archivo tiene una extensión permitida"""
-    if allowed_extensions is None:
-        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'mp4', 'webm', 'ogg'}
+    """
+    Verifica si el archivo tiene una extensión permitida.
+    Si no se proporcionan extensiones, usa un conjunto predeterminado.
+    """
+    if not filename:
+        return False
     
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in allowed_extensions
+    # Si no se proporcionan extensiones, usar un conjunto predeterminado
+    if allowed_extensions is None:
+        allowed_extensions = {
+            # Imágenes
+            'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg', 
+            # Videos
+            'mp4', 'webm', 'ogg', 'avi', 'mov', 
+            # Otros
+            'pdf', 'txt'
+        }
+    
+    # Convertir a minúsculas para comparación insensible a mayúsculas
+    filename = filename.lower()
+    
+    # Obtener la extensión del archivo
+    ext = filename.rsplit('.', 1)[-1] if '.' in filename else ''
+    
+    return ext in allowed_extensions
 
 def generate_unique_filename(filename):
     """Genera un nombre de archivo único manteniendo el nombre original"""

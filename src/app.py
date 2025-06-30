@@ -34,7 +34,7 @@ def create_app(config_name='development'):
     app.config.from_object(config[config_name])
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config['VIDEO_FOLDER'] = VIDEO_FOLDER
-    app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
     
     # Configuración de sesión para mejorar la seguridad
     # Para sesiones normales: 1 hora (controlado por middleware). 
@@ -75,6 +75,10 @@ def create_app(config_name='development'):
     
     # Configurar la ruta de archivos estáticos
     app.static_folder = STATIC_FOLDER
+    
+    # Configuración de Flask para manejar archivos grandes
+    app.config['MEDIA_FOLDER'] = os.path.join(app.root_path, 'static', 'img', 'media')
+    os.makedirs(app.config['MEDIA_FOLDER'], exist_ok=True)
     
     # Inicializar extensiones
     init_extensions(app)

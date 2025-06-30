@@ -76,6 +76,9 @@
         
         // Configuración para subida de archivos
         automatic_uploads: true,
+        max_file_size: 16 * 1024 * 1024,  // 16 MB
+        images_upload_max_filesize: 16 * 1024 * 1024,  // 16 MB
+        images_file_types: 'png,jpg,jpeg,gif,webp,svg',
         relative_urls: false,
         remove_script_host: false,
         convert_urls: false,
@@ -102,24 +105,35 @@
                     var json;
                     
                     if (xhr.status === 403) {
-                        reject('HTTP Error: ' + xhr.status + ' ' + xhr.statusText);
+                        reject('Error de autorización: No tienes permiso para subir archivos');
+                        return;
+                    }
+                    
+                    if (xhr.status === 413) {
+                        // Payload Too Large
+                        try {
+                            json = JSON.parse(xhr.responseText);
+                            reject(`Archivo demasiado grande. Máximo ${json.max_size / (1024 * 1024)} MB. Tamaño recibido: ${json.received_size / (1024 * 1024)} MB`);
+                        } catch (e) {
+                            reject('El archivo es demasiado grande. Máximo 16 MB');
+                        }
                         return;
                     }
                     
                     if (xhr.status < 200 || xhr.status >= 300) {
-                        reject('HTTP Error: ' + xhr.status);
+                        reject(`Error del servidor: ${xhr.status} - ${xhr.statusText}`);
                         return;
                     }
                     
                     try {
                         json = JSON.parse(xhr.responseText);
                     } catch (e) {
-                        reject('Invalid JSON: ' + xhr.responseText);
+                        reject(`Respuesta inválida del servidor: ${xhr.responseText}`);
                         return;
                     }
                     
                     if (!json || typeof json.location != 'string') {
-                        reject('Invalid JSON: No location in response');
+                        reject('Respuesta del servidor no contiene una ubicación de archivo válida');
                         return;
                     }
                     
@@ -127,7 +141,7 @@
                 };
                 
                 xhr.onerror = function() {
-                    reject('Image upload failed due to a network error.');
+                    reject('Error de red al subir el archivo. Por favor, verifica tu conexión.');
                 };
                 
                 formData = new FormData();
