@@ -21,24 +21,41 @@ def view_course(course_id):
 @course_bp.route('/<int:course_id>/chapter/<int:chapter_id>')
 @login_required
 def view_chapter(course_id, chapter_id):
+    # Logs de depuración detallados
+    print(f"DEBUG: Solicitando capítulo {chapter_id} para el curso {course_id}")
+    
     course = CourseController.get_course_by_id(course_id)
     if not course:
+        print(f"DEBUG: Curso {course_id} no encontrado")
         flash('Curso no encontrado', 'danger')
         return redirect(url_for('main.home'))
     
+    # Obtener el capítulo actual
     chapter = ChapterController.get_chapter_by_id(chapter_id)
-    if not chapter:
+    if not chapter or chapter[3] != course_id:
+        print(f"DEBUG: Capítulo {chapter_id} no encontrado o no pertenece al curso")
         flash('Capítulo no encontrado', 'danger')
         return redirect(url_for('course.view_course', course_id=course_id))
     
-    # Verificar que el capítulo pertenezca al curso
-    valid, error = ChapterController.validate_chapter_belongs_to_course(chapter, course_id)
-    if not valid:
-        flash(error, 'danger')
-        return redirect(url_for('course.view_course', course_id=course_id))
+    # Obtener capítulos anterior y siguiente
+    from extensions.extensions import db
+    next_chapter = ChapterController.get_next_chapter(db, course_id, chapter_id)
+    prev_chapter = ChapterController.get_previous_chapter(db, course_id, chapter_id)
     
+    # Obtener todos los capítulos del curso para la navegación
     chapters = ChapterController.get_chapters_by_course(course_id)
-    return render_template('course/chapter.html', course=course, chapter=chapter, chapters=chapters)
+    
+    # Logs de depuración
+    print(f"DEBUG: Capítulo actual: {chapter}")
+    print(f"DEBUG: Capítulo siguiente: {next_chapter}")
+    print(f"DEBUG: Capítulo anterior: {prev_chapter}")
+    
+    return render_template('course/chapter.html', 
+                           course=course, 
+                           chapter=chapter, 
+                           chapters=chapters,
+                           next_chapter=next_chapter,
+                           prev_chapter=prev_chapter)
 
 @course_bp.route('/<int:course_id>/chapter/<int:chapter_id>/exams')
 @login_required

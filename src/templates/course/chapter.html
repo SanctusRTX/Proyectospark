@@ -602,15 +602,6 @@
                 
                 <div class="chapter-content">
                     {{ chapter[2]|safe }}
-                    
-                    <!-- Consejo educativo destacado -->
-                    <div class="tip-box">
-                        <div class="tip-title">
-                            <i class="bi bi-lightbulb"></i>
-                            <span>Consejo de estudio</span>
-                        </div>
-                        <p>Recuerda que puedes repasar este capítulo las veces que necesites. ¡La práctica constante es la clave del aprendizaje!</p>
-                    </div>
                 </div>
                 
                 <!-- Sección de exámenes -->
@@ -636,16 +627,9 @@
                 </div>
                 
                 <!-- Navegación entre capítulos -->
-                {% set current_index = -1 %}
-                {% for i in range(chapters|length) %}
-                    {% if chapters[i][0] == chapter[0] %}
-                        {% set current_index = i %}
-                    {% endif %}
-                {% endfor %}
-                
                 <div class="d-flex justify-content-between mt-4">
-                    {% if current_index > 0 %}
-                    <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapters[current_index-1][0]) }}" class="btn btn-outline-primary btn-ripple">
+                    {% if prev_chapter %}
+                    <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=prev_chapter[0]) }}" class="btn btn-outline-primary btn-ripple">
                         <div class="btn-icon-container">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M19 12H5M12 19l-7-7 7-7"/>
@@ -661,12 +645,12 @@
                                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
                             </svg>
                         </div>
-                        <span>Inicio del Curso</span>
+                        <span>Volver al Curso</span>
                     </a>
                     {% endif %}
                     
-                    {% if current_index < chapters|length - 1 %}
-                    <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=chapters[current_index+1][0]) }}" class="btn btn-primary btn-ripple">
+                    {% if next_chapter %}
+                    <a href="{{ url_for('course.view_chapter', course_id=course[0], chapter_id=next_chapter[0]) }}" class="btn btn-primary btn-ripple">
                         <span>Siguiente Capítulo</span>
                         <div class="btn-icon-container">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -676,13 +660,13 @@
                     </a>
                     {% else %}
                     <a href="{{ url_for('course.view_course', course_id=course[0]) }}" class="btn btn-success btn-ripple">
+                        <span>Finalizar Curso</span>
                         <div class="btn-icon-container">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
                             </svg>
                         </div>
-                        <span>¡Completaste el Curso!</span>
                     </a>
                     {% endif %}
                 </div>
@@ -834,28 +818,6 @@
             observer.observe(heading);
         });
         
-        // Añadir consejos interactivos
-        const paragraphs = document.querySelectorAll('.chapter-content p');
-        let tipAdded = false;
-        
-        paragraphs.forEach((p, index) => {
-            // Añadir un consejo después del tercer párrafo si aún no se ha añadido
-            if (index === 2 && !tipAdded) {
-                const tip = document.createElement('div');
-                tip.className = 'tip-box';
-                tip.innerHTML = `
-                    <div class="tip-title">
-                        <i class="bi bi-stars"></i>
-                        <span>¡Dato interesante!</span>
-                    </div>
-                    <p>Cuando aprendemos algo nuevo, nuestro cerebro crea nuevas conexiones neuronales. ¡Cada vez que estudias, tu cerebro se hace más fuerte!</p>
-                `;
-                
-                p.parentNode.insertBefore(tip, p.nextSibling);
-                tipAdded = true;
-            }
-        });
-
         // Funcionalidad del menú flotante de Sparky
         const geminiFab = document.getElementById('geminiFab');
         const geminiMenu = document.getElementById('geminiMenu');

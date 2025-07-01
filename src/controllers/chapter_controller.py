@@ -59,3 +59,41 @@ class ChapterController:
             return False, "El capítulo no pertenece a este curso"
         
         return True, None
+
+    @staticmethod
+    def get_next_chapter(db, course_id, current_chapter_id):
+        """Obtiene el siguiente capítulo en un curso"""
+        try:
+            cursor = db.connection.cursor()
+            sql = """
+            SELECT id, titulo 
+            FROM capitulos 
+            WHERE curso_id = %s AND id > %s 
+            ORDER BY id ASC 
+            LIMIT 1
+            """
+            cursor.execute(sql, (course_id, current_chapter_id))
+            next_chapter = cursor.fetchone()
+            return next_chapter
+        except Exception as ex:
+            print(f"Error al obtener siguiente capítulo: {ex}")
+            return None
+    
+    @staticmethod
+    def get_previous_chapter(db, course_id, current_chapter_id):
+        """Obtiene el capítulo anterior en un curso"""
+        try:
+            cursor = db.connection.cursor()
+            sql = """
+            SELECT id, titulo 
+            FROM capitulos 
+            WHERE curso_id = %s AND id < %s 
+            ORDER BY id DESC 
+            LIMIT 1
+            """
+            cursor.execute(sql, (course_id, current_chapter_id))
+            prev_chapter = cursor.fetchone()
+            return prev_chapter
+        except Exception as ex:
+            print(f"Error al obtener capítulo anterior: {ex}")
+            return None
