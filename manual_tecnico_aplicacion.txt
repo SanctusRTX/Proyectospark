@@ -1,0 +1,295 @@
+Manual Técnico Detallado de Aplicación Educativa Flask
+
+1. INTRODUCCIÓN
+---------------
+Este documento proporciona una descripción técnica exhaustiva de la aplicación web educativa desarrollada con Flask, un framework de Python para desarrollo web, diseñado para ofrecer una experiencia de aprendizaje interactiva y segura.
+
+2. ARQUITECTURA GENERAL
+-----------------------
+2.1 Arquitectura Modular
+- Diseño basado en el patrón Modelo-Vista-Controlador (MVC)
+- Separación clara de responsabilidades entre componentes
+- Uso de Blueprints para modularidad y mantenibilidad del código
+
+2.2 Componentes Principales
+- Gestión de rutas mediante Blueprints
+- Sistema de autenticación robusto
+- Integración de base de datos con ORM
+- Manejo de sesiones y seguridad
+- Gestión de contenido multimedia
+- Sistema de cursos y evaluaciones
+
+3. CONFIGURACIÓN DEL ENTORNO
+----------------------------
+3.1 Dependencias Principales
+- Flask: Framework web principal
+  * Ligero y flexible
+  * Alto rendimiento
+  * Fácil extensibilidad
+
+- Flask-SQLAlchemy: ORM para interacción con base de datos
+  * Abstracción de consultas SQL
+  * Mapeo objeto-relacional
+  * Gestión eficiente de conexiones
+
+- Flask-Login: Gestión de sesiones de usuario
+  * Manejo de inicio y cierre de sesión
+  * Control de acceso basado en roles
+  * Protección contra accesos no autorizados
+
+- Werkzeug: Herramientas de seguridad y utilidades
+  * Generación de hash de contraseñas
+  * Manejo de solicitudes web
+  * Utilidades de seguridad
+
+- MySQL: Sistema de gestión de base de datos
+  * Alta confiabilidad
+  * Rendimiento escalable
+  * Soporte para transacciones
+
+4. ESTRUCTURA DE DIRECTORIOS
+----------------------------
+/src
+├── app.py                  # Punto de entrada principal de la aplicación
+├── config.py               # Configuraciones de entorno
+├── controllers/            # Lógica de control de diferentes módulos
+│   ├── auth_controller.py  # Controlador de autenticación
+│   ├── chapter_controller.py  # Controlador de capítulos
+│   └── ...
+├── models/                 # Definición de modelos de datos
+│   ├── entities/           # Entidades de base de datos
+│   │   ├── Chapter.py
+│   │   ├── Course.py
+│   │   └── Examen.py
+│   └── ...
+├── routes/                 # Definición de rutas de la aplicación
+│   ├── auth_routes.py      # Rutas de autenticación
+│   ├── admin_routes.py     # Rutas de administración
+│   └── ...
+├── static/                 # Archivos estáticos (CSS, JS, imágenes)
+│   ├── css/
+│   ├── js/
+│   └── img/
+└── templates/              # Plantillas HTML
+    ├── admin/
+    ├── auth/
+    └── ...
+
+5. FUNCIONALIDADES PRINCIPALES
+------------------------------
+5.1 Gestión de Autenticación
+Descripción Detallada:
+- Proceso de Inicio de Sesión
+  * Validación de credenciales contra base de datos
+  * Uso de hash seguro para almacenamiento de contraseñas
+  * Prevención de ataques de fuerza bruta
+  * Registro de intentos de inicio de sesión
+
+- Mecanismos de Seguridad
+  * Generación de token de sesión único
+  * Expiración de sesión configurable
+  * Opción de "Recuérdame" con token seguro
+  * Protección contra robo de sesión
+
+- Flujo de Autenticación
+  1. Usuario ingresa credenciales
+  2. Validación de credenciales
+  3. Generación de sesión segura
+  4. Redirección al panel correspondiente
+  5. Registro de actividad de usuario
+
+Beneficios:
+- Alta seguridad en el proceso de autenticación
+- Experiencia de usuario fluida
+- Control granular de acceso
+
+5.2 Gestión de Cursos
+Características Avanzadas:
+- Creación de Cursos
+  * Interfaz administrativa para gestión de cursos
+  * Definición de metadatos de curso
+  * Soporte para múltiples formatos de contenido
+
+- Estructura de Contenido
+  * Organización jerárquica (Curso > Capítulos > Contenido)
+  * Soporte para diferentes tipos de recursos
+    - Texto
+    - Videos
+    - Archivos multimedia
+    - Recursos interactivos
+
+- Progresión del Aprendizaje
+  * Seguimiento del progreso del estudiante
+  * Desbloqueo de contenido basado en avance
+  * Registro de tiempo de estudio
+
+5.3 Sistema de Exámenes
+Funcionalidades Avanzadas:
+- Creación de Exámenes
+  * Generación de cuestionarios dinámicos
+  * Soporte para diferentes tipos de preguntas
+    - Opción múltiple
+    - Verdadero/Falso
+    - Respuesta corta
+    - Ensayo
+
+- Evaluación Automatizada
+  * Calificación instantánea
+  * Generación de retroalimentación
+  * Análisis de resultados
+  * Estadísticas de rendimiento
+
+- Gestión de Resultados
+  * Almacenamiento histórico de evaluaciones
+  * Generación de certificados
+  * Informes detallados de desempeño
+
+5.4 Administración
+Panel de Control Integral:
+- Gestión de Usuarios
+  * Creación y eliminación de usuarios
+  * Asignación de roles y permisos
+  * Gestión de perfiles
+
+- Configuración del Sistema
+  * Parámetros de configuración
+  * Gestión de recursos
+  * Monitoreo de actividad
+
+6. SEGURIDAD
+------------
+Estrategias de Seguridad Implementadas:
+- Protección contra Ataques Comunes
+  * Cross-Site Scripting (XSS)
+  * Cross-Site Request Forgery (CSRF)
+  * Inyección SQL
+  * Secuestro de sesión
+
+- Configuraciones de Seguridad
+  * Generación de claves secretas únicas
+  * Cookies seguras con flags HttpOnly y SameSite
+  * Límite de tamaño de archivos subidos
+  * Validación de sesiones en cada solicitud
+
+- Gestión de Credenciales
+  * Almacenamiento de contraseñas con hash
+  * Salting para prevenir ataques de diccionario
+  * Política de contraseñas seguras
+
+7. GESTIÓN DE ARCHIVOS
+---------------------
+Sistema de Almacenamiento Multimedia:
+- Configuración de Carpetas
+  * Imágenes: /static/img/courses
+  * Videos: /static/videos/courses
+
+- Tipos de Archivos Permitidos
+  * Imágenes: png, jpg, jpeg, gif, svg
+  * Videos: mp4, webm, ogg
+
+- Políticas de Seguridad
+  * Tamaño máximo de archivo: 16 MB
+  * Validación de tipo de archivo
+  * Generación de nombres de archivo seguros
+
+8. GESTIÓN DE SESIONES
+---------------------
+Modelo de Control de Sesiones:
+- Duración de Sesiones
+  * Sesión normal: 1 hora
+  * Sesión "Recuérdame": 30 días
+
+- Mecanismos de Validación
+  * Verificación en cada solicitud
+  * Control de inactividad
+  * Cierre automático de sesión caducada
+
+- Características Avanzadas
+  * Registro de actividad de usuario
+  * Detección de inicio de sesión en múltiples dispositivos
+  * Notificaciones de actividad sospechosa
+
+9. MÓDULOS ADICIONALES
+---------------------
+Funcionalidades Complementarias:
+- Integración con Gemini
+  * Posible chat con IA
+  * Asistencia de aprendizaje
+  * Generación de contenido
+
+- Rutas de Medios
+  * Servir contenido multimedia
+  * Streaming de videos
+  * Gestión de recursos
+
+- Utilidades de Depuración
+  * Herramientas de diagnóstico
+  * Registro de errores
+  * Análisis de rendimiento
+
+10. CONFIGURACIÓN DE ENTORNO
+---------------------------
+Soporte Multi-Entorno:
+- Desarrollo
+  * Depuración detallada
+  * Recarga automática
+  * Configuraciones de prueba
+
+- Producción
+  * Optimización de rendimiento
+  * Registro de errores
+  * Configuraciones de seguridad avanzadas
+
+- Pruebas
+  * Entorno aislado
+  * Configuraciones de prueba
+  * Simulación de escenarios
+
+11. MANEJO DE ERRORES
+--------------------
+Sistema de Gestión de Errores:
+- Página de Error 404
+  * Mensaje personalizado
+  * Sugerencias de navegación
+  * Registro de accesos no encontrados
+
+- Página de Error 500
+  * Información de error técnico
+  * Notificación al administrador
+  * Registro detallado de excepción
+
+12. CONSIDERACIONES TÉCNICAS
+---------------------------
+Especificaciones Técnicas:
+- Lenguaje: Python 3.x
+- Framework: Flask
+- Base de datos: MySQL
+- ORM: SQLAlchemy
+- Gestión de sesiones: Flask-Login
+
+13. RECOMENDACIONES DE DESPLIEGUE
+--------------------------------
+Guía de Implementación:
+- Entorno Virtual
+  * Usar virtualenv o venv
+  * Gestión de dependencias con pip
+
+- Configuración de Servidor
+  * Servidor WSGI: Gunicorn, uWSGI
+  * Servidor Web: Nginx, Apache
+  * Configuración de HTTPS
+
+- Optimización
+  * Caché de aplicación
+  * Balanceo de carga
+  * Monitoreo de rendimiento
+
+14. NOTAS FINALES
+----------------
+Resumen Ejecutivo:
+- Aplicación modular y escalable
+- Enfoque en seguridad y experiencia de usuario
+- Diseñada para plataformas educativas interactivas
+- Flexibilidad para futuras expansiones
+
+ÚLTIMA ACTUALIZACIÓN: [Fecha actual] 
