@@ -483,6 +483,64 @@
     }
     
     /* Resto de estilos existentes para cards y otras secciones... */
+    .mission-vision-section {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .text-gradient {
+        background: linear-gradient(135deg, #3a86ff, #00ffdd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .feature-icon-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .mission-card:hover .feature-icon,
+    .vision-card:hover .feature-icon,
+    .objectives-card:hover .feature-icon {
+        transform: rotate(360deg) scale(1.1);
+    }
+    
+    .mission-card:hover,
+    .vision-card:hover,
+    .objectives-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .mission-card,
+    .vision-card,
+    .objectives-card {
+        transition: all 0.4s ease;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .mission-card::before,
+    .vision-card::before,
+    .objectives-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .mission-card:hover::before { background: #3a86ff; }
+    .vision-card:hover::before { background: #4CAF50; }
+    .objectives-card:hover::before { background: #17a2b8; }
 </style>
 {% endblock %}
 
@@ -637,95 +695,85 @@
     </div>
 </section>
 
-<!-- Sección Misión -->
-<section class="py-5" style="background: linear-gradient(135deg, rgba(58, 134, 255, 0.05) 0%, rgba(0, 255, 221, 0.05) 100%);">
+<!-- Sección Misión y Visión Modernizada -->
+<section class="mission-vision-section py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-                <img src="{{ url_for('static', filename='img/mision.svg') }}" alt="Misión" class="img-fluid" style="max-height: 300px;">
-            </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--secondary-color), #4cc9f0); color: var(--dark-color); position: relative;">
-                        <i class="bi bi-lightbulb fs-2"></i>
-                        <i class="bi bi-book fs-4" style="position: absolute; top: 5px; right: 5px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                        <i class="bi bi-mortarboard fs-4" style="position: absolute; bottom: 5px; left: 5px; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                    </div>
-                    <h2 class="mb-0 fw-bold">Misión</h2>
-                </div>
-                <p class="lead mb-4">Proporcionar a los estudiantes y docentes una plataforma educativa que fomente el aprendizaje interactivo y el desarrollo de competencias digitales esenciales para el siglo XXI.</p>
-                <p>Buscamos crear un entorno digital donde los estudiantes puedan explorar, aprender y desarrollar habilidades tecnológicas de manera segura y guiada, mientras los docentes cuentan con herramientas que enriquecen su práctica pedagógica.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Sección Visión -->
-<section class="py-5" style="background-color: #ffffff;">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0" data-aos="fade-left">
-                <img src="{{ url_for('static', filename='img/vision.svg') }}" alt="Visión" class="img-fluid" style="max-height: 300px;">
-            </div>
-            <div class="col-lg-6 order-lg-1" data-aos="fade-right">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; position: relative;">
-                        <i class="bi bi-eye fs-2"></i>
-                        <i class="bi bi-binoculars fs-4" style="position: absolute; top: 5px; right: 5px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                        <i class="bi bi-rocket fs-4" style="position: absolute; bottom: 5px; left: 5px; text-shadow: 0 0 3px rgba(0,0,0,0.3);"></i>
-                    </div>
-                    <h2 class="mb-0 fw-bold">Visión</h2>
-                </div>
-                <p class="lead mb-4">Transformar la experiencia educativa en la Escuela Bolivariana "Gustavo Domínguez" mediante la integración efectiva de tecnologías digitales que preparen a los estudiantes para los desafíos del futuro.</p>
-                <p>Aspiramos a ser un referente de innovación educativa en Venezuela, donde la tecnología se convierte en un aliado fundamental para el desarrollo integral de los estudiantes, potenciando sus capacidades y ampliando sus oportunidades de aprendizaje.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Sección Objetivos -->
-<section class="py-5" style="background: linear-gradient(135deg, rgba(58, 134, 255, 0.05) 0%, rgba(0, 255, 221, 0.05) 100%);">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 text-center mb-5">
-                <h2 class="section-title" data-aos="fade-up">Objetivos</h2>
-                <div class="d-flex justify-content-center" data-aos="fade-up">
-                    <div style="width: 80px; height: 4px; background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); margin-bottom: 2rem;"></div>
-                </div>
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-10 text-center">
+                <h2 class="display-5 fw-bold mb-4 text-primary" data-aos="fade-up">
+                    <span class="text-gradient">Nuestra Visión Educativa</span>
+                </h2>
+                <p class="lead text-muted" data-aos="fade-up" data-aos-delay="100">
+                    Transformando la educación a través de la innovación tecnológica y el aprendizaje interactivo.
+                </p>
             </div>
         </div>
         
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-                <img src="{{ url_for('static', filename='img/objetivos.svg') }}" alt="Objetivos" class="img-fluid" style="max-height: 300px;">
+        <div class="row g-4">
+            <!-- Misión -->
+            <div class="col-lg-4" data-aos="fade-right" data-aos-delay="200">
+                <div class="card border-0 shadow-lg h-100 mission-card">
+                    <div class="card-body p-5 text-center">
+                        <div class="feature-icon-container mb-4">
+                            <div class="feature-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                                <ion-icon name="compass-outline" class="ion-icon"></ion-icon>
+                            </div>
+                        </div>
+                        <h3 class="card-title mb-3 text-primary">Misión</h3>
+                        <p class="card-text text-muted">
+                            Empoderar a estudiantes de 5to y 6to grado mediante una plataforma digital innovadora que fusiona tecnología de punta con metodologías pedagógicas modernas, preparándolos para los desafíos del siglo XXI.
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <ul class="list-unstyled">
-                    <li class="mb-3 d-flex">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
-                            <i class="bi bi-check-lg"></i>
+            
+            <!-- Visión -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card border-0 shadow-lg h-100 vision-card">
+                    <div class="card-body p-5 text-center">
+                        <div class="feature-icon-container mb-4">
+                            <div class="feature-icon bg-success text-white rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                                <ion-icon name="eye-outline" class="ion-icon"></ion-icon>
+                            </div>
                         </div>
-                        <span>Fomentar el uso efectivo de herramientas digitales en el proceso de enseñanza-aprendizaje.</span>
-                    </li>
-                    <li class="mb-3 d-flex">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
-                            <i class="bi bi-check-lg"></i>
+                        <h3 class="card-title mb-3 text-success">Visión</h3>
+                        <p class="card-text text-muted">
+                            Ser el referente líder en educación digital, revolucionando el aprendizaje mediante soluciones tecnológicas que inspiren, motiven y transformen la experiencia educativa en Venezuela.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Objetivos -->
+            <div class="col-lg-4" data-aos="fade-left" data-aos-delay="400">
+                <div class="card border-0 shadow-lg h-100 objectives-card">
+                    <div class="card-body p-5 text-center">
+                        <div class="feature-icon-container mb-4">
+                            <div class="feature-icon bg-info text-white rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                                <ion-icon name="rocket-outline" class="ion-icon"></ion-icon>
+                            </div>
                         </div>
-                        <span>Desarrollar competencias digitales en estudiantes de 5to y 6to grado.</span>
-                    </li>
-                    <li class="mb-3 d-flex">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
-                            <i class="bi bi-check-lg"></i>
-                        </div>
-                        <span>Proporcionar recursos educativos que complementen el currículo escolar.</span>
-                    </li>
-                    <li class="d-flex">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="min-width: 30px; height: 30px; background: rgba(124, 77, 255, 0.2); color: #7c4dff;">
-                            <i class="bi bi-check-lg"></i>
-                        </div>
-                        <span>Facilitar a los docentes herramientas para la evaluación y seguimiento del progreso de los estudiantes.</span>
-                    </li>
-                </ul>
+                        <h3 class="card-title mb-3 text-info">Objetivos</h3>
+                        <ul class="list-unstyled text-muted text-start">
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Impulsar competencias digitales avanzadas
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Personalizar el aprendizaje con IA
+                            </li>
+                            <li class="mb-2 d-flex align-items-center">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Fomentar pensamiento crítico digital
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Conectar educación con tecnología
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1078,6 +1126,16 @@
 {% endblock %}
 
 {% block customJS %}
+<script type="module" src="{{ url_for('static', filename='js/ionicons/ionicons.esm.js') }}"></script>
+<script nomodule src="{{ url_for('static', filename='js/ionicons/ionicons.js') }}"></script>
+
+<style>
+    .ion-icon {
+        font-size: 2.5rem;
+        color: white;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Inicializar el carrusel con opciones mejoradas
