@@ -1,0 +1,27 @@
+Instrucciones para Desbloquear la Ejecución de Scripts de PowerShell
+
+Si el script de configuración no funciona, sigue estos pasos:
+
+1. Abrir PowerShell como Administrador:
+   - Presiona Windows + X
+   - Selecciona "Windows PowerShell (Administrador)"
+
+2. Ejecutar el siguiente comando para desbloquear scripts:
+   Set-ExecutionPolicy RemoteSigned
+
+3. Confirmar escribiendo "S" cuando se solicite
+
+Niveles de Política de Ejecución:
+- Restricted: No se permiten scripts
+- AllSigned: Solo scripts firmados
+- RemoteSigned: Scripts locales y remotos firmados
+- Unrestricted: Todos los scripts (NO RECOMENDADO)
+
+Advertencia de Seguridad:
+- Usar RemoteSigned solo para scripts de confianza
+- Siempre verifica el origen de los scripts antes de ejecutarlos
+
+Problemas Comunes:
+- Asegúrate de tener permisos de administrador
+- Verifica que Python esté instalado correctamente
+- Comprueba que estás en el directorio correcto del proyecto 
